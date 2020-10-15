@@ -1,7 +1,118 @@
-\nwfilename{mainlitprog.nw}\nwbegindocs{0}\nwenddocs{}\nwbegincode{1}\sublabel{NWaGG5Z-HXUTc-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-HXUTc-1}}}\moddef{tspnng.py~{\nwtagstyle{}\subpageref{NWaGG5Z-HXUTc-1}}}\endmoddef\nwstartdeflinemarkup\nwenddeflinemarkup% ===> this file was generated automatically by noweave --- better not edit it
-print("Hello World")
+\nwfilename{mainlitprog.nw}\nwbegindocs{0}\nwdocspar% ===> this file was generated automatically by noweave --- better not edit it
+\section{Overall structure of \texttt{tspnng.py}}
+
+The \texttt{tspnng.py} file at a high level divided into the following chunks, 
+each of which is expanded upon in the coming sections. The \texttt{main.py} file used to run the \texttt{main()} function
+from the command-line is more of a  scratchpad for testing the functions in this file, and later pointing the 
+main to the appropriate test harnesses inside the \texttt{tspnng.py} file. Hence \texttt{main.py} will be developed 
+independently of this document for convenience because it will be subject to continuous changes. .  
+
+\nwenddocs{}\nwbegincode{1}\sublabel{NWaGG5Z-HXUTc-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-HXUTc-1}}}\moddef{tspnng.py~{\nwtagstyle{}\subpageref{NWaGG5Z-HXUTc-1}}}\endmoddef\nwstartdeflinemarkup\nwenddeflinemarkup
+
+\LA{}Header statements~{\nwtagstyle{}\subpageref{NWaGG5Z-3JxOw2-1}}\RA{}
+\LA{}Data Generation~{\nwtagstyle{}\subpageref{NWaGG5Z-2uhtAA-1}}\RA{}
+\LA{}Generic utility classes and functions~{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-1}}\RA{}
+\LA{}Functions for plotting~{\nwtagstyle{}\subpageref{NWaGG5Z-3bUROe-1}}\RA{}
+\LA{}Functions for generating various graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-1}}\RA{}
+\LA{}Functions for testing various hypotheses~{\nwtagstyle{}\subpageref{NWaGG5Z-3Z0LKc-1}}\RA{}
+
 \nwnotused{tspnng.py}\nwendcode{}\nwbegindocs{2}\nwdocspar
+
+
+\nwenddocs{}\nwbegincode{3}\sublabel{NWaGG5Z-3JxOw2-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3JxOw2-1}}}\moddef{Header statements~{\nwtagstyle{}\subpageref{NWaGG5Z-3JxOw2-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwenddeflinemarkup
+from matplotlib import matplotlib.pyplot as plt
+import matplotlib as mpl
+from matplotlib import rc
+rc('font',**\{'family':'serif','serif':['Palatino']\})
+rc('text', usetex=True)
+
+import scipy as sp
+import numpy as np
+import random
+from colorama import Fore, Back, Style
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{4}\nwdocspar
+
+
+\section{Data Generation}
+
+Alongside TSPLIB we will principally be using synthetic data i.e.uniform and non-uniform point-sets generated inside the unit-square $[0,1] \times [0,1]$. 
+Note that each point is represented as a numpy array of size 2. 
+
+\nwenddocs{}\nwbegincode{5}\sublabel{NWaGG5Z-2uhtAA-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-2uhtAA-1}}}\moddef{Data Generation~{\nwtagstyle{}\subpageref{NWaGG5Z-2uhtAA-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwenddeflinemarkup
+   \LA{}Synthetic data~{\nwtagstyle{}\subpageref{NWaGG5Z-1lO5Wy-1}}\RA{}
+   \LA{}TSPLIB data~{\nwtagstyle{}\subpageref{NWaGG5Z-Bg7qX-1}}\RA{}
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{6}\nwdocspar
+
+This chunk generates uniform and non-uniform point sets in $[0,1] \times [0,1]$. To generate non-uniform point-sets we basically 
+take a small set of uniformly distributed random points in the square, place a small square centered around each such random point and then
+generate the appropriate number of points uniformly inside each of those squares. \footnote{A similar technique was used in Jon Bentley's experimental TSP paper}
+
+\nwenddocs{}\nwbegincode{7}\sublabel{NWaGG5Z-1lO5Wy-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-1lO5Wy-1}}}\moddef{Synthetic data~{\nwtagstyle{}\subpageref{NWaGG5Z-1lO5Wy-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-2uhtAA-1}}\nwenddeflinemarkup
+def uniform_points(numpts):
+     return  sp.rand(numpts, 2).tolist()
+
+def non_uniform_points(numpts):
+
+    cluster_size = int(np.sqrt(numpts)) 
+    numcenters   = cluster_size
+    centers      = sp.rand(numcenters,2).tolist()
+    scale, points = 4.0, []
+
+    for c in centers:
+        cx, cy = c[0], c[1]
+        sq_size      = min(cx,1-cx,cy, 1-cy)
+
+        loc_pts_x    = np.random.uniform(low  = cx-sq_size/scale, 
+                                         high = cx+sq_size/scale, 
+                                         size = (cluster_size,))
+        loc_pts_y    = np.random.uniform(low = cy-sq_size/scale, 
+                                         high = cy+sq_size/scale, 
+                                         size = (cluster_size,))
+
+        points.extend(zip(loc_pts_x, loc_pts_y))
+
+    num_remaining_pts = numpts - cluster_size * numcenters
+    remaining_pts = scipy.rand(num_remaining_pts, 2).tolist()
+    points.extend(remaining_pts)
+    return points
+\nwused{\\{NWaGG5Z-2uhtAA-1}}\nwendcode{}\nwbegindocs{8}\nwdocspar
+
+
+
+
+
+This chunk principally just deals with massaging the TSPLIB data into a format appropriate for the current code. 
+\nwenddocs{}\nwbegincode{9}\sublabel{NWaGG5Z-Bg7qX-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-Bg7qX-1}}}\moddef{TSPLIB data~{\nwtagstyle{}\subpageref{NWaGG5Z-Bg7qX-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-2uhtAA-1}}\nwenddeflinemarkup
+\nwused{\\{NWaGG5Z-2uhtAA-1}}\nwendcode{}\nwbegindocs{10}\nwdocspar
+
+YAML\cite{ben2009yaml} is a convenient serialization and data-interchange format that we will be using principally 
+for serializing data onto disk. Python has particularly good libraries in dealing with YAML. Basically, 
+YAML stores data similar to a Python dictionary. Infact the \texttt{yaml} module provides an function to 
+transparently encode any (appropriate) Python dictionary into a YAML file. In the function below, the 
+\texttt{data} argument is a dictionary, and \texttt{dir\_name} and \texttt{file\_name} are strings. 
+ 
+\nwenddocs{}\nwbegincode{11}\sublabel{NWaGG5Z-4cZhfD-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-1}}}\moddef{Generic utility classes and functions~{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwenddeflinemarkup
+def write_to_yaml_file(data, dir_name, file_name):
+   import yaml
+   with open(dir_name + '/' + file_name, 'w') as outfile:
+          yaml.dump( data, outfile, default_flow_style = False)
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{12}\nwdocspar
+\nwenddocs{}\nwbegincode{13}\sublabel{NWaGG5Z-3bUROe-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3bUROe-1}}}\moddef{Functions for plotting~{\nwtagstyle{}\subpageref{NWaGG5Z-3bUROe-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwenddeflinemarkup
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{14}\nwdocspar
+\nwenddocs{}\nwbegincode{15}\sublabel{NWaGG5Z-2XNY09-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-1}}}\moddef{Functions for generating various graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwenddeflinemarkup
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{16}\nwdocspar
+\nwenddocs{}\nwbegincode{17}\sublabel{NWaGG5Z-3Z0LKc-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3Z0LKc-1}}}\moddef{Functions for testing various hypotheses~{\nwtagstyle{}\subpageref{NWaGG5Z-3Z0LKc-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwenddeflinemarkup
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{18}\nwdocspar
+
 \nwenddocs{}
 
+\nwixlogsorted{c}{{Data Generation}{NWaGG5Z-2uhtAA-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-2uhtAA-1}}}%
+\nwixlogsorted{c}{{Functions for generating various graphs}{NWaGG5Z-2XNY09-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-2XNY09-1}}}%
+\nwixlogsorted{c}{{Functions for plotting}{NWaGG5Z-3bUROe-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-3bUROe-1}}}%
+\nwixlogsorted{c}{{Functions for testing various hypotheses}{NWaGG5Z-3Z0LKc-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-3Z0LKc-1}}}%
+\nwixlogsorted{c}{{Generic utility classes and functions}{NWaGG5Z-4cZhfD-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-4cZhfD-1}}}%
+\nwixlogsorted{c}{{Header statements}{NWaGG5Z-3JxOw2-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-3JxOw2-1}}}%
+\nwixlogsorted{c}{{Synthetic data}{NWaGG5Z-1lO5Wy-1}{\nwixu{NWaGG5Z-2uhtAA-1}\nwixd{NWaGG5Z-1lO5Wy-1}}}%
+\nwixlogsorted{c}{{TSPLIB data}{NWaGG5Z-Bg7qX-1}{\nwixu{NWaGG5Z-2uhtAA-1}\nwixd{NWaGG5Z-Bg7qX-1}}}%
 \nwixlogsorted{c}{{tspnng.py}{NWaGG5Z-HXUTc-1}{\nwixd{NWaGG5Z-HXUTc-1}}}%
 

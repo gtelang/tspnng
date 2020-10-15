@@ -1,3 +1,107 @@
+
+\section{Overall structure of \texttt{tspnng.py}}
+
+The \texttt{tspnng.py} file at a high level divided into the following chunks, 
+each of which is expanded upon in the coming sections. The \texttt{main.py} file used to run the \texttt{main()} function
+from the command-line is more of a  scratchpad for testing the functions in this file, and later pointing the 
+main to the appropriate test harnesses inside the \texttt{tspnng.py} file. Hence \texttt{main.py} will be developed 
+independently of this document for convenience because it will be subject to continuous changes. .  
+
 <<tspnng.py>>=
-print("Hello World")
+
+<<Header statements>>
+<<Data Generation>>
+<<Generic utility classes and functions>>
+<<Functions for plotting>>
+<<Functions for generating various graphs>>
+<<Functions for testing various hypotheses>>
+
 @
+
+
+<<Header statements>>=
+from matplotlib import matplotlib.pyplot as plt
+import matplotlib as mpl
+from matplotlib import rc
+rc('font',**{'family':'serif','serif':['Palatino']})
+rc('text', usetex=True)
+
+import scipy as sp
+import numpy as np
+import random
+from colorama import Fore, Back, Style
+@
+
+
+\section{Data Generation}
+
+Alongside TSPLIB we will principally be using synthetic data i.e.uniform and non-uniform point-sets generated inside the unit-square $[0,1] \times [0,1]$. 
+Note that each point is represented as a numpy array of size 2. 
+
+<<Data Generation>>=
+   <<Synthetic data>>
+   <<TSPLIB data>>
+@
+
+This chunk generates uniform and non-uniform point sets in $[0,1] \times [0,1]$. To generate non-uniform point-sets we basically 
+take a small set of uniformly distributed random points in the square, place a small square centered around each such random point and then
+generate the appropriate number of points uniformly inside each of those squares. \footnote{A similar technique was used in Jon Bentley's experimental TSP paper}
+
+<<Synthetic data>>=
+def uniform_points(numpts):
+     return  sp.rand(numpts, 2).tolist()
+
+def non_uniform_points(numpts):
+
+    cluster_size = int(np.sqrt(numpts)) 
+    numcenters   = cluster_size
+    centers      = sp.rand(numcenters,2).tolist()
+    scale, points = 4.0, []
+
+    for c in centers:
+        cx, cy = c[0], c[1]
+        sq_size      = min(cx,1-cx,cy, 1-cy)
+
+        loc_pts_x    = np.random.uniform(low  = cx-sq_size/scale, 
+                                         high = cx+sq_size/scale, 
+                                         size = (cluster_size,))
+        loc_pts_y    = np.random.uniform(low = cy-sq_size/scale, 
+                                         high = cy+sq_size/scale, 
+                                         size = (cluster_size,))
+
+        points.extend(zip(loc_pts_x, loc_pts_y))
+
+    num_remaining_pts = numpts - cluster_size * numcenters
+    remaining_pts = scipy.rand(num_remaining_pts, 2).tolist()
+    points.extend(remaining_pts)
+    return points
+@
+
+
+
+
+
+This chunk principally just reads in TSPLIB data and massages it into a format appropriate for the current code. 
+
+<<TSPLIB data>>=
+@
+
+YAML\cite{ben2009yaml} is a convenient serialization and data-interchange format that we will be using principally 
+for serializing data onto disk. Python has particularly good libraries in dealing with YAML. Basically, 
+YAML stores data similar to a Python dictionary. Infact the \texttt{yaml} module provides an function to 
+transparently encode any (appropriate) Python dictionary into a YAML file. In the function below, the 
+\texttt{data} argument is a dictionary, and \texttt{dir\_name} and \texttt{file\_name} are strings. 
+ 
+<<Generic utility classes and functions>>=
+def write_to_yaml_file(data, dir_name, file_name):
+   import yaml
+   with open(dir_name + '/' + file_name, 'w') as outfile:
+          yaml.dump( data, outfile, default_flow_style = False)
+@
+<<Functions for plotting>>=
+@
+<<Functions for generating various graphs>>=
+@
+<<Functions for testing various hypotheses>>=
+@
+
