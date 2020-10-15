@@ -50,7 +50,7 @@ if [ $# -eq 0 ]; then
     # Tangle the source code corresponding to each chunk into appropriate file
     #-------------------------------------------------------------------------
     printf "Tangling ..."
-    notangle -L -Rtspnng.py mainlitprog.nw > ../src/tspnng.py # the <<tspnng.py>> chunk
+    notangle  -Rtspnng.py mainlitprog.nw > ../src/tspnng.py # the <<tspnng.py>> chunk
     printf " ( done )\n"
     #------------------------------------------------------------------------
     # Run all tests

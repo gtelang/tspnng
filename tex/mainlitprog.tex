@@ -12,7 +12,7 @@ independently of this document for convenience because it will be subject to con
 \LA{}Header statements~{\nwtagstyle{}\subpageref{NWaGG5Z-3JxOw2-1}}\RA{}
 \LA{}Data Generation~{\nwtagstyle{}\subpageref{NWaGG5Z-2uhtAA-1}}\RA{}
 \LA{}Generic utility classes and functions~{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-1}}\RA{}
-\LA{}Functions for plotting~{\nwtagstyle{}\subpageref{NWaGG5Z-3bUROe-1}}\RA{}
+\LA{}Functions for plotting and interacting~{\nwtagstyle{}\subpageref{NWaGG5Z-3DI44N-1}}\RA{}
 \LA{}Functions for generating various graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-1}}\RA{}
 \LA{}Functions for testing various hypotheses~{\nwtagstyle{}\subpageref{NWaGG5Z-3Z0LKc-1}}\RA{}
 
@@ -20,7 +20,7 @@ independently of this document for convenience because it will be subject to con
 
 
 \nwenddocs{}\nwbegincode{3}\sublabel{NWaGG5Z-3JxOw2-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3JxOw2-1}}}\moddef{Header statements~{\nwtagstyle{}\subpageref{NWaGG5Z-3JxOw2-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwenddeflinemarkup
-from matplotlib import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import matplotlib as mpl
 from matplotlib import rc
 rc('font',**\{'family':'serif','serif':['Palatino']\})
@@ -30,6 +30,11 @@ import scipy as sp
 import numpy as np
 import random
 from colorama import Fore, Back, Style
+
+from scipy.optimize import minimize
+from sklearn.cluster import KMeans
+import argparse, sys, time
+
 \nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{4}\nwdocspar
 
 
@@ -39,8 +44,8 @@ Alongside TSPLIB we will principally be using synthetic data i.e.uniform and non
 Note that each point is represented as a numpy array of size 2. 
 
 \nwenddocs{}\nwbegincode{5}\sublabel{NWaGG5Z-2uhtAA-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-2uhtAA-1}}}\moddef{Data Generation~{\nwtagstyle{}\subpageref{NWaGG5Z-2uhtAA-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwenddeflinemarkup
-   \LA{}Synthetic data~{\nwtagstyle{}\subpageref{NWaGG5Z-1lO5Wy-1}}\RA{}
-   \LA{}TSPLIB data~{\nwtagstyle{}\subpageref{NWaGG5Z-Bg7qX-1}}\RA{}
+\LA{}Synthetic data~{\nwtagstyle{}\subpageref{NWaGG5Z-1lO5Wy-1}}\RA{}
+\LA{}TSPLIB data~{\nwtagstyle{}\subpageref{NWaGG5Z-Bg7qX-1}}\RA{}
 \nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{6}\nwdocspar
 
 This chunk generates uniform and non-uniform point sets in $[0,1] \times [0,1]$. To generate non-uniform point-sets we basically 
@@ -72,16 +77,13 @@ def non_uniform_points(numpts):
         points.extend(zip(loc_pts_x, loc_pts_y))
 
     num_remaining_pts = numpts - cluster_size * numcenters
-    remaining_pts = scipy.rand(num_remaining_pts, 2).tolist()
+    remaining_pts = sp.rand(num_remaining_pts, 2).tolist()
     points.extend(remaining_pts)
     return points
 \nwused{\\{NWaGG5Z-2uhtAA-1}}\nwendcode{}\nwbegindocs{8}\nwdocspar
 
+This chunk principally just reads in TSPLIB data and massages it into a format appropriate for the current code. 
 
-
-
-
-This chunk principally just deals with massaging the TSPLIB data into a format appropriate for the current code. 
 \nwenddocs{}\nwbegincode{9}\sublabel{NWaGG5Z-Bg7qX-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-Bg7qX-1}}}\moddef{TSPLIB data~{\nwtagstyle{}\subpageref{NWaGG5Z-Bg7qX-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-2uhtAA-1}}\nwenddeflinemarkup
 \nwused{\\{NWaGG5Z-2uhtAA-1}}\nwendcode{}\nwbegindocs{10}\nwdocspar
 
@@ -97,18 +99,205 @@ def write_to_yaml_file(data, dir_name, file_name):
    with open(dir_name + '/' + file_name, 'w') as outfile:
           yaml.dump( data, outfile, default_flow_style = False)
 \nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{12}\nwdocspar
-\nwenddocs{}\nwbegincode{13}\sublabel{NWaGG5Z-3bUROe-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3bUROe-1}}}\moddef{Functions for plotting~{\nwtagstyle{}\subpageref{NWaGG5Z-3bUROe-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwenddeflinemarkup
-\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{14}\nwdocspar
-\nwenddocs{}\nwbegincode{15}\sublabel{NWaGG5Z-2XNY09-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-1}}}\moddef{Functions for generating various graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwenddeflinemarkup
+
+
+
+The following set of code blocks create an interactive matplotlib canvas onto which the user can insert points, and then 
+run the appropriate algorithm to visualize the intersection of the TSP and various graphs. 
+
+Putting everything together, we set up the run handler by connecting the keyboard and mouse handlers
+to the canvas. This is done in the main \verb|run_handler()| function. 
+
+\nwenddocs{}\nwbegincode{13}\sublabel{NWaGG5Z-3DI44N-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3DI44N-1}}}\moddef{Functions for plotting and interacting~{\nwtagstyle{}\subpageref{NWaGG5Z-3DI44N-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{\relax}{NWaGG5Z-3DI44N-2}\nwenddeflinemarkup
+def run_handler():
+    fig, ax =  plt.subplots()
+    run = TSPNNGInput()
+    
+    ax.set_xlim([xlim[0], xlim[1]])
+    ax.set_ylim([ylim[0], ylim[1]])
+    ax.set_aspect(1.0)
+    ax.set_xticks([])
+    ax.set_yticks([])
+      
+    mouseClick   = wrapperEnterRunPointsHandler(fig,ax, run)
+    fig.canvas.mpl_connect('button_press_event' , mouseClick )
+      
+    keyPress     = wrapperkeyPressHandler(fig,ax, run)
+    fig.canvas.mpl_connect('key_press_event', keyPress   )
+    plt.show()
+\nwalsodefined{\\{NWaGG5Z-3DI44N-2}\\{NWaGG5Z-3DI44N-3}}\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{14}\nwdocspar
+
+
+
+There are two principal callback functions \verb|wrapperEnterRunPointshandler| and \verb|wrapperkeypresshandler| used in the code above. 
+These encode the interaction between the mouse and keyboard to the matplotlib canvas. 
+
+First we define the call back function for mouse-clicks. Double-clicking the left mouse button (denoted as ``button 1'' in the matplotlib world)
+inserts a small circle patch representing a point. 
+
+\nwenddocs{}\nwbegincode{15}\sublabel{NWaGG5Z-3DI44N-2}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3DI44N-2}}}\moddef{Functions for plotting and interacting~{\nwtagstyle{}\subpageref{NWaGG5Z-3DI44N-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-3DI44N-1}{NWaGG5Z-3DI44N-3}\nwenddeflinemarkup
+xlim, ylim = [0,1], [0,1]
+def wrapperEnterRunPointsHandler(fig, ax, run):
+    def _enterPointsHandler(event):
+        if event.name      == 'button_press_event'     and \\
+           (event.button   == 1)                       and \\
+            event.dblclick == True                     and \\ 
+            event.xdata  != None                       and\\ 
+            event.ydata  != None:
+
+             newPoint = (event.xdata, event.ydata)
+             run.sites.append( newPoint  )
+             patchSize  = (xlim[1]-xlim[0])/140.0
+                   
+             ax.add_patch( mpl.patches.Circle( newPoint, radius = patchSize,
+                                               facecolor='blue', edgecolor='black'  ))
+             ax.set_title('Points Inserted: ' + str(len(run.sites)), \\
+                           fontdict=\{'fontsize':40\})
+             applyAxCorrection(ax)
+             fig.canvas.draw()
+
+    return _enterPointsHandler
 \nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{16}\nwdocspar
-\nwenddocs{}\nwbegincode{17}\sublabel{NWaGG5Z-3Z0LKc-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3Z0LKc-1}}}\moddef{Functions for testing various hypotheses~{\nwtagstyle{}\subpageref{NWaGG5Z-3Z0LKc-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwenddeflinemarkup
+
+Now a call-back function for keyboard. Pressing \verb|`i'| or \verb|`I'| on the keyboard further prompts the 
+user to insert a 2 or 3 letter code to indicate which graph should span the points. 
+
+\nwenddocs{}\nwbegincode{17}\sublabel{NWaGG5Z-3DI44N-3}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3DI44N-3}}}\moddef{Functions for plotting and interacting~{\nwtagstyle{}\subpageref{NWaGG5Z-3DI44N-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-3DI44N-2}{\relax}\nwenddeflinemarkup
+def wrapperkeyPressHandler(fig,ax, run): 
+       def _keyPressHandler(event):
+               if event.key in ['i', 'I']:                     
+                     \LA{}Enter spanning graph~{\nwtagstyle{}\subpageref{NWaGG5Z-pTq9b-1}}\RA{}    
+               elif event.key in ['n', 'N', 'u', 'U']: 
+                     \LA{}Enter type of point set~{\nwtagstyle{}\subpageref{NWaGG5Z-zex4v-1}}\RA{}                   
+               elif event.key in ['c', 'C']: 
+                     \LA{}Clear all states and the canvas~{\nwtagstyle{}\subpageref{NWaGG5Z-itHJV-1}}\RA{}
+                   
+       return _keyPressHandler
 \nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{18}\nwdocspar
+
+We now elaborate on the chunks in \verb|wrapperkeypresshandler|, and implement the boring technicalities. You 
+can skip ahead to the next sections, at this point, if you wish. 
+
+The user should type the code enclosed in the brackets (e.g. \verb|dt| for delaunay triangulation) to generate the 
+indicated graph that spans the points. 
+
+\nwenddocs{}\nwbegincode{19}\sublabel{NWaGG5Z-pTq9b-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-pTq9b-1}}}\moddef{Enter spanning graph~{\nwtagstyle{}\subpageref{NWaGG5Z-pTq9b-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-3DI44N-3}}\nwenddeflinemarkup
+algo_str = raw_input(Fore.YELLOW                             +\\
+               "Enter code for the graph you need to span the points:\\n"  +\\
+               "(dt)   Delaunay Triangulation           \\n"  +\\
+               "(knng) k-Nearest Neighbor Graph           \\n"  +\\
+               Style.RESET_ALL)
+algo_str = algo_str.lstrip()
+
+if algo_str == 'dt':
+      geometric_graph = pass
+      
+elif algo_str == 'knng'
+      k_str = raw_input(Fore.YELLOW + '--> What value of k do you want? ')
+      k     = int(k_str)
+      geometric_graph = pass
+
+else:
+      print("Unknown option! ")
+      sys.exit()
+
+clearAxPolygonPatches(ax)
+applyAxCorrection(ax)
+
+## --> Plot spanning graph onto ax
+fig.canvas.draw()
+\nwused{\\{NWaGG5Z-3DI44N-3}}\nwendcode{}\nwbegindocs{20}\nwdocspar
+
+If you want to enter a uniformly or non-uniformly distributed point-set in the unit-square press \verb|`u`| or \verb|`n`|
+respectively after being prompted. 
+
+\nwenddocs{}\nwbegincode{21}\sublabel{NWaGG5Z-zex4v-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-zex4v-1}}}\moddef{Enter type of point set~{\nwtagstyle{}\subpageref{NWaGG5Z-zex4v-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-3DI44N-3}}\nwenddeflinemarkup
+numpts = int(raw_input("\\n" + Fore.YELLOW+\\
+                       "How many points should I generate?: "+\\
+                       Style.RESET_ALL)) 
+run.clearAllStates()
+ax.cla()
+               
+applyAxCorrection(ax)
+ax.set_xticks([])
+ax.set_yticks([])
+fig.texts = []
+                 
+if event.key in ['n', 'N']: 
+        run.sites = non_uniform_points(numpts)
+else : 
+        run.sites = uniform_points(numpts)
+
+patchSize  = (xlim[1]-xlim[0])/140.0
+
+for site in run.sites:      
+    ax.add_patch(mpl.patches.Circle(site, radius = patchSize, \\
+                 facecolor='blue',edgecolor='black' ))
+
+ax.set_title('Points : ' + str(len(run.sites)), fontdict=\{'fontsize':40\})
+fig.canvas.draw()
+
+\nwused{\\{NWaGG5Z-3DI44N-3}}\nwendcode{}\nwbegindocs{22}\nwdocspar
+
+If you want to wipe the canvas and the data inside the run clean, then as indicated in the following code
+chunk just press \verb|`c`|. 
+
+\nwenddocs{}\nwbegincode{23}\sublabel{NWaGG5Z-itHJV-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-itHJV-1}}}\moddef{Clear all states and the canvas~{\nwtagstyle{}\subpageref{NWaGG5Z-itHJV-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-3DI44N-3}}\nwenddeflinemarkup
+run.clearAllStates()
+ax.cla()
+                                 
+applyAxCorrection(ax)
+ax.set_xticks([])
+ax.set_yticks([])
+                                    
+fig.texts = []
+fig.canvas.draw()
+\nwused{\\{NWaGG5Z-3DI44N-3}}\nwendcode{}\nwbegindocs{24}\nwdocspar
+
+
+
+
+
+Often the \verb|ax| object has to be reset and cleaned of the various segment and circle patches, or even resetting the 
+aspect ratio of the \verb|ax| object to be 1.0. These ``cleanup'' functions are implemented next. 
+
+\nwenddocs{}\nwbegincode{25}\sublabel{NWaGG5Z-2xW5Z8-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-2xW5Z8-1}}}\moddef{Functions for plotting and interacting ~{\nwtagstyle{}\subpageref{NWaGG5Z-2xW5Z8-1}}}\endmoddef\nwstartdeflinemarkup\nwenddeflinemarkup
+def applyAxCorrection(ax):
+      ax.set_xlim([xlim[0], xlim[1]])
+      ax.set_ylim([ylim[0], ylim[1]])
+      ax.set_aspect(1.0)
+
+def clearPatches(ax):
+    for index , patch in zip(range(len(ax.patches)), ax.patches):
+        if isinstance(patch, mpl.patches.Polygon) == True:
+            patch.remove()
+    ax.lines[:]=[]
+    applyAxCorrection(ax)
+
+def clearAxPolygonPatches(ax):
+
+    for index , patch in zip(range(len(ax.patches)), ax.patches):
+        if isinstance(patch, mpl.patches.Polygon) == True:
+            patch.remove()
+    ax.lines[:]=[]
+    applyAxCorrection(ax)
+\nwnotused{Functions for plotting and interacting }\nwendcode{}\nwbegindocs{26}\nwdocspar
+
+
+\nwenddocs{}\nwbegincode{27}\sublabel{NWaGG5Z-2XNY09-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-1}}}\moddef{Functions for generating various graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwenddeflinemarkup
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{28}\nwdocspar
+\nwenddocs{}\nwbegincode{29}\sublabel{NWaGG5Z-3Z0LKc-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3Z0LKc-1}}}\moddef{Functions for testing various hypotheses~{\nwtagstyle{}\subpageref{NWaGG5Z-3Z0LKc-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwenddeflinemarkup
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{30}\nwdocspar
 
 \nwenddocs{}
 
+\nwixlogsorted{c}{{Clear all states and the canvas}{NWaGG5Z-itHJV-1}{\nwixu{NWaGG5Z-3DI44N-3}\nwixd{NWaGG5Z-itHJV-1}}}%
 \nwixlogsorted{c}{{Data Generation}{NWaGG5Z-2uhtAA-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-2uhtAA-1}}}%
+\nwixlogsorted{c}{{Enter spanning graph}{NWaGG5Z-pTq9b-1}{\nwixu{NWaGG5Z-3DI44N-3}\nwixd{NWaGG5Z-pTq9b-1}}}%
+\nwixlogsorted{c}{{Enter type of point set}{NWaGG5Z-zex4v-1}{\nwixu{NWaGG5Z-3DI44N-3}\nwixd{NWaGG5Z-zex4v-1}}}%
 \nwixlogsorted{c}{{Functions for generating various graphs}{NWaGG5Z-2XNY09-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-2XNY09-1}}}%
-\nwixlogsorted{c}{{Functions for plotting}{NWaGG5Z-3bUROe-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-3bUROe-1}}}%
+\nwixlogsorted{c}{{Functions for plotting and interacting}{NWaGG5Z-3DI44N-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-3DI44N-1}\nwixd{NWaGG5Z-3DI44N-2}\nwixd{NWaGG5Z-3DI44N-3}}}%
+\nwixlogsorted{c}{{Functions for plotting and interacting }{NWaGG5Z-2xW5Z8-1}{\nwixd{NWaGG5Z-2xW5Z8-1}}}%
 \nwixlogsorted{c}{{Functions for testing various hypotheses}{NWaGG5Z-3Z0LKc-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-3Z0LKc-1}}}%
 \nwixlogsorted{c}{{Generic utility classes and functions}{NWaGG5Z-4cZhfD-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-4cZhfD-1}}}%
 \nwixlogsorted{c}{{Header statements}{NWaGG5Z-3JxOw2-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-3JxOw2-1}}}%
