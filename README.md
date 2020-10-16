@@ -12,7 +12,7 @@ SYNOPSIS
 
 DESCRIPTION
 
-:   This question suggested itself to the author while working on the
+:   The question posed in the title came about while working on the
     Horsefly problem, a generalization of the famously $NP$-hard
     Travelling Salesman Problem [^2]. One line of attack was to get at
     some kind of structure theorem by identifying a candidate set of

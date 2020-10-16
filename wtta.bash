@@ -82,7 +82,7 @@ if [ $# -eq 0 ]; then
     # base rather the the code tree. Makes it easier to understand the whole system.
     #-----------------------------------------------------------------------------------------------------------------------
     mkdir ${progname}
-    cp -r src tests lib bin makefile README.md .git .gitignore ${progname} # needs to be lightly edited depending on the project. Keep the .git folder!
+    cp -r src tests bin README.md .git .gitignore ${progname} # needs to be lightly edited depending on the project. Keep the .git folder!
                                                                     # It helps to keep track of changes to all files in src as if everything was written 
 								    # in a non-literate way. The appearance of stuff in the `code` should be as if 
 								    # it were written in a non-literate way. The only evidence it was written literately

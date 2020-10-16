@@ -11,8 +11,28 @@ import random
 import networkx as nx
 
 from sklearn.cluster import KMeans
-import argparse, sys, time
+import argparse, os, sys, time
 from colorama import Fore, Style, Back
+import yaml
+
+def get_names_of_all_euclidean2D_instances(dirpath="./sym-tsp-tsplib/instances/euclidean_instances_yaml/" ):
+     
+     inst_names = []
+     for name in os.listdir(dirpath):
+         full_path = os.path.join(dirpath, name)
+         if os.path.isfile(full_path):
+             inst_names.append(name)
+     return inst_names
+
+def tsplib_instance_points(instance_file_name, dirpath="./sym-tsp-tsplib/instances/euclidean_instances_yaml/"):
+
+        print(Fore.GREEN+"Reading " + instance_file_name, Style.RESET_ALL)
+        with open(dirpath+instance_file_name) as file:
+            data = yaml.load(file, Loader=yaml.FullLoader)
+            points = np.asarray(data['points'])
+        
+        return points 
+           
 def uniform_points(numpts):
      return  sp.rand(numpts, 2).tolist()
 
@@ -40,9 +60,7 @@ def non_uniform_points(numpts):
     remaining_pts = sp.rand(num_remaining_pts, 2).tolist()
     points.extend(remaining_pts)
     return points
-
 def write_to_yaml_file(data, dir_name, file_name):
-   import yaml
    with open(dir_name + '/' + file_name, 'w') as outfile:
           yaml.dump( data, outfile, default_flow_style = False)
 class TSPNNGInput:
@@ -83,10 +101,14 @@ def wrapperEnterRunPointsHandler(fig, ax, run):
              run.points.append( newPoint  )
              print("You inserted ", newPoint)
 
-             patchSize  = (xlim[1]-xlim[0])/140.0
+             patchSize  = (xlim[1]-xlim[0])/130.0
                    
-             ax.add_patch( mpl.patches.Circle( newPoint, radius = patchSize,
-                                               facecolor='blue', edgecolor='black'  ))
+             ax.clear()
+
+             for pt in run.points:
+                  ax.add_patch( mpl.patches.Circle( pt, radius = patchSize,
+                                                    facecolor='blue', edgecolor='black'  ))
+
              ax.set_title('Points Inserted: ' + str(len(run.points)), \
                            fontdict={'fontsize':25})
              applyAxCorrection(ax)
@@ -100,7 +122,8 @@ def wrapperkeyPressHandler(fig,ax, run):
                                           "(knng) k-Nearest Neighbor Graph        \n"            +\
                                           "(mst)  Minimum Spanning Tree           \n"            +\
                                           "(dt)   Delaunay Triangulation         \n"             +\
-                                          "(tsp)  TSP\n")
+                                          "(pytsp) TSP computed with the pure Python TSP library \n" +
+                                          "(conc)  TSP computed with the pure Python TSP library \n")
                      algo_str = algo_str.lstrip()
 
                      if algo_str == 'knng':
@@ -114,13 +137,28 @@ def wrapperkeyPressHandler(fig,ax, run):
                      elif algo_str == 'dt':
                            geometric_graph = get_delaunay_tri_graph(run.points)
 
-                     elif algo_str == 'tsp':
-                          geometric_graph = get_tsp_graph(run.points)
+                     elif algo_str == 'pytsp':
+                          geometric_graph = get_py_tsp_graph(run.points)
+
+                     elif algo_str == 'conc':
+                          geometric_graph = get_concorde_tsp_graph(run.points)
 
                      else:
                            print(Fore.YELLOW, "I did not recognize that option.", Style.RESET_ALL)
                            geometric_graph = None
 
+
+                     common_edges = list_common_edges(get_concorde_tsp_graph(run.points), geometric_graph)
+                     print(Fore.YELLOW, "----------LIST OF EDGES OF COMPUTED GRAPH COMMON TO TSP-------------")
+                     for i, edge in zip(range(1,1+len(common_edges)),common_edges):
+                          print(i, '--->', edge)
+                     print("-------------------------------------------------------------------------------------")
+                     print("Number of edges of the indicated geometric graph that are common to the Concorde TSP: ", len(common_edges))
+                     print("-------------------------------------------------------------------------------------", Style.RESET_ALL)
+
+
+
+                     ax.set_title("Graph Type: " + geometric_graph.graph['type'] + '\n Number of nodes: ' + str(len(run.points)), fontdict={'fontsize':25})
                      render_graph(geometric_graph,fig,ax)
                      fig.canvas.draw()    
                elif event.key in ['n', 'N', 'u', 'U']: 
@@ -144,7 +182,7 @@ def wrapperkeyPressHandler(fig,ax, run):
                          ax.add_patch(mpl.patches.Circle(site, radius = patchSize, \
                                       facecolor='blue',edgecolor='black' ))
 
-                     ax.set_title('Points : ' + str(len(run.points)), fontdict={'fontsize':40})
+                     ax.set_title('Points generated: ' + str(len(run.points)), fontdict={'fontsize':25})
                      fig.canvas.draw()                   
                elif event.key in ['c', 'C']: 
                      run.clearAllStates()
@@ -177,53 +215,150 @@ def clearAxPolygonPatches(ax):
             patch.remove()
     ax.lines[:]=[]
     applyAxCorrection(ax)
-def render_graph(geometric_graph,fig,ax):
-     if geometric_graph is None:
+def render_graph(G,fig,ax):
+     if G is None:
             return
-
-     t = np.arange(0.0, 2.0, 0.01)
-     s = 1 + np.sin(2 * np.pi * t)
-     ax.plot(t, s)
+     edgecol = None
+     if G.graph['type'] == 'mst':
+          edgecol = 'g'
+     elif G.graph['type'] in ['conc','pytsp']:
+          edgecol = 'r'
+     elif G.graph['type'] == 'dt':
+          edgecol = 'b'
+     elif G.graph['type'][-3:] == 'nng':
+          edgecol = 'm'
+     for  (nidx1, nidx2) in G.edges:
+          x1, y1 = G.nodes[nidx1]['coods']
+          x2, y2 = G.nodes[nidx2]['coods']
+          ax.plot([x1,x2],[y1,y2],'-', color=edgecol)
+          
      fig.canvas.draw()
 
 def get_knng_graph(points,k):
-     points = np.array(points)
+     from sklearn.neighbors import NearestNeighbors
 
-     ### --> Make the graph here
-     knng_graph = None
+     points     = np.array(points)
+     coords     = [{"coods":pt} for pt in points]
+     knng_graph = nx.Graph()
+     knng_graph.add_nodes_from(zip(range(len(points)), coords))
+
+     nbrs = NearestNeighbors(n_neighbors=(k+1), algorithm='ball_tree').fit(points)
+     distances, indices = nbrs.kneighbors(points)
+
+     edge_list = []
+     for nbidxs in indices:
+          nfix = nbidxs[0]
+          edge_list.extend([(nfix,nvar) for nvar in nbidxs[1:]])
+
+     knng_graph.add_edges_from(  edge_list  )
+
+     knng_graph.graph['type']   = str(k)+'nng'
+     knng_graph.graph['weight'] =  None # TODO, also edge weights for each edge!!!
      return knng_graph
+def get_delaunay_tri_graph(points):
+     from scipy.spatial import Delaunay
+     points       = np.array(points)
+     coords       = [{"coods":pt} for pt in points]
+     tri          = Delaunay(points)
+     deltri_graph = nx.Graph()
+
+     deltri_graph.add_nodes_from(zip(range(len(points)), coords))
+
+     edge_list = []
+     for (i,j,k) in tri.simplices:
+         edge_list.extend([(i,j),(j,k),(k,i)])    
+     deltri_graph.add_edges_from(  edge_list  )
+     
+     total_weight_of_edges = 0.0
+     for edge in deltri_graph.edges:
+           n1, n2 = edge
+           pt1 = deltri_graph.nodes[n1]['coods'] 
+           pt2 = deltri_graph.nodes[n2]['coods']
+           edge_wt = np.linalg.norm(pt1-pt2)
+
+           deltri_graph.edges[n1,n2]['weight'] = edge_wt
+           total_weight_of_edges = total_weight_of_edges + edge_wt 
+     
+     deltri_graph.graph['weight'] = total_weight_of_edges
+     deltri_graph.graph['type']   = 'dt'
+
+     return deltri_graph
 
 def get_mst_graph(points):
-     points = np.array(points)
 
-     ### --> Make the graph here
-     mst_graph = None
+     points = np.array(points)
+     deltri_graph = get_delaunay_tri_graph(points)
+     mst_graph = nx.algorithms.tree.mst.minimum_spanning_tree(deltri_graph, algorithm='kruskal')
+     mst_graph.graph['type']   = 'mst'
      return mst_graph
-
-def get_delaunay_tri_graph(points):
-     points = np.array(points)
-     tri    = sp.spatial.Delaunay(points)
-
-     ### --> Make the graph here
-     deltri_graph = None
-     return deltri_graph
-def get_tsp_graph(points):
-
+def get_py_tsp_graph(points):
      import tsp
      points = np.array(points)
-     coords = [{"coords":pt} for pt in points]
-     t      = tsp.tsp(points)
+     coords = [{"coods":pt} for pt in points]
+     t              = tsp.tsp(points)
      idxs_along_tsp = t[1]
+     tsp_graph      = nx.Graph()
 
-
-     tsp_graph = nx.Graph()
      tsp_graph.add_nodes_from(zip(range(len(points)), coords))
-
-     edge_list = zip(idxs_along_tsp, idxs_along_tsp[1:]) + [(idxs_along_tsp[-1],idxs_along_tsp[0])]
+     edge_list = list(zip(idxs_along_tsp, idxs_along_tsp[1:])) + \
+                       [(idxs_along_tsp[-1],idxs_along_tsp[0])]
      tsp_graph.add_edges_from(  edge_list  )
+     total_weight_of_edges = 0.0
+     for edge in tsp_graph.edges:
 
-     print(Fore.RED, list_edges(tsp_graph), Style.RESET_ALL)
+           n1, n2 = edge
+           pt1 = tsp_graph.nodes[n1]['coods'] 
+           pt2 = tsp_graph.nodes[n2]['coods']
+           edge_wt = np.linalg.norm(pt1-pt2)
 
+           tsp_graph.edges[n1,n2]['weight'] = edge_wt
+           total_weight_of_edges = total_weight_of_edges + edge_wt 
+     tsp_graph.graph['weight'] = total_weight_of_edges
+     tsp_graph.graph['type']   = 'pytsp'     
      return tsp_graph
+def get_concorde_tsp_graph(points, scaling_factor=1000):
+     from concorde.tsp import TSPSolver
+     points = np.array(points)
+     coords = [{"coods":pt} for pt in points]
 
+     #from concorde.tests.data_utils import get_dataset_path          
+     #fname = get_dataset_path("berlin52")     
+     #solver = TSPSolver.from_tspfile(fname)
+     #solution = solver.solve()
+
+     xs = [int(scaling_factor*pt[0]) for pt in points]
+     ys = [int(scaling_factor*pt[1]) for pt in points]
+     solver = TSPSolver.from_data(xs, ys, norm='EUC_2D', name=None)
+     print(Fore.GREEN)
+     solution = solver.solve()
+     print(Style.RESET_ALL)
+
+     concorde_tsp_graph=nx.Graph()
+          
+     idxs_along_tsp = solution.tour
+     concorde_tsp_graph.add_nodes_from(zip(range(len(points)), coords))
+     edge_list = list(zip(idxs_along_tsp, idxs_along_tsp[1:])) + \
+                    [(idxs_along_tsp[-1],idxs_along_tsp[0])]
+     concorde_tsp_graph.add_edges_from(  edge_list  )
+
+     concorde_tsp_graph.graph['type']   = 'conc'
+     concorde_tsp_graph.graph['found_tour_p'] = solution.found_tour
+     concorde_tsp_graph.graph['weight'] = None ### TODO!! 
+     return concorde_tsp_graph
+def edge_equal_p(e1,e2):
+     e1 = sorted(list(e1))
+     e2 = sorted(list(e2))
+     return (e1==e2)
+def list_common_edges(g1, g2):
+     common_edges = []
+     for e1 in g1.edges:
+          for e2 in g2.edges:
+             if  edge_equal_p(e1,e2):
+                  common_edges.append(e1)
+     return common_edges
+def graphs_intersect_p(g1,g2):
+     flag = False
+     if list_common_edges(g1,g2):     
+          flag = True 
+     return flag
 

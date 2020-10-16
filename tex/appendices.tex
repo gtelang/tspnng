@@ -28,12 +28,22 @@ To run the code, \texttt{cd} into the code's top-level folder, then type any one
 \item \verb|python src/main.py --file <points.yaml>|
 \end{itemize}
 
+\subsection{Interactive Mode}
+
+In this mode, one can mouse-in points onto a canvas (with double-clicks) and run various network algorithms and render the 
+resulting network. 
+
+Once you finish mousing in the points, press \verb|`i`|, and that will open up a prompt at the terminal, asking which 
+network do you want to compute on those points. Enter the code in the brackets. 
+
+If you don't want to mouse-in points, and just want to plaster a few uniformly distributed random points on the canvas, 
+press \verb|`u`|, and then type into the terminal the number of points. (Same for non-uniform distributed points, but for that
+you must press \verb|`n`|)
+
 Please note, while  running the  code in `\verb|interactive|` mode you will a
 warning message:
 
-
 \begin{quote}
-
 \color{blue}
 \verb|CoreApplication::exec: The event loop is already running|
 \end{quote}
