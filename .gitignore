@@ -1,2 +1,6 @@
 checklist.org
 tspnng.tar.gz
+tex/0
+src/tspnng.pyc
+tspnng
+src/__pycache__/

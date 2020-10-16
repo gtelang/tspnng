@@ -1,5 +1,5 @@
 ......................................................................... 
-Compilation of project started on:  Thu Oct 15 11:21:26 EDT 2020
+Compilation of project started on:  Fri Oct 16 03:57:20 EDT 2020
 ...................System Info (Output of uname -a)...................... 
 Linux multivac 4.10.0-38-generic #42~16.04.1-Ubuntu SMP Tue Oct 10 16:32:20 UTC 2017 x86_64 x86_64 x86_64 GNU/Linux
 ....................Processor Details (Output of lscpu)...................
@@ -17,10 +17,10 @@ CPU family:            6
 Model:                 69
 Model name:            Intel(R) Core(TM) i5-4300U CPU @ 1.90GHz
 Stepping:              1
-CPU MHz:               1120.147
+CPU MHz:               932.464
 CPU max MHz:           2900.0000
 CPU min MHz:           800.0000
-BogoMIPS:              4988.34
+BogoMIPS:              4988.57
 Virtualization:        VT-x
 L1d cache:             32K
 L1i cache:             32K
@@ -324,51 +324,83 @@ Package biblatex Warning: Data encoding is 'utf8'.
 No file main.bbl.
 (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msa.cfg)
 (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msb.cfg) (./manpage.tex
-<miscimages/monalisa.jpg, id=11, 215.8464pt x 315.579pt>
-<use miscimages/monalisa.jpg> [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.
-map} <./miscimages/monalisa.jpg>]) [2] (./mainlitprog.tex
 
-LaTeX Warning: Reference `NWaGG5Z-HXUTc-1' on page 3 undefined on input line 10
+LaTeX Warning: Citation 'hougardy2014edge' on page 1 undefined on input line 17
 .
 
 
-LaTeX Warning: Reference `NWaGG5Z-HXUTc-1' on page 3 undefined on input line 10
-.
+LaTeX Warning: Citation 'applegate2009certification' on page 1 undefined on inp
+ut line 20.
 
 
-LaTeX Warning: Reference `NWaGG5Z-3JxOw2-1' on page 3 undefined on input line 1
-2.
+LaTeX Warning: Citation 'mitchell1999guillotine' on page 1 undefined on input l
+ine 22.
 
 
-LaTeX Warning: Reference `NWaGG5Z-2uhtAA-1' on page 3 undefined on input line 1
-3.
+LaTeX Warning: Citation 'arora1996polynomial' on page 1 undefined on input line
+ 22.
 
 
-LaTeX Warning: Reference `NWaGG5Z-4cZhfD-1' on page 3 undefined on input line 1
-4.
+Underfull \hbox (badness 1616) in paragraph at lines 22--22
+[][][]\T1/cmr/m/n/9 (+10) Note that the land-mark PTAS'es for the TSP, such as 
+those of Mitchell [[]] and
 
-
-LaTeX Warning: Reference `NWaGG5Z-3DI44N-1' on page 3 undefined on input line 1
+LaTeX Warning: Citation 'knuth1984literate' on page 1 undefined on input line 2
 5.
 
 
-LaTeX Warning: Reference `NWaGG5Z-2XNY09-1' on page 3 undefined on input line 1
+LaTeX Warning: Citation 'ramsey2008noweb' on page 1 undefined on input line 25.
+
+
+<miscimages/monalisa.jpg, id=12, 215.8464pt x 315.579pt>
+<use miscimages/monalisa.jpg> [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.
+map} <./miscimages/monalisa.jpg>]) [2] (./mainlitprog.tex
+
+LaTeX Warning: Reference `NWaGG5Z-HXUTc-1' on page 3 undefined on input line 11
+.
+
+
+LaTeX Warning: Reference `NWaGG5Z-HXUTc-1' on page 3 undefined on input line 11
+.
+
+
+LaTeX Warning: Reference `NWaGG5Z-2BmRoZ-1' on page 3 undefined on input line 1
+3.
+
+
+LaTeX Warning: Reference `NWaGG5Z-2uhtAA-1' on page 3 undefined on input line 1
+4.
+
+
+LaTeX Warning: Reference `NWaGG5Z-4cZhfD-1' on page 3 undefined on input line 1
+5.
+
+
+LaTeX Warning: Reference `NWaGG5Z-3DI44N-1' on page 3 undefined on input line 1
 6.
 
 
-LaTeX Warning: Reference `NWaGG5Z-3Z0LKc-1' on page 3 undefined on input line 1
+LaTeX Warning: Reference `NWaGG5Z-2XNY09-1' on page 3 undefined on input line 1
 7.
 
 
-LaTeX Warning: Reference `NWaGG5Z-3JxOw2-1' on page 3 undefined on input line 2
-2.
+LaTeX Warning: Reference `NWaGG5Z-b3I3C-1' on page 3 undefined on input line 18
+.
 
 
-LaTeX Warning: Reference `NWaGG5Z-3JxOw2-1' on page 3 undefined on input line 2
-2.
+LaTeX Warning: Reference `NWaGG5Z-3pWXcO-1' on page 3 undefined on input line 1
+9.
 
 
-LaTeX Warning: Reference `NWaGG5Z-HXUTc-1' on page 3 undefined on input line 22
+LaTeX Warning: Reference `NWaGG5Z-2BmRoZ-1' on page 3 undefined on input line 2
+3.
+
+
+LaTeX Warning: Reference `NWaGG5Z-2BmRoZ-1' on page 3 undefined on input line 2
+3.
+
+
+LaTeX Warning: Reference `NWaGG5Z-HXUTc-1' on page 3 undefined on input line 23
 .
 
 [3]
@@ -393,192 +425,341 @@ LaTeX Warning: Reference `NWaGG5Z-Bg7qX-1' on page 4 undefined on input line 48
 .
 
 
-LaTeX Warning: Reference `NWaGG5Z-1lO5Wy-1' on page 4 undefined on input line 5
-5.
+LaTeX Warning: Reference `NWaGG5Z-1lO5Wy-1' on page 4 undefined on input line 6
+0.
 
 
-LaTeX Warning: Reference `NWaGG5Z-1lO5Wy-1' on page 4 undefined on input line 5
-5.
+LaTeX Warning: Reference `NWaGG5Z-1lO5Wy-1' on page 4 undefined on input line 6
+0.
 
 
-LaTeX Warning: Reference `NWaGG5Z-2uhtAA-1' on page 4 undefined on input line 5
-5.
+LaTeX Warning: Reference `NWaGG5Z-2uhtAA-1' on page 4 undefined on input line 6
+0.
 
 [4]
 
-LaTeX Warning: Reference `NWaGG5Z-Bg7qX-1' on page 5 undefined on input line 87
+LaTeX Warning: Reference `NWaGG5Z-Bg7qX-1' on page 5 undefined on input line 92
 .
 
 
-LaTeX Warning: Reference `NWaGG5Z-Bg7qX-1' on page 5 undefined on input line 87
+LaTeX Warning: Reference `NWaGG5Z-Bg7qX-1' on page 5 undefined on input line 92
 .
 
 
-LaTeX Warning: Reference `NWaGG5Z-2uhtAA-1' on page 5 undefined on input line 8
-7.
-
-
-LaTeX Warning: Citation 'ben2009yaml' on page 5 undefined on input line 90.
+LaTeX Warning: Reference `NWaGG5Z-2uhtAA-1' on page 5 undefined on input line 9
+2.
 
 [5]
 
-LaTeX Warning: Reference `NWaGG5Z-4cZhfD-1' on page 6 undefined on input line 9
-6.
+LaTeX Warning: Citation 'ben2009yaml' on page 6 undefined on input line 96.
 
 
-LaTeX Warning: Reference `NWaGG5Z-4cZhfD-1' on page 6 undefined on input line 9
-6.
+LaTeX Warning: Reference `NWaGG5Z-4cZhfD-1' on page 6 undefined on input line 1
+02.
 
 
-LaTeX Warning: Reference `NWaGG5Z-HXUTc-1' on page 6 undefined on input line 96
-.
+LaTeX Warning: Reference `NWaGG5Z-4cZhfD-1' on page 6 undefined on input line 1
+02.
 
 
-LaTeX Warning: Reference `NWaGG5Z-3DI44N-1' on page 6 undefined on input line 1
-11.
+LaTeX Warning: Reference `NWaGG5Z-HXUTc-1' on page 6 undefined on input line 10
+2.
 
 
-LaTeX Warning: Reference `NWaGG5Z-3DI44N-1' on page 6 undefined on input line 1
-11.
+LaTeX Warning: Reference `NWaGG5Z-4cZhfD-2' on page 6 undefined on input line 1
+02.
+
+
+LaTeX Warning: Reference `NWaGG5Z-4cZhfD-2' on page 6 undefined on input line 1
+17.
+
+
+LaTeX Warning: Reference `NWaGG5Z-4cZhfD-1' on page 6 undefined on input line 1
+17.
 
 
 LaTeX Warning: Reference `NWaGG5Z-HXUTc-1' on page 6 undefined on input line 11
-1.
+7.
 
 
-LaTeX Warning: Reference `NWaGG5Z-3DI44N-2' on page 6 undefined on input line 1
-11.
+LaTeX Warning: Reference `NWaGG5Z-4cZhfD-1' on page 6 undefined on input line 1
+17.
+
+[6]
+
+LaTeX Warning: Reference `NWaGG5Z-3DI44N-1' on page 7 undefined on input line 1
+36.
 
 
-Overfull \hbox (7.36101pt too wide) in paragraph at lines 132--134
+LaTeX Warning: Reference `NWaGG5Z-3DI44N-1' on page 7 undefined on input line 1
+36.
+
+
+LaTeX Warning: Reference `NWaGG5Z-HXUTc-1' on page 7 undefined on input line 13
+6.
+
+
+LaTeX Warning: Reference `NWaGG5Z-3DI44N-2' on page 7 undefined on input line 1
+36.
+
+
+Overfull \hbox (7.36101pt too wide) in paragraph at lines 157--159
 []\T1/cmr/m/n/10.95 (-10) There are two prin-ci-pal call-back func-tions []\T1/
 cmtt/m/n/10.95 wrapperEnterRunPointshandler \T1/cmr/m/n/10.95 (-10) and []\T1/c
 mtt/m/n/10.95 wrapperkeypresshandler
 
-LaTeX Warning: Reference `NWaGG5Z-3DI44N-2' on page 6 undefined on input line 1
-38.
-
-
-LaTeX Warning: Reference `NWaGG5Z-3DI44N-1' on page 6 undefined on input line 1
-38.
-
-
-LaTeX Warning: Reference `NWaGG5Z-HXUTc-1' on page 6 undefined on input line 13
-8.
-
-
-LaTeX Warning: Reference `NWaGG5Z-3DI44N-1' on page 6 undefined on input line 1
-38.
-
-
-LaTeX Warning: Reference `NWaGG5Z-3DI44N-3' on page 6 undefined on input line 1
-38.
-
-[6]
-
-LaTeX Warning: Reference `NWaGG5Z-3DI44N-3' on page 7 undefined on input line 1
-65.
+LaTeX Warning: Reference `NWaGG5Z-3DI44N-2' on page 7 undefined on input line 1
+63.
 
 
 LaTeX Warning: Reference `NWaGG5Z-3DI44N-1' on page 7 undefined on input line 1
-65.
+63.
 
 
 LaTeX Warning: Reference `NWaGG5Z-HXUTc-1' on page 7 undefined on input line 16
-5.
-
-
-LaTeX Warning: Reference `NWaGG5Z-3DI44N-2' on page 7 undefined on input line 1
-65.
-
-
-LaTeX Warning: Reference `NWaGG5Z-pTq9b-1' on page 7 undefined on input line 16
-9.
-
-
-LaTeX Warning: Reference `NWaGG5Z-zex4v-1' on page 7 undefined on input line 17
-1.
-
-
-LaTeX Warning: Reference `NWaGG5Z-itHJV-1' on page 7 undefined on input line 17
 3.
+
+
+LaTeX Warning: Reference `NWaGG5Z-3DI44N-1' on page 7 undefined on input line 1
+63.
+
+
+LaTeX Warning: Reference `NWaGG5Z-3DI44N-3' on page 7 undefined on input line 1
+63.
 
 [7]
 
-LaTeX Warning: Reference `NWaGG5Z-pTq9b-1' on page 8 undefined on input line 18
-4.
-
-
-LaTeX Warning: Reference `NWaGG5Z-pTq9b-1' on page 8 undefined on input line 18
-4.
-
-
 LaTeX Warning: Reference `NWaGG5Z-3DI44N-3' on page 8 undefined on input line 1
-84.
+92.
 
 
-LaTeX Warning: Reference `NWaGG5Z-zex4v-1' on page 8 undefined on input line 21
-4.
+LaTeX Warning: Reference `NWaGG5Z-3DI44N-1' on page 8 undefined on input line 1
+92.
 
 
-LaTeX Warning: Reference `NWaGG5Z-zex4v-1' on page 8 undefined on input line 21
-4.
+LaTeX Warning: Reference `NWaGG5Z-HXUTc-1' on page 8 undefined on input line 19
+2.
 
 
-LaTeX Warning: Reference `NWaGG5Z-3DI44N-3' on page 8 undefined on input line 2
-14.
+LaTeX Warning: Reference `NWaGG5Z-3DI44N-2' on page 8 undefined on input line 1
+92.
+
+
+LaTeX Warning: Reference `NWaGG5Z-3DI44N-4' on page 8 undefined on input line 1
+92.
+
+
+LaTeX Warning: Reference `NWaGG5Z-pTq9b-1' on page 8 undefined on input line 19
+6.
+
+
+LaTeX Warning: Reference `NWaGG5Z-zex4v-1' on page 8 undefined on input line 19
+8.
+
+
+LaTeX Warning: Reference `NWaGG5Z-itHJV-1' on page 8 undefined on input line 20
+0.
 
 [8]
 
-LaTeX Warning: Reference `NWaGG5Z-itHJV-1' on page 9 undefined on input line 24
-5.
+LaTeX Warning: Reference `NWaGG5Z-pTq9b-1' on page 9 undefined on input line 21
+1.
 
 
-LaTeX Warning: Reference `NWaGG5Z-itHJV-1' on page 9 undefined on input line 24
-5.
+LaTeX Warning: Reference `NWaGG5Z-pTq9b-1' on page 9 undefined on input line 21
+1.
 
 
 LaTeX Warning: Reference `NWaGG5Z-3DI44N-3' on page 9 undefined on input line 2
-45.
+11.
 
+
+Overfull \hbox (106.37738pt too wide) in paragraph at lines 212--212
+ []\T1/cmtt/m/n/10.95 algo_str = input(Fore.YELLOW + "Enter code for the graph 
+you need to span the points:\n" + Style.RESET_ALL  +\[]  
 [9]
 
-LaTeX Warning: Reference `NWaGG5Z-2xW5Z8-1' on page 10 undefined on input line 
-264.
+LaTeX Warning: Reference `NWaGG5Z-zex4v-1' on page 10 undefined on input line 2
+44.
 
 
-LaTeX Warning: Reference `NWaGG5Z-2xW5Z8-1' on page 10 undefined on input line 
-264.
+LaTeX Warning: Reference `NWaGG5Z-zex4v-1' on page 10 undefined on input line 2
+44.
 
 
-LaTeX Warning: Reference `NWaGG5Z-2XNY09-1' on page 10 undefined on input line 
-287.
+LaTeX Warning: Reference `NWaGG5Z-3DI44N-3' on page 10 undefined on input line 
+244.
+
+[10]
+
+LaTeX Warning: Reference `NWaGG5Z-itHJV-1' on page 11 undefined on input line 2
+72.
 
 
-LaTeX Warning: Reference `NWaGG5Z-2XNY09-1' on page 10 undefined on input line 
-287.
+LaTeX Warning: Reference `NWaGG5Z-itHJV-1' on page 11 undefined on input line 2
+72.
 
 
-LaTeX Warning: Reference `NWaGG5Z-HXUTc-1' on page 10 undefined on input line 2
-87.
+LaTeX Warning: Reference `NWaGG5Z-3DI44N-3' on page 11 undefined on input line 
+272.
 
 
-LaTeX Warning: Reference `NWaGG5Z-3Z0LKc-1' on page 10 undefined on input line 
-289.
+LaTeX Warning: Reference `NWaGG5Z-3DI44N-4' on page 11 undefined on input line 
+292.
 
 
-LaTeX Warning: Reference `NWaGG5Z-3Z0LKc-1' on page 10 undefined on input line 
-289.
+LaTeX Warning: Reference `NWaGG5Z-3DI44N-1' on page 11 undefined on input line 
+292.
 
 
-LaTeX Warning: Reference `NWaGG5Z-HXUTc-1' on page 10 undefined on input line 2
-89.
+LaTeX Warning: Reference `NWaGG5Z-HXUTc-1' on page 11 undefined on input line 2
+92.
+
+
+LaTeX Warning: Reference `NWaGG5Z-3DI44N-3' on page 11 undefined on input line 
+292.
+
+
+LaTeX Warning: Reference `NWaGG5Z-3DI44N-5' on page 11 undefined on input line 
+292.
+
+[11]
+
+LaTeX Warning: Citation 'hagberg2008exploring' on page 12 undefined on input li
+ne 317.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 323.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 323.
+
+
+LaTeX Warning: Reference `NWaGG5Z-2XNY09-1' on page 12 undefined on input line 
+324.
+
+
+LaTeX Warning: Reference `NWaGG5Z-2XNY09-1' on page 12 undefined on input line 
+324.
+
+
+LaTeX Warning: Reference `NWaGG5Z-HXUTc-1' on page 12 undefined on input line 3
+24.
+
+
+LaTeX Warning: Reference `NWaGG5Z-2XNY09-2' on page 12 undefined on input line 
+324.
+
+[12]
+
+LaTeX Warning: Reference `NWaGG5Z-2XNY09-2' on page 13 undefined on input line 
+338.
+
+
+LaTeX Warning: Reference `NWaGG5Z-2XNY09-1' on page 13 undefined on input line 
+338.
+
+
+LaTeX Warning: Reference `NWaGG5Z-HXUTc-1' on page 13 undefined on input line 3
+38.
+
+
+LaTeX Warning: Reference `NWaGG5Z-2XNY09-1' on page 13 undefined on input line 
+338.
+
+
+LaTeX Warning: Reference `NWaGG5Z-2XNY09-3' on page 13 undefined on input line 
+338.
+
+
+LaTeX Warning: Reference `NWaGG5Z-2XNY09-3' on page 13 undefined on input line 
+358.
+
+
+LaTeX Warning: Reference `NWaGG5Z-2XNY09-1' on page 13 undefined on input line 
+358.
+
+
+LaTeX Warning: Reference `NWaGG5Z-HXUTc-1' on page 13 undefined on input line 3
+58.
+
+
+LaTeX Warning: Reference `NWaGG5Z-2XNY09-2' on page 13 undefined on input line 
+358.
+
+
+LaTeX Warning: Reference `NWaGG5Z-2XNY09-4' on page 13 undefined on input line 
+358.
+
+[13]
+
+LaTeX Warning: Reference `NWaGG5Z-2XNY09-4' on page 14 undefined on input line 
+370.
+
+
+LaTeX Warning: Reference `NWaGG5Z-2XNY09-1' on page 14 undefined on input line 
+370.
+
+
+LaTeX Warning: Reference `NWaGG5Z-HXUTc-1' on page 14 undefined on input line 3
+70.
+
+
+LaTeX Warning: Reference `NWaGG5Z-2XNY09-3' on page 14 undefined on input line 
+370.
+
+
+Overfull \hbox (45.26697pt too wide) in paragraph at lines 383--383
+ []     \T1/cmtt/m/n/10.95 edge_list = zip(idxs_along_tsp, idxs_along_tsp[1:]) 
++ [(idxs_along_tsp[-1],idxs_along_tsp[0])][]  
+
+LaTeX Warning: Reference `NWaGG5Z-3DI44N-5' on page 14 undefined on input line 
+396.
+
+
+LaTeX Warning: Reference `NWaGG5Z-3DI44N-1' on page 14 undefined on input line 
+396.
+
+
+LaTeX Warning: Reference `NWaGG5Z-HXUTc-1' on page 14 undefined on input line 3
+96.
+
+
+LaTeX Warning: Reference `NWaGG5Z-3DI44N-4' on page 14 undefined on input line 
+396.
+
+[14]
+
+LaTeX Warning: Reference `NWaGG5Z-b3I3C-1' on page 15 undefined on input line 4
+16.
+
+
+LaTeX Warning: Reference `NWaGG5Z-b3I3C-1' on page 15 undefined on input line 4
+16.
+
+
+LaTeX Warning: Reference `NWaGG5Z-HXUTc-1' on page 15 undefined on input line 4
+16.
+
+
+LaTeX Warning: Reference `NWaGG5Z-3pWXcO-1' on page 15 undefined on input line 
+422.
+
+
+LaTeX Warning: Reference `NWaGG5Z-3pWXcO-1' on page 15 undefined on input line 
+422.
+
+
+LaTeX Warning: Reference `NWaGG5Z-HXUTc-1' on page 15 undefined on input line 4
+22.
 
 )
 
 LaTeX Warning: Empty bibliography on input line 44.
 
-(./appendices.tex [10]) [11] (./main.aux)
+(./appendices.tex [15]) [16] (./main.aux)
 
 Package rerunfilecheck Warning: File `main.out' has changed.
 (rerunfilecheck)                Rerun to get outlines right
@@ -620,10 +801,10 @@ er/sfrm0800.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm0900.pfb></us
 r/share/texmf/fonts/type1/public/cm-super/sfrm1095.pfb></usr/share/texmf/fonts/
 type1/public/cm-super/sfrm1200.pfb></usr/share/texmf/fonts/type1/public/cm-supe
 r/sftc1440.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfti1095.pfb></usr
-/share/texmf/fonts/type1/public/cm-super/sftt1095.pfb></usr/share/texmf/fonts/t
-ype1/public/cm-super/sftt1200.pfb></usr/share/texlive/texmf-dist/fonts/type1/ur
-w/zapfding/uzdr.pfb>
-Output written on main.pdf (11 pages, 727417 bytes).
+/share/texmf/fonts/type1/public/cm-super/sftt0900.pfb></usr/share/texmf/fonts/t
+ype1/public/cm-super/sftt1095.pfb></usr/share/texmf/fonts/type1/public/cm-super
+/sftt1200.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/zapfding/uzdr.pfb>
+Output written on main.pdf (16 pages, 776860 bytes).
 Transcript written on main.log.
 This is BibTeX, Version 0.99d (TeX Live 2015/Debian)
 The top-level auxiliary file: main.aux
@@ -925,20 +1106,34 @@ Package biblatex Warning: Data encoding is 'utf8'.
 
 (./main.bbl) (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msa.cfg)
 (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msb.cfg) (./manpage.tex
-<miscimages/monalisa.jpg, id=43, 215.8464pt x 315.579pt>
+<miscimages/monalisa.jpg, id=82, 215.8464pt x 315.579pt>
 <use miscimages/monalisa.jpg> [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.
 map} <./miscimages/monalisa.jpg>]) [2] (./main.toc
-Overfull \hbox (0.21613pt too wide) detected at line 18
+Overfull \hbox (0.21613pt too wide) detected at line 36
 \T1/cmr/bx/n/10.95 II 
-
-Overfull \hbox (5.23653pt too wide) detected at line 20
-\T1/cmr/bx/n/10.95 III 
-) (./mainlitprog.tex [3] [4] [5]
-Overfull \hbox (7.36101pt too wide) in paragraph at lines 132--134
+) (./mainlitprog.tex [3] [4] [5] [6] [7]
+Overfull \hbox (7.36101pt too wide) in paragraph at lines 157--159
 []\T1/cmr/m/n/10.95 (-10) There are two prin-ci-pal call-back func-tions []\T1/
 cmtt/m/n/10.95 wrapperEnterRunPointshandler \T1/cmr/m/n/10.95 (-10) and []\T1/c
 mtt/m/n/10.95 wrapperkeypresshandler
-[6] [7] [8] [9]) (./appendices.tex [10]) [11] (./main.aux)
+[8] [9]
+Overfull \hbox (106.37738pt too wide) in paragraph at lines 212--212
+ []\T1/cmtt/m/n/10.95 algo_str = input(Fore.YELLOW + "Enter code for the graph 
+you need to span the points:\n" + Style.RESET_ALL  +\[]  
+[10] [11] [12]
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 323.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 323.
+
+[13] [14]
+Overfull \hbox (45.26697pt too wide) in paragraph at lines 383--383
+ []     \T1/cmtt/m/n/10.95 edge_list = zip(idxs_along_tsp, idxs_along_tsp[1:]) 
++ [(idxs_along_tsp[-1],idxs_along_tsp[0])][]  
+[15]) [16] (./appendices.tex [17]) [18] (./main.aux)
 
 LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
@@ -955,16 +1150,18 @@ are/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/sha
 re/texmf/fonts/type1/public/cm-super/sfbx1095.pfb></usr/share/texmf/fonts/type1
 /public/cm-super/sfbx1200.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfb
 x1440.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfbx2074.pfb></usr/shar
-e/texmf/fonts/type1/public/cm-super/sfcc1440.pfb></usr/share/texmf/fonts/type1/
-public/cm-super/sfrm0600.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm
-0800.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm0900.pfb></usr/share
-/texmf/fonts/type1/public/cm-super/sfrm1095.pfb></usr/share/texmf/fonts/type1/p
-ublic/cm-super/sfrm1200.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfsl1
-095.pfb></usr/share/texmf/fonts/type1/public/cm-super/sftc1440.pfb></usr/share/
-texmf/fonts/type1/public/cm-super/sfti1095.pfb></usr/share/texmf/fonts/type1/pu
-blic/cm-super/sftt1095.pfb></usr/share/texmf/fonts/type1/public/cm-super/sftt12
-00.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/zapfding/uzdr.pfb>
-Output written on main.pdf (11 pages, 732151 bytes).
+e/texmf/fonts/type1/public/cm-super/sfcc1095.pfb></usr/share/texmf/fonts/type1/
+public/cm-super/sfcc1440.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm
+0600.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm0800.pfb></usr/share
+/texmf/fonts/type1/public/cm-super/sfrm0900.pfb></usr/share/texmf/fonts/type1/p
+ublic/cm-super/sfrm1095.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1
+200.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfsl1095.pfb></usr/share/
+texmf/fonts/type1/public/cm-super/sftc1440.pfb></usr/share/texmf/fonts/type1/pu
+blic/cm-super/sfti1095.pfb></usr/share/texmf/fonts/type1/public/cm-super/sftt09
+00.pfb></usr/share/texmf/fonts/type1/public/cm-super/sftt1095.pfb></usr/share/t
+exmf/fonts/type1/public/cm-super/sftt1200.pfb></usr/share/texlive/texmf-dist/fo
+nts/type1/urw/zapfding/uzdr.pfb>
+Output written on main.pdf (18 pages, 787824 bytes).
 Transcript written on main.log.
 This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex)
  \write18 enabled.
@@ -1260,20 +1457,34 @@ Package biblatex Warning: Data encoding is 'utf8'.
 
 (./main.bbl) (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msa.cfg)
 (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msb.cfg) (./manpage.tex
-<miscimages/monalisa.jpg, id=43, 215.8464pt x 315.579pt>
+<miscimages/monalisa.jpg, id=82, 215.8464pt x 315.579pt>
 <use miscimages/monalisa.jpg> [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.
 map} <./miscimages/monalisa.jpg>]) [2] (./main.toc
-Overfull \hbox (0.21613pt too wide) detected at line 18
+Overfull \hbox (0.21613pt too wide) detected at line 36
 \T1/cmr/bx/n/10.95 II 
-
-Overfull \hbox (5.23653pt too wide) detected at line 20
-\T1/cmr/bx/n/10.95 III 
-) (./mainlitprog.tex [3] [4] [5]
-Overfull \hbox (7.36101pt too wide) in paragraph at lines 132--134
+) (./mainlitprog.tex [3] [4] [5] [6] [7]
+Overfull \hbox (7.36101pt too wide) in paragraph at lines 157--159
 []\T1/cmr/m/n/10.95 (-10) There are two prin-ci-pal call-back func-tions []\T1/
 cmtt/m/n/10.95 wrapperEnterRunPointshandler \T1/cmr/m/n/10.95 (-10) and []\T1/c
 mtt/m/n/10.95 wrapperkeypresshandler
-[6] [7] [8] [9]) (./appendices.tex [10]) [11] (./main.aux) )
+[8] [9]
+Overfull \hbox (106.37738pt too wide) in paragraph at lines 212--212
+ []\T1/cmtt/m/n/10.95 algo_str = input(Fore.YELLOW + "Enter code for the graph 
+you need to span the points:\n" + Style.RESET_ALL  +\[]  
+[10] [11] [12]
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 323.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 323.
+
+[13] [14]
+Overfull \hbox (45.26697pt too wide) in paragraph at lines 383--383
+ []     \T1/cmtt/m/n/10.95 edge_list = zip(idxs_along_tsp, idxs_along_tsp[1:]) 
++ [(idxs_along_tsp[-1],idxs_along_tsp[0])][]  
+[15]) [16] (./appendices.tex [17]) [18] (./main.aux) )
 (\end occurred when \iftrue on line 36 was incomplete)
 (see the transcript file for additional information){/usr/share/texmf/fonts/enc
 /dvips/cm-super/cm-super-t1.enc}</usr/share/texlive/texmf-dist/fonts/type1/publ
@@ -1286,14 +1497,16 @@ are/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/sha
 re/texmf/fonts/type1/public/cm-super/sfbx1095.pfb></usr/share/texmf/fonts/type1
 /public/cm-super/sfbx1200.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfb
 x1440.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfbx2074.pfb></usr/shar
-e/texmf/fonts/type1/public/cm-super/sfcc1440.pfb></usr/share/texmf/fonts/type1/
-public/cm-super/sfrm0600.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm
-0800.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm0900.pfb></usr/share
-/texmf/fonts/type1/public/cm-super/sfrm1095.pfb></usr/share/texmf/fonts/type1/p
-ublic/cm-super/sfrm1200.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfsl1
-095.pfb></usr/share/texmf/fonts/type1/public/cm-super/sftc1440.pfb></usr/share/
-texmf/fonts/type1/public/cm-super/sfti1095.pfb></usr/share/texmf/fonts/type1/pu
-blic/cm-super/sftt1095.pfb></usr/share/texmf/fonts/type1/public/cm-super/sftt12
-00.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/zapfding/uzdr.pfb>
-Output written on main.pdf (11 pages, 731849 bytes).
+e/texmf/fonts/type1/public/cm-super/sfcc1095.pfb></usr/share/texmf/fonts/type1/
+public/cm-super/sfcc1440.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm
+0600.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm0800.pfb></usr/share
+/texmf/fonts/type1/public/cm-super/sfrm0900.pfb></usr/share/texmf/fonts/type1/p
+ublic/cm-super/sfrm1095.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1
+200.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfsl1095.pfb></usr/share/
+texmf/fonts/type1/public/cm-super/sftc1440.pfb></usr/share/texmf/fonts/type1/pu
+blic/cm-super/sfti1095.pfb></usr/share/texmf/fonts/type1/public/cm-super/sftt09
+00.pfb></usr/share/texmf/fonts/type1/public/cm-super/sftt1095.pfb></usr/share/t
+exmf/fonts/type1/public/cm-super/sftt1200.pfb></usr/share/texlive/texmf-dist/fo
+nts/type1/urw/zapfding/uzdr.pfb>
+Output written on main.pdf (18 pages, 787788 bytes).
 Transcript written on main.log.

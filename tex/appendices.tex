@@ -1,22 +1,50 @@
 \begin{appendices}
 \renewcommand{\thesection}{\Roman{section}\;\;}
-\section{Complete installation instructions}
-\subsection{On GNU/Linux systems}
-\blindtext
-\subsection{Windows 10 + Cygwin}
-In this example several keywords\index{keywords} will be used 
-which are important and deserve to appear in the Index\index{Index}.
-Terms like generate\index{generate} and some\index{others} will also 
-show up. Terms in the index can also be nested \index{Index!nested}
+%%% Just continue as you would usually have while writing the the main part of the document. 
+\section{Running the Code}
 
-\section{Reading Chunk numbers}
+Ideally, you will just need to download and install \href{https://www.anaconda.com/products/individual}{Anaconda} and a couple of other Python packages.  
 
-From left to right. This is how you should learn to read numbers generated 
-by noweb when definiing a new or extending a chunk. 
+To check if the Python executable is in your path and that it is Python 3\texttt{+}, run the command \verb|python --version| 
+inside your terminal emulator. If it succeeds in printing something similar to ``\verb|Python 3.7.3|'' --- as it did on my laptop --- then 
+you have successfully installed the Anaconda distro. 
 
-\section{Layout of source files}
-Generate this using some bash commands to give overview of the 
-project tree. 
+The additional packages required can be installed executing in succession the following commands:
+\begin{quote}
+\color{blue}
+\texttt{pip install colorama}  \footnote{If you don't have superuser access during installation, add the flag \texttt{\color{red} \texttt{-{}-}user}}  \\
+\texttt{pip install tsp} \\
+\texttt{git clone https://github.com/jvkersch/pyconcorde} \\
+\texttt{cd pyconcorde}\\
+\texttt{pip install -e .}
+\end{quote}
 
 
+To run the code, \texttt{cd} into the code's top-level folder, then type any one of the following commands into your terminal. 
+
+\begin{itemize}
+\item \verb|python src/main.py --interactive|
+\item \verb|python src/main.py --batchtest|
+\item \verb|python src/main.py --file <points.yaml>|
+\end{itemize}
+
+Please note, while  running the  code in `\verb|interactive|` mode you will a
+warning message:
+
+
+\begin{quote}
+
+\color{blue}
+\verb|CoreApplication::exec: The event loop is already running|
+\end{quote}
+
+Please ignore it! It doesn't affect any of the results. Something in the
+the internals of the Matplotlib that uses the Qt library triggers that warning. I 
+am not sure what. The message doesn't pop up
+when I use Python 2.7 \footnote{Note that Python 2 has been deprecated in favour of Python 3\texttt{+}, since January 2020, } 
+instead of Python 3.7. 
+
+If you have any trouble --- or detect a bug! ---  we can hash things out on Slack, Github or email.
+
+\section{Laundry-list of Questions/Variants/Conjectures}
 \end{appendices}
