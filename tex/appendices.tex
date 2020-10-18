@@ -66,18 +66,23 @@ If you have any trouble --- or detect a bug! ---  we can hash things out on Slac
 \item We know that the Delaunay Triangulation of a set of points need not be Hamiltonian. In fact \textit{detecting}
       Hamiltonicity of a Delaunay Triangulation is famously $NP$-complete \cite{dillencourt1996finding} 
 
-      Two natural questions suggest themselves:
+      Two useful facts before we proceed: 
 
-     \begin{itemize}
-       \item The cube of any connected (unweighted) graph is known to be Hamiltonian. \footnote{It is sufficient to prove this fact for any tree, and then use it on the spanning tree of the given graph}. 
-             Is the \textit{square} of the underlying unweighted graph of the DT (or *any* triangulation of points, for that matter) Hamiltonian? 
-             Surely this should be simple to show?! There are some results on testing if squares of graphs can be Hamilonian, (I remember Estie mentioning them in passing once) but 
-             I can't recall them at the moment. Maybe we can exploit \cite{dillencourt1996finding} to find counter-examples?
-        \item More generally, is $TSP \subseteq DT^{k}$ for a small fixed $k$? I'd wager $k=2,3$ or some slowly growing function of $n$ going by some of 
-             the experimental observations in this report,. \footnote{Even if true, this observation can only be useful in $\RR^2$; it is worthless in higher dimensions because of the combinatorial complexity of delaunay arrangements}
-     \end{itemize}
+     \begin{description}
+       \item[Folklore] The cube of any connected, unweighted, graph is known to be Hamiltonian. 
+             \footnote{It is sufficient to prove this fact for any tree, and then use it on the spanning tree of the given graph}. 
+       \item[Fleischner's theorem  \cite{georgakopoulos2009short}] The square of 
+             Any 2-vertex connected, unweighted, graph is Hamiltonian. \footnote{This last theorem certainly applies to Delaunay triangulations of general point-sets.  By the square of a delaunay triangulation, I mean to say: throw away the edge weights and consider the square of the underlying unweighted graph. Once the new edges are added, consider them weighted with the natural euclidean distance between their endpoints}
+     \end{description}
 
- 
+      Based on the experiments results shown in this report, can we 
+      claim  $TSP \subseteq DT^{k}$ 
+      or $TSP \subseteq MST^{k}$ in $\RR^2$ for a \textit{small} fixed $k$? I'd wager $k=2,3$ 
+      or at worst some very slowly growing function of $n$ ($\log (n)$ maybe?) 
+
+
+       
+
 \end{itemize}
 
 \end{appendices}

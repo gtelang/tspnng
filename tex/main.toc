@@ -37,10 +37,10 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {section}{\numberline {9}Hypothesis testing!}{24}{section.9}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{Appendices}{25}{section*.3}
+\contentsline {section}{Appendices}{26}{section*.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{Appendix \numberline {I\tmspace +\thickmuskip {.2777em}\tmspace +\thickmuskip {.2777em}}Installing and running the Code}{25}{Appendix.a.A}
+\contentsline {section}{Appendix \numberline {I\tmspace +\thickmuskip {.2777em}\tmspace +\thickmuskip {.2777em}}Installing and running the Code}{26}{Appendix.a.A}
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {I\tmspace +\thickmuskip {.2777em}\tmspace +\thickmuskip {.2777em}.1}Interactive Mode}{26}{subsection.a.A.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{Appendix \numberline {II\tmspace +\thickmuskip {.2777em}\tmspace +\thickmuskip {.2777em}}Laundry-list of Questions/Variants/Conjectures}{26}{Appendix.a.B}
+\contentsline {section}{Appendix \numberline {II\tmspace +\thickmuskip {.2777em}\tmspace +\thickmuskip {.2777em}}Laundry-list of Questions/Variants/Conjectures}{27}{Appendix.a.B}

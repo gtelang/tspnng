@@ -27,7 +27,7 @@
 
      Bill Cook, the author of Concorde\cite{applegate2009certification},  on hearing about this problem from Prof. Mitchell said that, if true, it could be used 
      to speed up some of the existing experimental TSP heuristics which in many cases can compute optimal tours exactly. 
-     \footnote{The landmark PTAS'es for the TSP, such as those of Mitchell \cite{mitchell1999guillotine} and Arora\cite{arora1996polynomial},  are too complicated to be put into code (yes, even Python!). On the other hand, the Concorde library uses a whole kitchen-sink of practical techniques such as $k$-local swaps, branch-and-bound, branch-and-cut to generate  near-optimal (if not optimal) tours very fast. But it would be interesting to investigate the behavior of the various graphs with respect to the techniques used in the PTAS'es of Mitchell and Arora. Maybe we can augment them with the probabilistic method (the pigeon-hole principle on steroids!) to prove the existence of an intersection??}
+     \footnote{The landmark PTAS'es for the TSP, such as those of Mitchell \cite{mitchell1999guillotine} and Arora\cite{arora1996polynomial},  are too complicated to be put into code (yes, even Python!). On the other hand, the Concorde library \cite{applegate2009certification} or Helsgaun's methods\cite{helsgaun2000effective}  use a whole kitchen-sink of practical techniques such as $k$-local swaps, branch-and-bound, branch-and-cut to generate  near-optimal (if not optimal) tours very fast. But it would be interesting to investigate the behavior of the various graphs with respect to the techniques used in the PTAS'es of Mitchell and Arora. Maybe we can augment them with the probabilistic method (the pigeon-hole principle on steroids!) to prove the existence of an intersection??}
 
      To spur our intuition,  we investigate the conjecture experimentally in this short report 
      \footnote{This report has been written as a literate program \cite{knuth1984literate,ramsey2008noweb} to weave together the code, explanations and generated data into the same document. Brickbats or bouqets on the author's preliminary stab at literate programming are most welcome.}
@@ -56,5 +56,4 @@
      If you don't have  Python 3.7+ on your machine, download the free  \href{https://www.anaconda.com/products/individual}{Anaconda} distro of Python; 
      it comes with most of the batteries included. See Appendix \autoref{sec:install} for instructions on how to install and run the code. 
 
-     \textit{Yalla}, what are we waiting for?! Let’s go! 
 \end{description}

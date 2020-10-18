@@ -143,6 +143,29 @@
   \field{year}{1996}
 \endentry
 
+\entry{helsgaun2000effective}{article}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Helsgaun}{H.}%
+     {Keld}{K.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {Elsevier}%
+  }
+  \strng{namehash}{HK1}
+  \strng{fullhash}{HK1}
+  \field{labelalpha}{Hel00}
+  \field{number}{1}
+  \field{pages}{106\bibrangedash 130}
+  \field{title}{An effective implementation of the Lin--Kernighan traveling
+  salesman heuristic}
+  \field{volume}{126}
+  \field{journaltitle}{European Journal of Operational Research}
+  \field{year}{2000}
+\endentry
+
 \entry{knuth1984literate}{article}{}
   \name{author}{1}{}{%
     {{}%
@@ -419,6 +442,28 @@
   \field{volume}{64}
   \field{journaltitle}{Discrete Applied Mathematics}
   \field{year}{1996}
+\endentry
+
+\entry{georgakopoulos2009short}{article}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Georgakopoulos}{G.}%
+     {Agelos}{A.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {Elsevier}%
+  }
+  \strng{namehash}{GA1}
+  \strng{fullhash}{GA1}
+  \field{labelalpha}{Geo09}
+  \field{number}{23-24}
+  \field{pages}{6632\bibrangedash 6634}
+  \field{title}{A short proof of Fleischner’s theorem}
+  \field{volume}{309}
+  \field{journaltitle}{Discrete Mathematics}
+  \field{year}{2009}
 \endentry
 
 \lossort

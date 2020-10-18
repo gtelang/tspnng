@@ -19,7 +19,8 @@ init() # this line does nothing on Linux/Mac,
 import yaml
 from prettytable import PrettyTable
 
-def get_names_of_all_euclidean2D_instances(dirpath="./sym-tsp-tsplib/instances/euclidean_instances_yaml/" ):
+def get_names_of_all_euclidean2D_instances(dirpath=\
+         "./sym-tsp-tsplib/instances/euclidean_instances_yaml/" ):
      
      inst_names = []
      for name in os.listdir(dirpath):
@@ -28,7 +29,8 @@ def get_names_of_all_euclidean2D_instances(dirpath="./sym-tsp-tsplib/instances/e
              inst_names.append(name)
      return inst_names
 
-def tsplib_instance_points(instance_file_name, dirpath="./sym-tsp-tsplib/instances/euclidean_instances_yaml/"):
+def tsplib_instance_points(instance_file_name,\
+                           dirpath="./sym-tsp-tsplib/instances/euclidean_instances_yaml/"):
 
         print(Fore.GREEN+"Reading " + instance_file_name, Style.RESET_ALL)
         with open(dirpath+instance_file_name) as file:
@@ -197,14 +199,11 @@ def wrapperkeyPressHandler(fig,ax, run):
                            print(Fore.YELLOW, "I did not recognize that option.", Style.RESET_ALL)
                            geometric_graph = None
 
-
                      common_edges = list_common_edges(get_concorde_tsp_graph(run.points), geometric_graph)
-                     #print(Fore.YELLOW, "----------LIST OF EDGES COMMON TO CONCORDE TSP-------------")
-                     #for i, edge in zip(range(1,1+len(common_edges)),common_edges):
-                     #     print(i, '--->', edge)
-                     print("-------------------------------------------------------------------------------------")
-                     print("Number of edges common to Concorde TSP: ", len(common_edges))
-                     print("-------------------------------------------------------------------------------------", Style.RESET_ALL)
+                     print("------------------------------------------------------------------------------")
+                     print("Number of edges in " + algo_str + " graph (TOTAL)                          :", len(geometric_graph.edges))
+                     print("Number of edges in " + algo_str + " graph which are also in Concorde TSP   :", len(common_edges))
+                     print("------------------------------------------------------------------------------", Style.RESET_ALL)
 
 
 
@@ -258,11 +257,25 @@ def render_graph(G,fig,ax):
           edgecol = 'b'
      elif G.graph['type'][-3:] == 'nng':
           edgecol = 'm'
-     for  (nidx1, nidx2) in G.edges:
-          x1, y1 = G.nodes[nidx1]['coods']
-          x2, y2 = G.nodes[nidx2]['coods']
-          ax.plot([x1,x2],[y1,y2],'-', color=edgecol)
-          
+     if G.graph['type'] not in ['conc', 'pytsp']:
+          for  (nidx1, nidx2) in G.edges:
+              x1, y1 = G.nodes[nidx1]['coods']
+              x2, y2 = G.nodes[nidx2]['coods']
+              ax.plot([x1,x2],[y1,y2],'-', color=edgecol)
+     else:
+          from networkx.algorithms.traversal.depth_first_search import dfs_edges
+          node_coods = []
+          for (nidx1, nidx2) in dfs_edges(G):
+                 node_coods.append(G.nodes[nidx1]['coods'])
+                 node_coods.append(G.nodes[nidx2]['coods'])
+
+          node_coods = np.asarray(node_coods)
+
+          from matplotlib.patches import Polygon
+          from matplotlib.collections import PatchCollection
+
+          polygon = Polygon(node_coods, closed=True, facecolor=(255/255, 255/255, 102/255,0.5), edgecolor='k', linewidth=1)
+          ax.add_patch(polygon)
      fig.canvas.draw()
 
 def get_knng_graph(points,k):
@@ -319,7 +332,8 @@ def get_mst_graph(points):
 
      points = np.array(points)
      deltri_graph = get_delaunay_tri_graph(points)
-     mst_graph = nx.algorithms.tree.mst.minimum_spanning_tree(deltri_graph, algorithm='kruskal')
+     mst_graph = nx.algorithms.tree.mst.minimum_spanning_tree(deltri_graph, \
+                                                              algorithm='kruskal')
      mst_graph.graph['type']   = 'mst'
      return mst_graph
 def get_py_tsp_graph(points):
@@ -351,11 +365,6 @@ def get_concorde_tsp_graph(points, scaling_factor=1000):
      from concorde.tsp import TSPSolver
      points = np.array(points)
      coords = [{"coods":pt} for pt in points]
-
-     #from concorde.tests.data_utils import get_dataset_path          
-     #fname = get_dataset_path("berlin52")     
-     #solver = TSPSolver.from_tspfile(fname)
-     #solution = solver.solve()
 
      xs = [int(scaling_factor*pt[0]) for pt in points]
      ys = [int(scaling_factor*pt[1]) for pt in points]

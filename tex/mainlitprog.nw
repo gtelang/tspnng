@@ -62,7 +62,7 @@ that should more than suffice as an intro to this popular benchmark data-set for
 
 In this document we will be interested in that subset of instances corresponding to the Symmetric TSP with the standard 
 Euclidean Metric. Pages 9 through 11 of \cite{reinelt1991tsplib} contain 4-column tables with all Symmetric TSP instances. 
-We will be focusing on precisely those instances which have their 3rd column marked \verb|EUC_2D|.  
+We will be focusing precisely on those instances which have their 3rd column marked ``\verb|EUC_2D|''.  
 
 The entire symmetric TSP data-set has been downloaded into the 
 
@@ -78,7 +78,7 @@ were converted into the convenient YAML format and copied into the
 \color{blue}
 \texttt{./sym-tsp-tsplib/instances/sym-tsp-tsplib/instances/euclidean\_instances\_yaml/} 
 \end{displayquote}
-directory. For all practical purposes, unless otherwise notes, \textit{we will retrict our attention to this directory when talking about working with TSPLIB data}. 
+directory. For all practical purposes, unless otherwise noted, \textit{we will retrict our attention to this directory when talking about working with TSPLIB data}. 
 
 To see what the point-sets look like peep into the folder \verb|tsplib_euc2d_pictures_of_instances| contained in the top level directory of the code. 
 Note that the numbers affixed to each instance name indicate the number of points in that instance. See \autoref{fig:tsplibinstances} for some examples. 
@@ -89,7 +89,8 @@ and returns a list of 2D points for that instance.
 
 <<TSPLIB data>>=
 
-def get_names_of_all_euclidean2D_instances(dirpath="./sym-tsp-tsplib/instances/euclidean_instances_yaml/" ):
+def get_names_of_all_euclidean2D_instances(dirpath=\
+         "./sym-tsp-tsplib/instances/euclidean_instances_yaml/" ):
      
      inst_names = []
      for name in os.listdir(dirpath):
@@ -98,7 +99,8 @@ def get_names_of_all_euclidean2D_instances(dirpath="./sym-tsp-tsplib/instances/e
              inst_names.append(name)
      return inst_names
 
-def tsplib_instance_points(instance_file_name, dirpath="./sym-tsp-tsplib/instances/euclidean_instances_yaml/"):
+def tsplib_instance_points(instance_file_name,\
+                           dirpath="./sym-tsp-tsplib/instances/euclidean_instances_yaml/"):
 
         print(Fore.GREEN+"Reading " + instance_file_name, Style.RESET_ALL)
         with open(dirpath+instance_file_name) as file:
@@ -127,7 +129,7 @@ Note that each point is represented as a numpy array of size 2.
 
 This chunk generates uniform and non-uniform point sets in $[0,1] \times [0,1]$. To generate non-uniform point-sets we basically 
 take a small set of uniformly distributed random points in the square, place a small square centered around each such random point and then
-generate the appropriate number of points uniformly inside each of those squares. \footnote{A similar technique was used in Jon Bentley's experimental TSP paper}
+generate the appropriate number of points uniformly inside each of those squares. \footnote{A somewhat similar method was used in Jon Bentley's experimental TSP paper}
 The size of the square is proportional to the distance of the sampled point from the boundary of the unit square. Thus you will often see tight clusters
 near the boundary as you increase the number of input points (\texttt{`numpts`}). This was done to make sure all points get generated in the unit square. 
 This would make it convenient for the purposes of plotting. Other non-uniform point-generation schemes will later be considered depending on which 
@@ -358,14 +360,11 @@ else:
       print(Fore.YELLOW, "I did not recognize that option.", Style.RESET_ALL)
       geometric_graph = None
 
-
 common_edges = list_common_edges(get_concorde_tsp_graph(run.points), geometric_graph)
-#print(Fore.YELLOW, "----------LIST OF EDGES COMMON TO CONCORDE TSP-------------")
-#for i, edge in zip(range(1,1+len(common_edges)),common_edges):
-#     print(i, '--->', edge)
-print("-------------------------------------------------------------------------------------")
-print("Number of edges common to Concorde TSP: ", len(common_edges))
-print("-------------------------------------------------------------------------------------", Style.RESET_ALL)
+print("------------------------------------------------------------------------------")
+print("Number of edges in " + algo_str + " graph (TOTAL)                          :", len(geometric_graph.edges))
+print("Number of edges in " + algo_str + " graph which are also in Concorde TSP   :", len(common_edges))
+print("------------------------------------------------------------------------------", Style.RESET_ALL)
 
 
 
@@ -546,7 +545,7 @@ From elementary CG, we know that the MST of a set of points in the plane is a su
 it suffices to compute the MST of the corresponding delaunay triangulation. 
 See \href{https://networkx.github.io/documentation/stable/reference/algorithms/generated/networkx.algorithms.tree.mst.minimum_spanning_edges.html}{this page}
 for a documentation of the code in NetworkX used to compute the MST on an abstract weighted undirected graph. Note that along with the Kruskal method (used below), both Prim's and Boruvka's 
-algorithms have also been implemented. 
+algorithms have also been implemented in that library. 
 
 <<Functions for generating various graphs>>=
 
@@ -554,7 +553,8 @@ def get_mst_graph(points):
 
      points = np.array(points)
      deltri_graph = get_delaunay_tri_graph(points)
-     mst_graph = nx.algorithms.tree.mst.minimum_spanning_tree(deltri_graph, algorithm='kruskal')
+     mst_graph = nx.algorithms.tree.mst.minimum_spanning_tree(deltri_graph, \
+                                                              algorithm='kruskal')
      mst_graph.graph['type']   = 'mst'
      return mst_graph
 @
@@ -621,11 +621,11 @@ tsp_graph.graph['type']   = 'pytsp'
 \subsubsection{* Using the Pyconcorde library}
 
 This library is a thin interface around Concorde. Installing Pyconcorde
-automatically installs Concorde and other required libraries such as QSOpt. Instructions for installation
-are given in Appendix I.  
+automatically installs Concorde and other required libraries such as QSOpt. 
+Instructions for installation are given in Appendix I.  
 
-Note that the Concorde solver works only on points with integer coordinates. Since our synthetic data-sets
-will be generated inside the unit-square, we scale by the amount \verb|scale_factor| and then 
+Note that for the \verb|EUC_2D| cases, the Concorde solver works only on points with integer coordinates. 
+Since our synthetic data-sets will be generated inside the unit-square, we scale by the amount \verb|scale_factor| and then 
 rounded to an integer using \verb|int()|. For a sufficiently large value \verb|scaling_factor|,  
 ordering of points reported by Concorde should be the same as  if the algorithm was run on the 
 unscaled points. 
@@ -635,11 +635,6 @@ def get_concorde_tsp_graph(points, scaling_factor=1000):
      from concorde.tsp import TSPSolver
      points = np.array(points)
      coords = [{"coods":pt} for pt in points]
-
-     #from concorde.tests.data_utils import get_dataset_path          
-     #fname = get_dataset_path("berlin52")     
-     #solver = TSPSolver.from_tspfile(fname)
-     #solution = solver.solve()
 
      xs = [int(scaling_factor*pt[0]) for pt in points]
      ys = [int(scaling_factor*pt[1]) for pt in points]
@@ -676,10 +671,12 @@ def render_graph(G,fig,ax):
      if G is None:
             return
      <<Set up edge colors depending on graph type>>
-     <<Iterate through graph edges and draw as segments>>
+     if G.graph['type'] not in ['conc', 'pytsp']:
+          <<Iterate through graph edges and draw as segments>>
+     else:
+          <<Draw tour as polygon patch>>
      fig.canvas.draw()
 @
-
 
 <<Set up edge colors depending on graph type>>=
 edgecol = None
@@ -696,10 +693,25 @@ elif G.graph['type'][-3:] == 'nng':
 
 <<Iterate through graph edges and draw as segments>>=
 for  (nidx1, nidx2) in G.edges:
-     x1, y1 = G.nodes[nidx1]['coods']
-     x2, y2 = G.nodes[nidx2]['coods']
-     ax.plot([x1,x2],[y1,y2],'-', color=edgecol)
-     
+    x1, y1 = G.nodes[nidx1]['coods']
+    x2, y2 = G.nodes[nidx2]['coods']
+    ax.plot([x1,x2],[y1,y2],'-', color=edgecol)
+@
+
+<<Draw tour as polygon patch>>=
+from networkx.algorithms.traversal.depth_first_search import dfs_edges
+node_coods = []
+for (nidx1, nidx2) in dfs_edges(G):
+       node_coods.append(G.nodes[nidx1]['coods'])
+       node_coods.append(G.nodes[nidx2]['coods'])
+
+node_coods = np.asarray(node_coods)
+
+from matplotlib.patches import Polygon
+from matplotlib.collections import PatchCollection
+
+polygon = Polygon(node_coods, closed=True, facecolor=(255/255, 255/255, 102/255,0.5), edgecolor='k', linewidth=1)
+ax.add_patch(polygon)
 @
 
 
