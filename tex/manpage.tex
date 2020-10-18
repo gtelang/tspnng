@@ -9,46 +9,52 @@
      for which we can compute optimal or near-optimal tours using Concorde. 
                    
   \item[DESCRIPTION] The question posed in the title came about while working on the Horsefly problem, 
-     a generalization of the famously $NP$-hard Travelling Salesman Problem \footnote{In this report by ``$TSP$'', we mean $TSP$-cycle and not $TSP$-path, although the question is still interesting for the path case. One reason for focusing only on the path case, is that the TSPLIB bank only mentions optimal cycle solutions and not optimal path solutions, which can be structurally quite different! Also Concorde, the main library used to generate any TSP solutions also outputs cycles.}. 
+     a generalization of the famously $NP$-hard Travelling Salesman Problem \footnote{In this report by ``$TSP$'', we mean $TSP$-cycle and not $TSP$-path, although the question is still interesting for the path case. One reason for focusing only on the path case, is that the Concorde library (to the author's knowledge) computes only optimal cycle solutions and *not* optimal path solutions!}. 
      One line of attack was to get at some kind of structure theorem by identifying  a candidate set of good edges from which a near-optimal solution to the 
      horsefly problem could be constructed. But first off, would this approach work for the special case of the  TSP?  Answering
      \textit{``$TSP \cap NNG \stackrel{?}{=} \varnothing$''} seemed like a good place to start.  However, all attempts  
-     at constructing examples in which the intersection is \textit{empty} failed . And so did a
-     literature search. The closest matching reference we found was \cite{hougardy2014edge} which \textit{eliminates} edges 
-     that cannot be part of a Euclidean TSP tour on a given instance of points, based on checking a few simple, local geometric inequalities. 
+     at constructing examples where the intersection is \textit{empty} failed . And so did a
+     literature search! The closest matching reference we found was \cite{hougardy2014edge} which \textit{eliminates} edges 
+     that cannot be part of a Euclidean TSP tour on a given instance of points, based on checking a few simple, local geometric inequalities. \footnote{The author believes this will be a userful reference for future work}
+     There was also a very much related discussion thread on David Eppstein's \href{https://www.ics.uci.edu/~eppstein/junkyard/dt-not-tsp.html}{webpage}. 
+     A small counter-example is given near the bottom of that link. 
+     
+     But the thread says nothing about whether the DT \textit{must} intersect the TSP at least a certain fraction of times, or indeed even once.  
+
+     See also this \href{https://web.colby.edu/thegeometricviewpoint/2015/03/09/delauney-triangulations-and-the-traveling-salesman/}{blogpost} on the topic, which 
+     talks about using the Delaunay Triangulations for generating heuristically good (no bounds are given) TSP tours. Another approach using Del Tris
+     is taken in \href{https://www.researchgate.net/publication/215753374_An_On_log_n_Heuristic_for_the_Euclidean_Traveling_Salesman_Problem}{this technical report} 
 
      Bill Cook, the author of Concorde\cite{applegate2009certification},  on hearing about this problem from Prof. Mitchell said that, if true, it could be used 
-     to speed up some of the existing experimental TSP heuristics.  
-     \footnote{Note that the landmark PTAS'es for the TSP, such as those of Mitchell \cite{mitchell1999guillotine} and Arora\cite{arora1996polynomial},  are too complicated to be put into code (yes, even Python!). On the other hand, the Concorde library uses a whole kitchen-sink of practical techniques such as $k$-local swaps, branch-and-bound, branch-and-cut to generate  near-optimal (if not optimal) tours relatively quickly. However,it would be interesting to investigate the behavior of the various graphs with respect to the techniques used in the PTAS'es of Mitchell and Arora. Maybe we can augment them with the probabilistic method to prove the existence of an intersection??}
+     to speed up some of the existing experimental TSP heuristics which in many cases can compute optimal tours exactly. 
+     \footnote{The landmark PTAS'es for the TSP, such as those of Mitchell \cite{mitchell1999guillotine} and Arora\cite{arora1996polynomial},  are too complicated to be put into code (yes, even Python!). On the other hand, the Concorde library uses a whole kitchen-sink of practical techniques such as $k$-local swaps, branch-and-bound, branch-and-cut to generate  near-optimal (if not optimal) tours very fast. But it would be interesting to investigate the behavior of the various graphs with respect to the techniques used in the PTAS'es of Mitchell and Arora. Maybe we can augment them with the probabilistic method (the pigeon-hole principle on steroids!) to prove the existence of an intersection??}
 
      To spur our intuition,  we investigate the conjecture experimentally in this short report 
-     \footnote{This report has been written as a literate program \cite{knuth1984literate,ramsey2008noweb} to weave together the code, explanations and generated data into the same document. Feedback on the author's preliminary stab at literate programming is most welcome!}
-     using TSPLIB and Concorde in tandem. TSPLIB is an online collection of medium to large size instances for the Euclidean, Metric and other several variants of the TSP 
-     for which optimal solutions have been obtained using powerful heuristics implemented in libraries like Concorde or Keld-Helsgaun;
-     the certificate of optimality for these instances (as always!) comes from comparing the tour-length of the computed against 
-     a lower bound computed by those very heuristics. 
+     \footnote{This report has been written as a literate program \cite{knuth1984literate,ramsey2008noweb} to weave together the code, explanations and generated data into the same document. Brickbats or bouqets on the author's preliminary stab at literate programming are most welcome.}
+     using TSPLIB and Concorde in tandem. TSPLIB \cite{reinelt1991tsplib} is an online collection of medium to large scale instances of the Metric, the Euclidean and a few other variants of the TSP 
+     Concorde can compute the optimal solutions in nearly all the instances; the certificate of optimality --- as always! --- coming from the comparsion of the computed tour-length against 
+     a lower bounds (also computed by Concorde).
 
      For starters,  we investigate the following questions \footnote{Experimental answers to other questions will be barnacled onto the report as it grows}: 
      for each symmetric 2-D Euclidean TSP instance from TSPLIB for which we have an optimal solution, does
 
      \begin{itemize}
      \item $TSP \cap (k{\text -})NNG \stackrel{?}{=} \varnothing$, for $k=1,2,\ldots$
-     \item $TSP \cap \textit{Delaunay Graph} \stackrel{?}{=} \varnothing$
-     \item For question 1, in the cases that the intersection is non-empty, what fraction (a fourth?, a fifth?)of the $n$ 
-           edges of a TSP-tour share its edges with the  $k$-NNG does the TSP intersect for various values of $k$? 
+     \item $TSP \cap \; \text{Delaunay Graph} \stackrel{?}{=} \varnothing$
+     \item For question 1 what fraction (a fourth?, a fifth?)of the $n$ edges of a TSP-tour share its edges with the  $k$-NNG does the TSP intersect for various values of $k$? 
      \item Are there any structural patterns observed in the intersections? Specifically, does \textit{at least } 
-           one edge from the intersection have a \textit{vertex} incident to the convex hull? \footnote{This indeed seemed to be the case in all the author's failed attempts at a counter-example, and so we are looking for a proof/disproof for this special case of the conjecture}
-           More generally, is this true for every layer of the onion?
+           one edge from the intersection with the $1$-NNG have one of its \textit{vertices} on the convex hull? 
+           \footnote{This indeed seemed to be the case in all the author's failed attempts at a counter-example, and so a proof/disproof of this conjecture would be helpful}
+           More generally, is this true for every layer of the onion, and not just the outer layer (i,e, the convex hull)?
      \end{itemize}
 
-     See also Appendix A for a running wishlist of questions that come out during discussions. 
+     See also the Appendix \autoref{sec:questions} for a running wishlist of questions that come out during discussions. 
 
      As an aid in constructing possible counter-examples, a GUI interface is provided to mouse-in points and then 
-     run the Concorde heuristic on it. 
+     run various tests on the points inputted. 
      
-     The Python 3.7\texttt{+} code used to generate the data and figures in this paper has been attached to this pdf. If you don't have a Python distribution 
-     please download the freely available  \href{https://www.anaconda.com/products/individual}{Anaconda}  distro; it comes 
-     with most of the batteries included. You will also need to install a couple of other packages. See Appendix I. 
+     If you don't have  Python 3.7+ on your machine, download the free  \href{https://www.anaconda.com/products/individual}{Anaconda} distro of Python; 
+     it comes with most of the batteries included. See Appendix \autoref{sec:install} for instructions on how to install and run the code. 
 
      \textit{Yalla}, what are we waiting for?! Let’s go! 
 \end{description}

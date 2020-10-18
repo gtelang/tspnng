@@ -1,29 +1,32 @@
 \begin{appendices}
 \renewcommand{\thesection}{\Roman{section}\;\;}
 %%% Just continue as you would usually have while writing the the main part of the document. 
-\section{Running the Code}
+\section{Installing and running the Code}
+\label{sec:install}
 
-Ideally, you will just need to download and install \href{https://www.anaconda.com/products/individual}{Anaconda} and a couple of other Python packages.  
+The program can be downloaded from Github: \url{https://github.com/gtelang/tspnng}. Alternatively
+open a terminal and run the command, \texttt{git clone https://github.com/gtelang/tspnng.git}
 
-To check if the Python executable is in your path and that it is Python 3\texttt{+}, run the command \verb|python --version| 
-inside your terminal emulator. If it succeeds in printing something similar to ``\verb|Python 3.7.3|'' --- as it did on my laptop --- then 
-you have successfully installed the Anaconda distro. 
+The only other prerequisites for running the code, are the 
+\href{https://www.anaconda.com/products/individual}{Anaconda} distribution of Python 3 
+and a couple of other packages.  To check if the Python executable is in your path (and that it is Python 3.7\texttt{+}) 
+run the command \verb|python --version|. If it succeeds, you have installed Anaconda! 
 
-The additional packages required can be installed executing in succession the following commands:
+The additional packages required can be installed by: 
+
 \begin{quote}
 \color{blue}
-
-\texttt{pip install colorama tsp} \footnote{If you don't have superuser access during installation, add the flag \texttt{\color{red} \texttt{-{}-}user}}   \\
+\texttt{pip install colorama prettytable tsp} \footnote{If you don't have superuser access during installation, add the flag \texttt{\color{red} \texttt{-{}-}user} at the end}   \\
 \texttt{git clone https://github.com/jvkersch/pyconcorde} \\
 \texttt{cd pyconcorde}\\
 \texttt{pip install -e .}
 \end{quote}
 
-If the installation of pyconcorde fails, that's okay, the code will switch to the much slower Python based TSP solver. It can compute tours
-of size upto 30, 40 fairly quickly, after which the computation might takes more than a couple of minutes.  
+%#If the installation of \texttt{pyconcorde} fails, that's okay!; the code will switch to the much slower Python based TSP solver that also computes optimal solutions. 
+%This slower package can compute tours of size upto 30 to 40 in a few seconds; lareger point-clouds will take more than a couple of minutes.  
 
-To run the code, \texttt{cd} into the code's top-level folder, then type \footnote{On Windows replace, the forward slash `/` in the commands below by `\textbackslash`}
-any one of the following commands into your terminal. 
+To run the program, \texttt{cd} into the code's top-level folder, then type \footnote{On Windows replace, the forward slash `/` by `\textbackslash`}
+any one of: 
 
 \begin{itemize}
 \item \verb|python src/main.py --interactive|
@@ -33,18 +36,18 @@ any one of the following commands into your terminal.
 
 \subsection{Interactive Mode}
 
-In this mode, one can mouse-in points onto a canvas (with double-clicks) and, various network algorithms and render the 
-resulting network. 
+In this mode, one can mouse-in points onto a canvas (with double-clicks), run various network algorithms 
+and render the them onto a GUI canvas. 
 
-Once you finish mousing in the points, press \verb|`i`|, and that will open up a prompt at the terminal, asking which 
+Once you finish mousing in the points, press \verb|`i`|; that will open up a prompt at the terminal, asking which 
 network do you want to compute on those points. Enter the code in the brackets. 
 
-If you don't want to mouse-in points, and just want to plaster a few uniformly distributed random points on the canvas, 
-press \verb|`u`|, and then type into the terminal the number of points. (Same for non-uniform distributed points, but for that
-you must press \verb|`n`|)
+If you don't want to mouse-in points, and just want to plaster uniformly distributed random points on the canvas, 
+press \verb|`u`|, and then type into the terminal the number of points. Same for non-uniform distributed points: for that
+press \verb|`n`|. 
 
-Please note, while  running the  code in `\verb|interactive|` mode you will a
-warning message:
+Please note, in `\verb|interactive|` mode you might see a
+warning in your terminal:
 
 \begin{quote}
 \color{blue}
@@ -52,12 +55,29 @@ warning message:
 \end{quote}
 
 Please ignore it! It doesn't affect any of the results. Something in the
-the internals of the Matplotlib that uses the Qt library triggers that warning. I 
-am not sure what. The message doesn't pop up
-when I use Python 2.7 \footnote{Note that Python 2 has been deprecated in favour of Python 3\texttt{+}, since January 2020, } 
-instead of Python 3.7. 
+the internals of Matplotlib that uses Qt triggers that message. \shrug. 
 
 If you have any trouble --- or detect a bug! ---  we can hash things out on Slack, Github or email.
 
 \section{Laundry-list of Questions/Variants/Conjectures}
+ \label{sec:questions}
+
+\begin{itemize}
+\item We know that the Delaunay Triangulation of a set of points need not be Hamiltonian. In fact \textit{detecting}
+      Hamiltonicity of a Delaunay Triangulation is famously $NP$-complete \cite{dillencourt1996finding} 
+
+      Two natural questions suggest themselves:
+
+     \begin{itemize}
+       \item The cube of any connected (unweighted) graph is known to be Hamiltonian. \footnote{It is sufficient to prove this fact for any tree, and then use it on the spanning tree of the given graph}. 
+             Is the \textit{square} of the underlying unweighted graph of the DT (or *any* triangulation of points, for that matter) Hamiltonian? 
+             Surely this should be simple to show?! There are some results on testing if squares of graphs can be Hamilonian, (I remember Estie mentioning them in passing once) but 
+             I can't recall them at the moment. Maybe we can exploit \cite{dillencourt1996finding} to find counter-examples?
+        \item More generally, is $TSP \subseteq DT^{k}$ for a small fixed $k$? I'd wager $k=2,3$ or some slowly growing function of $n$ going by some of 
+             the experimental observations in this report,. \footnote{Even if true, this observation can only be useful in $\RR^2$; it is worthless in higher dimensions because of the combinatorial complexity of delaunay arrangements}
+     \end{itemize}
+
+ 
+\end{itemize}
+
 \end{appendices}

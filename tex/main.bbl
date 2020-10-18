@@ -1,0 +1,427 @@
+% $ biblatex auxiliary file $
+% $ biblatex version 2.6 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated as
+% required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+\entry{hougardy2014edge}{inproceedings}{}
+  \name{author}{2}{}{%
+    {{}%
+     {Hougardy}{H.}%
+     {Stefan}{S.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Schroeder}{S.}%
+     {Rasmus~T}{R.~T.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{organization}{1}{%
+    {Springer}%
+  }
+  \strng{namehash}{HSSRT1}
+  \strng{fullhash}{HSSRT1}
+  \field{labelalpha}{HS14}
+  \field{booktitle}{International Workshop on Graph-Theoretic Concepts in
+  Computer Science}
+  \field{pages}{275\bibrangedash 286}
+  \field{title}{Edge elimination in TSP instances}
+  \verb{url}
+  \verb https://bit.ly/3dCFqRS
+  \endverb
+  \field{year}{2014}
+\endentry
+
+\entry{applegate2009certification}{article}{}
+  \name{author}{7}{}{%
+    {{}%
+     {Applegate}{A.}%
+     {David~L}{D.~L.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Bixby}{B.}%
+     {Robert~E}{R.~E.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Chv{\'a}tal}{C.}%
+     {Va{\v{s}}ek}{V.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Cook}{C.}%
+     {William}{W.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Espinoza}{E.}%
+     {Daniel~G}{D.~G.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Goycoolea}{G.}%
+     {Marcos}{M.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Helsgaun}{H.}%
+     {Keld}{K.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {Elsevier}%
+  }
+  \strng{namehash}{ADL+1}
+  \strng{fullhash}{ADLBRECVCWEDGGMHK1}
+  \field{labelalpha}{App+09}
+  \field{number}{1}
+  \field{pages}{11\bibrangedash 15}
+  \field{title}{Certification of an optimal TSP tour through 85,900 cities}
+  \field{volume}{37}
+  \field{journaltitle}{Operations Research Letters}
+  \field{year}{2009}
+\endentry
+
+\entry{mitchell1999guillotine}{article}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Mitchell}{M.}%
+     {Joseph~SB}{J.~S.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {SIAM}%
+  }
+  \strng{namehash}{MJS1}
+  \strng{fullhash}{MJS1}
+  \field{labelalpha}{Mit99}
+  \field{number}{4}
+  \field{pages}{1298\bibrangedash 1309}
+  \field{title}{Guillotine subdivisions approximate polygonal subdivisions: A
+  simple polynomial-time approximation scheme for geometric TSP, k-MST, and
+  related problems}
+  \field{volume}{28}
+  \field{journaltitle}{SIAM Journal on computing}
+  \field{year}{1999}
+\endentry
+
+\entry{arora1996polynomial}{inproceedings}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Arora}{A.}%
+     {Sanjeev}{S.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{organization}{1}{%
+    {IEEE}%
+  }
+  \strng{namehash}{AS1}
+  \strng{fullhash}{AS1}
+  \field{labelalpha}{Aro96}
+  \field{booktitle}{Proceedings of 37th Conference on Foundations of Computer
+  Science}
+  \field{pages}{2\bibrangedash 11}
+  \field{title}{Polynomial time approximation schemes for Euclidean TSP and
+  other geometric problems}
+  \field{year}{1996}
+\endentry
+
+\entry{knuth1984literate}{article}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Knuth}{K.}%
+     {Donald~Ervin}{D.~E.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {Oxford University Press}%
+  }
+  \strng{namehash}{KDE1}
+  \strng{fullhash}{KDE1}
+  \field{labelalpha}{Knu84}
+  \field{number}{2}
+  \field{pages}{97\bibrangedash 111}
+  \field{title}{Literate programming}
+  \field{volume}{27}
+  \field{journaltitle}{The Computer Journal}
+  \field{year}{1984}
+\endentry
+
+\entry{ramsey2008noweb}{misc}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Ramsey}{R.}%
+     {Norman}{N.}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{RN1}
+  \strng{fullhash}{RN1}
+  \field{labelalpha}{Ram08}
+  \field{title}{Noweb—a simple, extensible tool for literate programming}
+  \field{year}{2008}
+\endentry
+
+\entry{reinelt1991tsplib}{article}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Reinelt}{R.}%
+     {Gerhard}{G.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {INFORMS}%
+  }
+  \strng{namehash}{RG1}
+  \strng{fullhash}{RG1}
+  \field{labelalpha}{Rei91}
+  \field{number}{4}
+  \field{pages}{376\bibrangedash 384}
+  \field{title}{TSPLIB—A traveling salesman problem library}
+  \verb{url}
+  \verb https://bit.ly/37eObAq
+  \endverb
+  \field{volume}{3}
+  \field{journaltitle}{ORSA journal on computing}
+  \field{year}{1991}
+\endentry
+
+\entry{ben2009yaml}{article}{}
+  \name{author}{3}{}{%
+    {{}%
+     {Ben-Kiki}{B.-K.}%
+     {Oren}{O.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Evans}{E.}%
+     {Clark}{C.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Ingerson}{I.}%
+     {Brian}{B.}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{BKOECIB1}
+  \strng{fullhash}{BKOECIB1}
+  \field{labelalpha}{BKEI09}
+  \field{title}{Yaml ain't markup language (yaml™) version 1.1}
+  \field{volume}{11}
+  \field{journaltitle}{Working Draft 2008-05}
+  \field{year}{2009}
+\endentry
+
+\entry{hagberg2008exploring}{report}{}
+  \name{author}{3}{}{%
+    {{}%
+     {Hagberg}{H.}%
+     {Aric}{A.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Swart}{S.}%
+     {Pieter}{P.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {S~Chult}{S.~C.}%
+     {Daniel}{D.}%
+     {}{}%
+     {}{}}%
+  }
+  \strng{namehash}{HASPSCD1}
+  \strng{fullhash}{HASPSCD1}
+  \field{labelalpha}{HSSC08}
+  \field{title}{Exploring network structure, dynamics, and function using
+  NetworkX}
+  \list{institution}{1}{%
+    {Los Alamos National Lab.(LANL), Los Alamos, NM (United States)}%
+  }
+  \field{type}{techreport}
+  \field{year}{2008}
+\endentry
+
+\entry{pedregosa2011scikit}{article}{}
+  \true{moreauthor}
+  \name{author}{10}{}{%
+    {{}%
+     {Pedregosa}{P.}%
+     {Fabian}{F.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Varoquaux}{V.}%
+     {Ga{\"e}l}{G.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Gramfort}{G.}%
+     {Alexandre}{A.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Michel}{M.}%
+     {Vincent}{V.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Thirion}{T.}%
+     {Bertrand}{B.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Grisel}{G.}%
+     {Olivier}{O.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Blondel}{B.}%
+     {Mathieu}{M.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Prettenhofer}{P.}%
+     {Peter}{P.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Weiss}{W.}%
+     {Ron}{R.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Dubourg}{D.}%
+     {Vincent}{V.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {JMLR. org}%
+  }
+  \strng{namehash}{PF+1}
+  \strng{fullhash}{PFVGGAMVTBGOBMPPWRDV+1}
+  \field{labelalpha}{Ped+11}
+  \field{pages}{2825\bibrangedash 2830}
+  \field{title}{Scikit-learn: Machine learning in Python}
+  \field{volume}{12}
+  \field{journaltitle}{the Journal of machine Learning research}
+  \field{year}{2011}
+\endentry
+
+\entry{virtanen2020scipy}{article}{}
+  \true{moreauthor}
+  \name{author}{10}{}{%
+    {{}%
+     {Virtanen}{V.}%
+     {Pauli}{P.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Gommers}{G.}%
+     {Ralf}{R.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Oliphant}{O.}%
+     {Travis~E}{T.~E.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Haberland}{H.}%
+     {Matt}{M.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Reddy}{R.}%
+     {Tyler}{T.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Cournapeau}{C.}%
+     {David}{D.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Burovski}{B.}%
+     {Evgeni}{E.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Peterson}{P.}%
+     {Pearu}{P.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Weckesser}{W.}%
+     {Warren}{W.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Bright}{B.}%
+     {Jonathan}{J.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {Nature Publishing Group}%
+  }
+  \strng{namehash}{VP+1}
+  \strng{fullhash}{VPGROTEHMRTCDBEPPWWBJ+1}
+  \field{labelalpha}{Vir+20}
+  \field{number}{3}
+  \field{pages}{261\bibrangedash 272}
+  \field{title}{SciPy 1.0: fundamental algorithms for scientific computing in
+  Python}
+  \field{volume}{17}
+  \field{journaltitle}{Nature methods}
+  \field{year}{2020}
+\endentry
+
+\entry{dillencourt1996finding}{article}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Dillencourt}{D.}%
+     {Michael~B}{M.~B.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {Elsevier}%
+  }
+  \strng{namehash}{DMB1}
+  \strng{fullhash}{DMB1}
+  \field{labelalpha}{Dil96}
+  \field{number}{3}
+  \field{pages}{207\bibrangedash 217}
+  \field{title}{Finding Hamiltonian cycles in Delaunay triangulations is
+  NP-complete}
+  \field{volume}{64}
+  \field{journaltitle}{Discrete Applied Mathematics}
+  \field{year}{1996}
+\endentry
+
+\lossort
+\endlossort
+
+\endinput

@@ -270,29 +270,71 @@ user to insert a 2 or 3 letter code to indicate which graph should span the poin
 <<Functions for plotting and interacting>>=
 def wrapperkeyPressHandler(fig,ax, run): 
        def _keyPressHandler(event):
-               if event.key in ['i', 'I']:                     
-                     <<Enter spanning graph>>    
-               elif event.key in ['n', 'N', 'u', 'U']: 
-                     <<Enter type of point set>>                   
+               if event.key in ['n', 'N', 'u', 'U']: 
+                     <<Enter type of point set to generate>>                   
+               elif event.key in ['t' or 'T']:
+                     <<Compute TSP and find common edges with various spanning graphs>>
+               elif event.key in ['i', 'I']:                     
+                     <<Compute spanning graph>>    
+               elif event.key in ['x', 'X']:
+                     <<Clear all line segments from the canvas>>
                elif event.key in ['c', 'C']: 
                      <<Clear all states and the canvas>>
-                   
        return _keyPressHandler
 @
 
 We now elaborate on the chunks in \verb|wrapperkeypresshandler|, and implement the boring technicalities. You 
 can skip ahead to the next sections, at this point, if you wish. 
 
+First we compute the TSP and then print a table mentioning how many of its edges are common to other
+standard graphs. See \url{https://pypi.org/project/prettytable/} for more information on the 
+prettytable module used to output data to terminal. 
+
+
+<<Headers>>=
+from prettytable import PrettyTable
+@
+
+
+<<Compute TSP and find common edges with various spanning graphs>>=
+tsp_graph = get_concorde_tsp_graph(run.points)
+graph_fns = [(get_delaunay_tri_graph, 'Delaunay Triangulation'), \
+             (get_mst_graph         , 'Minimum Spanning Tree')]
+
+tbl             = PrettyTable()
+tbl.field_names = ["Spanning Graph (G)", "G", "G \cap T", "T", "(G \cap T)/T"]
+
+num_tsp_edges = len(tsp_graph.edges)
+for ctr, (fn_body, fn_name) in zip(range(1,1+len(graph_fns)), graph_fns):
+     geometric_graph = fn_body(run.points)
+     num_graph_edges = len(geometric_graph.edges)
+     common_edges    = list_common_edges(tsp_graph, geometric_graph)
+     num_common_edges_with_tsp = len(common_edges)
+
+     tbl.add_row([fn_name,                   \
+                num_graph_edges,           \
+                num_common_edges_with_tsp, \
+                num_tsp_edges,             \
+                "{perc:3.2f}".format(perc=1e2*num_common_edges_with_tsp/num_tsp_edges)+ ' %' ])
+print(tbl)
+render_graph(tsp_graph,fig,ax)
+fig.canvas.draw()
+@
+
+In a kind of ``dual'' demo, we now compute and render the various geometric graphs, and then mention how many 
+edges each graph has in common with the TSP. Thus we can explore the intersection of the TSP with a graph
+from the point-of-view of both the TSP and the graph. 
+
 The user should type the code enclosed in the brackets (e.g. `\verb|dt|' for delaunay triangulation) to generate the 
 indicated graph that spans the points. 
 
-<<Enter spanning graph>>=
+<<Compute spanning graph>>=
 algo_str = input(Fore.YELLOW + "Enter code for the graph you need to span the points:\n" + Style.RESET_ALL  +\
-                     "(knng) k-Nearest Neighbor Graph        \n"            +\
-                     "(mst)  Minimum Spanning Tree           \n"            +\
-                     "(dt)   Delaunay Triangulation         \n"             +\
-                     "(pytsp) TSP computed with the pure Python TSP library \n" +
-                     "(conc)  TSP computed with the pure Python TSP library \n")
+                     "(knng)   k-Nearest Neighbor Graph        \n"            +\
+                     "(mst)    Minimum Spanning Tree           \n"            +\
+                     "(dt)     Delaunay Triangulation         \n"             +\
+                     "(conc)   TSP computed by the Concorde TSP library \n" +
+                     "(pytsp)  TSP computed by the pure Python TSP library \n")
 algo_str = algo_str.lstrip()
 
 if algo_str == 'knng':
@@ -306,11 +348,11 @@ elif algo_str == 'mst':
 elif algo_str == 'dt':
       geometric_graph = get_delaunay_tri_graph(run.points)
 
-elif algo_str == 'pytsp':
-     geometric_graph = get_py_tsp_graph(run.points)
-
 elif algo_str == 'conc':
      geometric_graph = get_concorde_tsp_graph(run.points)
+
+elif algo_str == 'pytsp':
+     geometric_graph = get_py_tsp_graph(run.points)
 
 else:
       print(Fore.YELLOW, "I did not recognize that option.", Style.RESET_ALL)
@@ -318,11 +360,11 @@ else:
 
 
 common_edges = list_common_edges(get_concorde_tsp_graph(run.points), geometric_graph)
-print(Fore.YELLOW, "----------LIST OF EDGES OF COMPUTED GRAPH COMMON TO TSP-------------")
-for i, edge in zip(range(1,1+len(common_edges)),common_edges):
-     print(i, '--->', edge)
+#print(Fore.YELLOW, "----------LIST OF EDGES COMMON TO CONCORDE TSP-------------")
+#for i, edge in zip(range(1,1+len(common_edges)),common_edges):
+#     print(i, '--->', edge)
 print("-------------------------------------------------------------------------------------")
-print("Number of edges of the indicated geometric graph that are common to the Concorde TSP: ", len(common_edges))
+print("Number of edges common to Concorde TSP: ", len(common_edges))
 print("-------------------------------------------------------------------------------------", Style.RESET_ALL)
 
 
@@ -335,7 +377,7 @@ fig.canvas.draw()
 If you want to enter a uniformly or non-uniformly distributed point-set in the unit-square press \verb|`u`| or \verb|`n`|
 respectively after being prompted. 
 
-<<Enter type of point set>>=
+<<Enter type of point set to generate>>=
 numpts = int(input("\nHow many points should I generate?: ")) 
 run.clearAllStates()
 ax.cla()
@@ -360,8 +402,21 @@ ax.set_title('Points generated: ' + str(len(run.points)), fontdict={'fontsize':2
 fig.canvas.draw()
 @
 
-If you want to wipe the canvas and the data inside the run clean, then as indicated in the following code
-chunk just press \verb|`c`|. 
+
+
+Sometimes, you just want to clear the edges of the network from the graph, so that
+a new graph can be rendered in its place on the points. For that, you need to press
+`x` or `X`. 
+
+<<Clear all line segments from the canvas>>=
+print(Fore.GREEN, 'Removing network edges from canvas' ,Style.RESET_ALL)
+ax.lines=[]
+applyAxCorrection(ax)
+fig.canvas.draw()
+@
+
+If you want to wipe the canvas and the point-cloud data (and everything else \ldots) clean, 
+then press \verb|`c`|. 
 
 <<Clear all states and the canvas>>=
 run.clearAllStates()
@@ -490,7 +545,7 @@ def get_delaunay_tri_graph(points):
 From elementary CG, we know that the MST of a set of points in the plane is a subset of the delaunay triangulation. Thus to compute the MST,
 it suffices to compute the MST of the corresponding delaunay triangulation. 
 See \href{https://networkx.github.io/documentation/stable/reference/algorithms/generated/networkx.algorithms.tree.mst.minimum_spanning_edges.html}{this page}
-for a documentation of the code in NetworkX used to compute the MST. Note that along with the Kruskal method (used below), both Prim's and Boruvka's 
+for a documentation of the code in NetworkX used to compute the MST on an abstract weighted undirected graph. Note that along with the Kruskal method (used below), both Prim's and Boruvka's 
 algorithms have also been implemented. 
 
 <<Functions for generating various graphs>>=

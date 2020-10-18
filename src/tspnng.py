@@ -17,6 +17,7 @@ init() # this line does nothing on Linux/Mac,
        # but is important for Windows to display
        # colored text. See https://pypi.org/project/colorama/
 import yaml
+from prettytable import PrettyTable
 
 def get_names_of_all_euclidean2D_instances(dirpath="./sym-tsp-tsplib/instances/euclidean_instances_yaml/" ):
      
@@ -120,51 +121,7 @@ def wrapperEnterRunPointsHandler(fig, ax, run):
     return _enterPointsHandler
 def wrapperkeyPressHandler(fig,ax, run): 
        def _keyPressHandler(event):
-               if event.key in ['i', 'I']:                     
-                     algo_str = input(Fore.YELLOW + "Enter code for the graph you need to span the points:\n" + Style.RESET_ALL  +\
-                                          "(knng) k-Nearest Neighbor Graph        \n"            +\
-                                          "(mst)  Minimum Spanning Tree           \n"            +\
-                                          "(dt)   Delaunay Triangulation         \n"             +\
-                                          "(pytsp) TSP computed with the pure Python TSP library \n" +
-                                          "(conc)  TSP computed with the pure Python TSP library \n")
-                     algo_str = algo_str.lstrip()
-
-                     if algo_str == 'knng':
-                           k_str = input('===> What value of k do you want? ')
-                           k     = int(k_str)
-                           geometric_graph = get_knng_graph(run.points,k)
-
-                     elif algo_str == 'mst':
-                          geometric_graph = get_mst_graph(run.points)
-
-                     elif algo_str == 'dt':
-                           geometric_graph = get_delaunay_tri_graph(run.points)
-
-                     elif algo_str == 'pytsp':
-                          geometric_graph = get_py_tsp_graph(run.points)
-
-                     elif algo_str == 'conc':
-                          geometric_graph = get_concorde_tsp_graph(run.points)
-
-                     else:
-                           print(Fore.YELLOW, "I did not recognize that option.", Style.RESET_ALL)
-                           geometric_graph = None
-
-
-                     common_edges = list_common_edges(get_concorde_tsp_graph(run.points), geometric_graph)
-                     print(Fore.YELLOW, "----------LIST OF EDGES OF COMPUTED GRAPH COMMON TO TSP-------------")
-                     for i, edge in zip(range(1,1+len(common_edges)),common_edges):
-                          print(i, '--->', edge)
-                     print("-------------------------------------------------------------------------------------")
-                     print("Number of edges of the indicated geometric graph that are common to the Concorde TSP: ", len(common_edges))
-                     print("-------------------------------------------------------------------------------------", Style.RESET_ALL)
-
-
-
-                     ax.set_title("Graph Type: " + geometric_graph.graph['type'] + '\n Number of nodes: ' + str(len(run.points)), fontdict={'fontsize':25})
-                     render_graph(geometric_graph,fig,ax)
-                     fig.canvas.draw()    
-               elif event.key in ['n', 'N', 'u', 'U']: 
+               if event.key in ['n', 'N', 'u', 'U']: 
                      numpts = int(input("\nHow many points should I generate?: ")) 
                      run.clearAllStates()
                      ax.cla()
@@ -187,6 +144,78 @@ def wrapperkeyPressHandler(fig,ax, run):
 
                      ax.set_title('Points generated: ' + str(len(run.points)), fontdict={'fontsize':25})
                      fig.canvas.draw()                   
+               elif event.key in ['t' or 'T']:
+                     tsp_graph = get_concorde_tsp_graph(run.points)
+                     graph_fns = [(get_delaunay_tri_graph, 'Delaunay Triangulation'), \
+                                  (get_mst_graph         , 'Minimum Spanning Tree')]
+
+                     tbl             = PrettyTable()
+                     tbl.field_names = ["Spanning Graph (G)", "G", "G \cap T", "T", "(G \cap T)/T"]
+
+                     num_tsp_edges = len(tsp_graph.edges)
+                     for ctr, (fn_body, fn_name) in zip(range(1,1+len(graph_fns)), graph_fns):
+                          geometric_graph = fn_body(run.points)
+                          num_graph_edges = len(geometric_graph.edges)
+                          common_edges    = list_common_edges(tsp_graph, geometric_graph)
+                          num_common_edges_with_tsp = len(common_edges)
+
+                          tbl.add_row([fn_name,                   \
+                                     num_graph_edges,           \
+                                     num_common_edges_with_tsp, \
+                                     num_tsp_edges,             \
+                                     "{perc:3.2f}".format(perc=1e2*num_common_edges_with_tsp/num_tsp_edges)+ ' %' ])
+                     print(tbl)
+                     render_graph(tsp_graph,fig,ax)
+                     fig.canvas.draw()
+               elif event.key in ['i', 'I']:                     
+                     algo_str = input(Fore.YELLOW + "Enter code for the graph you need to span the points:\n" + Style.RESET_ALL  +\
+                                          "(knng)   k-Nearest Neighbor Graph        \n"            +\
+                                          "(mst)    Minimum Spanning Tree           \n"            +\
+                                          "(dt)     Delaunay Triangulation         \n"             +\
+                                          "(conc)   TSP computed by the Concorde TSP library \n" +
+                                          "(pytsp)  TSP computed by the pure Python TSP library \n")
+                     algo_str = algo_str.lstrip()
+
+                     if algo_str == 'knng':
+                           k_str = input('===> What value of k do you want? ')
+                           k     = int(k_str)
+                           geometric_graph = get_knng_graph(run.points,k)
+
+                     elif algo_str == 'mst':
+                          geometric_graph = get_mst_graph(run.points)
+
+                     elif algo_str == 'dt':
+                           geometric_graph = get_delaunay_tri_graph(run.points)
+
+                     elif algo_str == 'conc':
+                          geometric_graph = get_concorde_tsp_graph(run.points)
+
+                     elif algo_str == 'pytsp':
+                          geometric_graph = get_py_tsp_graph(run.points)
+
+                     else:
+                           print(Fore.YELLOW, "I did not recognize that option.", Style.RESET_ALL)
+                           geometric_graph = None
+
+
+                     common_edges = list_common_edges(get_concorde_tsp_graph(run.points), geometric_graph)
+                     #print(Fore.YELLOW, "----------LIST OF EDGES COMMON TO CONCORDE TSP-------------")
+                     #for i, edge in zip(range(1,1+len(common_edges)),common_edges):
+                     #     print(i, '--->', edge)
+                     print("-------------------------------------------------------------------------------------")
+                     print("Number of edges common to Concorde TSP: ", len(common_edges))
+                     print("-------------------------------------------------------------------------------------", Style.RESET_ALL)
+
+
+
+                     ax.set_title("Graph Type: " + geometric_graph.graph['type'] + '\n Number of nodes: ' + str(len(run.points)), fontdict={'fontsize':25})
+                     render_graph(geometric_graph,fig,ax)
+                     fig.canvas.draw()    
+               elif event.key in ['x', 'X']:
+                     print(Fore.GREEN, 'Removing network edges from canvas' ,Style.RESET_ALL)
+                     ax.lines=[]
+                     applyAxCorrection(ax)
+                     fig.canvas.draw()
                elif event.key in ['c', 'C']: 
                      run.clearAllStates()
                      ax.cla()
@@ -197,7 +226,6 @@ def wrapperkeyPressHandler(fig,ax, run):
                                                          
                      fig.texts = []
                      fig.canvas.draw()
-                   
        return _keyPressHandler
 def applyAxCorrection(ax):
       ax.set_xlim([xlim[0], xlim[1]])
