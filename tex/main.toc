@@ -33,14 +33,14 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {section}{\numberline {7}Rendering the graphs}{23}{section.7}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {8}Finding common edges between two graphs}{23}{section.8}
+\contentsline {section}{\numberline {8}Finding common edges between two graphs}{24}{section.8}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {9}Hypothesis testing!}{24}{section.9}
+\contentsline {section}{\numberline {9}Hypothesis testing!}{25}{section.9}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{Appendices}{26}{section*.3}
+\contentsline {section}{Appendices}{27}{section*.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{Appendix \numberline {I\tmspace +\thickmuskip {.2777em}\tmspace +\thickmuskip {.2777em}}Installing and running the Code}{26}{Appendix.a.A}
+\contentsline {section}{Appendix \numberline {I\tmspace +\thickmuskip {.2777em}\tmspace +\thickmuskip {.2777em}}Installing and running the Code}{27}{Appendix.a.A}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {I\tmspace +\thickmuskip {.2777em}\tmspace +\thickmuskip {.2777em}.1}Interactive Mode}{26}{subsection.a.A.1}
+\contentsline {subsection}{\numberline {I\tmspace +\thickmuskip {.2777em}\tmspace +\thickmuskip {.2777em}.1}Interactive Mode}{27}{subsection.a.A.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{Appendix \numberline {II\tmspace +\thickmuskip {.2777em}\tmspace +\thickmuskip {.2777em}}Laundry-list of Questions/Variants/Conjectures}{27}{Appendix.a.B}
+\contentsline {section}{Appendix \numberline {II\tmspace +\thickmuskip {.2777em}\tmspace +\thickmuskip {.2777em}}Laundry-list of Questions/Variants/Conjectures}{28}{Appendix.a.B}

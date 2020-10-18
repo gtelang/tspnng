@@ -360,14 +360,11 @@ else:
       print(Fore.YELLOW, "I did not recognize that option.", Style.RESET_ALL)
       geometric_graph = None
 
-
 common_edges = list_common_edges(get_concorde_tsp_graph(run.points), geometric_graph)
-#print(Fore.YELLOW, "----------LIST OF EDGES COMMON TO CONCORDE TSP-------------")
-#for i, edge in zip(range(1,1+len(common_edges)),common_edges):
-#     print(i, '--->', edge)
-print("-------------------------------------------------------------------------------------")
-print("Number of edges common to Concorde TSP: ", len(common_edges))
-print("-------------------------------------------------------------------------------------", Style.RESET_ALL)
+print("------------------------------------------------------------------------------")
+print("Number of edges in " + algo_str + " graph (TOTAL)                          :", len(geometric_graph.edges))
+print("Number of edges in " + algo_str + " graph which are also in Concorde TSP   :", len(common_edges))
+print("------------------------------------------------------------------------------", Style.RESET_ALL)
 
 
 
@@ -674,10 +671,12 @@ def render_graph(G,fig,ax):
      if G is None:
             return
      \LA{}Set up edge colors depending on graph type~{\nwtagstyle{}\subpageref{NWaGG5Z-3Ujbzt-1}}\RA{}
-     \LA{}Iterate through graph edges and draw as segments~{\nwtagstyle{}\subpageref{NWaGG5Z-2RD3q9-1}}\RA{}
+     if G.graph['type'] not in ['conc', 'pytsp']:
+          \LA{}Iterate through graph edges and draw as segments~{\nwtagstyle{}\subpageref{NWaGG5Z-2RD3q9-1}}\RA{}
+     else:
+          \LA{}Draw tour as polygon patch~{\nwtagstyle{}\subpageref{NWaGG5Z-KZycx-1}}\RA{}
      fig.canvas.draw()
 \nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{52}\nwdocspar
-
 
 \nwenddocs{}\nwbegincode{53}\sublabel{NWaGG5Z-3Ujbzt-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3Ujbzt-1}}}\moddef{Set up edge colors depending on graph type~{\nwtagstyle{}\subpageref{NWaGG5Z-3Ujbzt-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-3DI44N-5}}\nwenddeflinemarkup
 edgecol = None
@@ -694,11 +693,26 @@ elif G.graph['type'][-3:] == 'nng':
 
 \nwenddocs{}\nwbegincode{55}\sublabel{NWaGG5Z-2RD3q9-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-2RD3q9-1}}}\moddef{Iterate through graph edges and draw as segments~{\nwtagstyle{}\subpageref{NWaGG5Z-2RD3q9-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-3DI44N-5}}\nwenddeflinemarkup
 for  (nidx1, nidx2) in G.edges:
-     x1, y1 = G.nodes[nidx1]['coods']
-     x2, y2 = G.nodes[nidx2]['coods']
-     ax.plot([x1,x2],[y1,y2],'-', color=edgecol)
-     
+    x1, y1 = G.nodes[nidx1]['coods']
+    x2, y2 = G.nodes[nidx2]['coods']
+    ax.plot([x1,x2],[y1,y2],'-', color=edgecol)
 \nwused{\\{NWaGG5Z-3DI44N-5}}\nwendcode{}\nwbegindocs{56}\nwdocspar
+
+\nwenddocs{}\nwbegincode{57}\sublabel{NWaGG5Z-KZycx-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-KZycx-1}}}\moddef{Draw tour as polygon patch~{\nwtagstyle{}\subpageref{NWaGG5Z-KZycx-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-3DI44N-5}}\nwenddeflinemarkup
+from networkx.algorithms.traversal.depth_first_search import dfs_edges
+node_coods = []
+for (nidx1, nidx2) in dfs_edges(G):
+       node_coods.append(G.nodes[nidx1]['coods'])
+       node_coods.append(G.nodes[nidx2]['coods'])
+
+node_coods = np.asarray(node_coods)
+
+from matplotlib.patches import Polygon
+from matplotlib.collections import PatchCollection
+
+polygon = Polygon(node_coods, closed=True, facecolor=(255/255, 255/255, 102/255,0.5), edgecolor='k', linewidth=1)
+ax.add_patch(polygon)
+\nwused{\\{NWaGG5Z-3DI44N-5}}\nwendcode{}\nwbegindocs{58}\nwdocspar
 
 
 
@@ -710,18 +724,18 @@ but the indices recorded in the nodes may be in a different order.
 Hence, we explicitly define edges from two different graphs on the same set of nodes
 as being equal, if they are equal as sorted lists.
 
-\nwenddocs{}\nwbegincode{57}\sublabel{NWaGG5Z-b3I3C-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-b3I3C-1}}}\moddef{Functions dealing with intersecting two geometric graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-b3I3C-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{\relax}{NWaGG5Z-b3I3C-2}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{59}\sublabel{NWaGG5Z-b3I3C-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-b3I3C-1}}}\moddef{Functions dealing with intersecting two geometric graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-b3I3C-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{\relax}{NWaGG5Z-b3I3C-2}\nwenddeflinemarkup
 def edge_equal_p(e1,e2):
      e1 = sorted(list(e1))
      e2 = sorted(list(e2))
      return (e1==e2)
-\nwalsodefined{\\{NWaGG5Z-b3I3C-2}\\{NWaGG5Z-b3I3C-3}}\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{58}\nwdocspar
+\nwalsodefined{\\{NWaGG5Z-b3I3C-2}\\{NWaGG5Z-b3I3C-3}}\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{60}\nwdocspar
 
 To find the set of edges common to two graphs on the same set of nodes, we take take each
 edge from one of the graphs and check whether it exists in the other. 
 
 
-\nwenddocs{}\nwbegincode{59}\sublabel{NWaGG5Z-b3I3C-2}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-b3I3C-2}}}\moddef{Functions dealing with intersecting two geometric graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-b3I3C-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-b3I3C-1}{NWaGG5Z-b3I3C-3}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{61}\sublabel{NWaGG5Z-b3I3C-2}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-b3I3C-2}}}\moddef{Functions dealing with intersecting two geometric graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-b3I3C-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-b3I3C-1}{NWaGG5Z-b3I3C-3}\nwenddeflinemarkup
 def list_common_edges(g1, g2):
      common_edges = []
      for e1 in g1.edges:
@@ -729,22 +743,22 @@ def list_common_edges(g1, g2):
              if  edge_equal_p(e1,e2):
                   common_edges.append(e1)
      return common_edges
-\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{60}\nwdocspar
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{62}\nwdocspar
 
 Finally, just a small function that tests if two graphs intersect. 
 
-\nwenddocs{}\nwbegincode{61}\sublabel{NWaGG5Z-b3I3C-3}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-b3I3C-3}}}\moddef{Functions dealing with intersecting two geometric graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-b3I3C-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-b3I3C-2}{\relax}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{63}\sublabel{NWaGG5Z-b3I3C-3}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-b3I3C-3}}}\moddef{Functions dealing with intersecting two geometric graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-b3I3C-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-b3I3C-2}{\relax}\nwenddeflinemarkup
 def graphs_intersect_p(g1,g2):
      flag = False
      if list_common_edges(g1,g2):     
           flag = True 
      return flag
-\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{62}\nwdocspar
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{64}\nwdocspar
 
 \section{Hypothesis testing!}
 
-\nwenddocs{}\nwbegincode{63}\sublabel{NWaGG5Z-3pWXcO-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3pWXcO-1}}}\moddef{Testing hypotheses~{\nwtagstyle{}\subpageref{NWaGG5Z-3pWXcO-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwenddeflinemarkup
-\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{64}\nwdocspar
+\nwenddocs{}\nwbegincode{65}\sublabel{NWaGG5Z-3pWXcO-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3pWXcO-1}}}\moddef{Testing hypotheses~{\nwtagstyle{}\subpageref{NWaGG5Z-3pWXcO-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwenddeflinemarkup
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{66}\nwdocspar
 \nwenddocs{}
 
 \nwixlogsorted{c}{{Clear all line segments from the canvas}{NWaGG5Z-3ttuy9-1}{\nwixu{NWaGG5Z-3DI44N-3}\nwixd{NWaGG5Z-3ttuy9-1}}}%
@@ -753,6 +767,7 @@ def graphs_intersect_p(g1,g2):
 \nwixlogsorted{c}{{Compute TSP and find common edges with various spanning graphs}{NWaGG5Z-1xEGS-1}{\nwixu{NWaGG5Z-3DI44N-3}\nwixd{NWaGG5Z-1xEGS-1}}}%
 \nwixlogsorted{c}{{Compute weight of each edge and total edge weight}{NWaGG5Z-3homP2-1}{\nwixu{NWaGG5Z-2XNY09-4}\nwixd{NWaGG5Z-3homP2-1}}}%
 \nwixlogsorted{c}{{Data Generation}{NWaGG5Z-2uhtAA-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-2uhtAA-1}}}%
+\nwixlogsorted{c}{{Draw tour as polygon patch}{NWaGG5Z-KZycx-1}{\nwixu{NWaGG5Z-3DI44N-5}\nwixd{NWaGG5Z-KZycx-1}}}%
 \nwixlogsorted{c}{{Enter type of point set to generate}{NWaGG5Z-1TJD4t-1}{\nwixu{NWaGG5Z-3DI44N-3}\nwixd{NWaGG5Z-1TJD4t-1}}}%
 \nwixlogsorted{c}{{Functions dealing with intersecting two geometric graphs}{NWaGG5Z-b3I3C-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-b3I3C-1}\nwixd{NWaGG5Z-b3I3C-2}\nwixd{NWaGG5Z-b3I3C-3}}}%
 \nwixlogsorted{c}{{Functions for generating various graphs}{NWaGG5Z-2XNY09-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-2XNY09-1}\nwixd{NWaGG5Z-2XNY09-2}\nwixd{NWaGG5Z-2XNY09-3}\nwixd{NWaGG5Z-2XNY09-4}\nwixd{NWaGG5Z-2XNY09-5}}}%
