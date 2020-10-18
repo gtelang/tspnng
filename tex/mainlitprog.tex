@@ -34,7 +34,10 @@ import networkx as nx
 
 from sklearn.cluster import KMeans
 import argparse, os, sys, time
-from colorama import Fore, Style, Back
+from colorama import init, Fore, Style, Back
+init() # this line does nothing on Linux/Mac,
+       # but is important for Windows to display
+       # colored text. See https://pypi.org/project/colorama/
 import yaml
 \nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{4}\nwdocspar
 

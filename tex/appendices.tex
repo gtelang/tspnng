@@ -12,15 +12,18 @@ you have successfully installed the Anaconda distro.
 The additional packages required can be installed executing in succession the following commands:
 \begin{quote}
 \color{blue}
-\texttt{pip install colorama}  \footnote{If you don't have superuser access during installation, add the flag \texttt{\color{red} \texttt{-{}-}user}}  \\
-\texttt{pip install tsp} \\
+
+\texttt{pip install colorama tsp} \footnote{If you don't have superuser access during installation, add the flag \texttt{\color{red} \texttt{-{}-}user}}   \\
 \texttt{git clone https://github.com/jvkersch/pyconcorde} \\
 \texttt{cd pyconcorde}\\
 \texttt{pip install -e .}
 \end{quote}
 
+If the installation of pyconcorde fails, that's okay, the code will switch to the much slower Python based TSP solver. It can compute tours
+of size upto 30, 40 fairly quickly, after which the computation might takes more than a couple of minutes.  
 
-To run the code, \texttt{cd} into the code's top-level folder, then type any one of the following commands into your terminal. 
+To run the code, \texttt{cd} into the code's top-level folder, then type \footnote{On Windows replace, the forward slash `/` in the commands below by `\textbackslash`}
+any one of the following commands into your terminal. 
 
 \begin{itemize}
 \item \verb|python src/main.py --interactive|
@@ -30,7 +33,7 @@ To run the code, \texttt{cd} into the code's top-level folder, then type any one
 
 \subsection{Interactive Mode}
 
-In this mode, one can mouse-in points onto a canvas (with double-clicks) and run various network algorithms and render the 
+In this mode, one can mouse-in points onto a canvas (with double-clicks) and, various network algorithms and render the 
 resulting network. 
 
 Once you finish mousing in the points, press \verb|`i`|, and that will open up a prompt at the terminal, asking which 

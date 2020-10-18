@@ -12,7 +12,10 @@ import networkx as nx
 
 from sklearn.cluster import KMeans
 import argparse, os, sys, time
-from colorama import Fore, Style, Back
+from colorama import init, Fore, Style, Back
+init() # this line does nothing on Linux/Mac,
+       # but is important for Windows to display
+       # colored text. See https://pypi.org/project/colorama/
 import yaml
 
 def get_names_of_all_euclidean2D_instances(dirpath="./sym-tsp-tsplib/instances/euclidean_instances_yaml/" ):
