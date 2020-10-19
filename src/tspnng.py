@@ -149,7 +149,8 @@ def wrapperkeyPressHandler(fig,ax, run):
                elif event.key in ['t' or 'T']:
                      tsp_graph = get_concorde_tsp_graph(run.points)
                      graph_fns = [(get_delaunay_tri_graph, 'Delaunay Triangulation'), \
-                                  (get_mst_graph         , 'Minimum Spanning Tree')]
+                                  (get_mst_graph         , 'Minimum Spanning Tree'), \
+                                  (get_onion_graph       , 'Onion') ]
 
                      tbl             = PrettyTable()
                      tbl.field_names = ["Spanning Graph (G)", "G", "G \cap T", "T", "(G \cap T)/T"]
@@ -256,7 +257,7 @@ def render_graph(G,fig,ax):
      if G.graph['type'] == 'mst':
           edgecol = 'g'
      elif G.graph['type'] == 'onion':
-          edgecol = 'k'
+          edgecol = 'gray'
      elif G.graph['type'] in ['conc','pytsp']:
           edgecol = 'r'
      elif G.graph['type'] == 'dt':
@@ -264,6 +265,10 @@ def render_graph(G,fig,ax):
      elif G.graph['type'][-3:] == 'nng':
           edgecol = 'm'
      if G.graph['type'] not in ['conc', 'pytsp']:
+          
+          for elt in list(G.nodes(data=True)):
+               print(elt)
+
           for  (nidx1, nidx2) in G.edges:
               x1, y1 = G.nodes[nidx1]['coods']
               x2, y2 = G.nodes[nidx2]['coods']
@@ -282,6 +287,8 @@ def render_graph(G,fig,ax):
 
           polygon = Polygon(node_coods, closed=True, facecolor=(255/255, 255/255, 102/255,0.5), edgecolor='k', linewidth=1)
           ax.add_patch(polygon)
+          
+     ax.axis('off')
      fig.canvas.draw()
 
 def get_knng_graph(points,k):
@@ -344,25 +351,20 @@ def get_mst_graph(points):
      return mst_graph
 
 def get_onion_graph(points):
-
      from scipy.spatial import ConvexHull
-
      points      = np.asarray(points)     
      points_tmp  = points.copy()
      numpts      = len(points)
-
      onion_graph = nx.Graph()
      numpts_proc = -1
 
      def circular_edge_zip(xs):
-
          xs = list(xs) # in the event, that zip or ranges are passed as arguments
          if len(xs) in [0,1] :
               zipl = []
          elif len(xs) == 2 :
               zipl = [(xs[0],xs[1])]
          else:
-              print(xs)
               zipl = list(zip(xs,xs[1:]+xs[:1]))
          return zipl
 
@@ -370,30 +372,26 @@ def get_onion_graph(points):
            hull            = ConvexHull(points_tmp)
            pts_on_hull     = [points_tmp[i] for i in hull.vertices]
            coords          = [{"coods":pt} for pt in pts_on_hull]
-
            new_node_idxs   = range(numpts_proc+1, numpts_proc+len(hull.vertices)+1)
            onion_graph.add_nodes_from(zip(new_node_idxs, coords))
            onion_graph.add_edges_from(circular_edge_zip(new_node_idxs))
-
            numpts_proc  = numpts_proc + len(hull.vertices)
            rem_pts_idxs = list(set(range(len(points_tmp)))-set(hull.vertices)) 
            points_tmp   = [ points_tmp[idx] for idx in rem_pts_idxs ]
            coords       = [{"coods":pt} for pt in points]
-     
-           if len(points_tmp) == 2:
-               p, l = numpts_proc+1, numpts_proc+2
-               onion_graph.add_node(p)
-               onion_graph.add_node(l)
-               onion_graph.nodes[p]['cood'] = points_tmp[0]
-               onion_graph.nodes[l]['cood'] = points_tmp[1]
-               onion_graph.add_edge(p,l)
 
-           elif len(points_tmp) == 1:
-               l = numpts_proc+1 
-               onion_graph.add_node(l)
-               onion_graph.nodes[l]['cood'] = points_tmp[0]
-               break
-
+     if len(points_tmp) == 2:
+          p, l = numpts_proc+1, numpts_proc+2
+          onion_graph.add_node(p)
+          onion_graph.add_node(l)
+          onion_graph.nodes[p]['coods'] = points_tmp[0]
+          onion_graph.nodes[l]['coods'] = points_tmp[1]
+          onion_graph.add_edge(p,l)
+     elif len(points_tmp) == 1:
+          l = numpts_proc+1 
+          onion_graph.add_node(l)
+          onion_graph.nodes[l]['cood'] = points_tmp[0]
+ 
      onion_graph.graph['type'] = 'onion'
      return onion_graph
 def get_py_tsp_graph(points):

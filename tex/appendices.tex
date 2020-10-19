@@ -62,38 +62,65 @@ If you have any trouble --- or detect a bug! ---  we can hash things out on Slac
 \section{Laundry-list of Questions/Variants/Conjectures}
  \label{sec:questions}
 
-\begin{itemize}
-\item We know that the Delaunay Triangulation of a set of points need not be Hamiltonian. In fact \textit{detecting}
+
+\begin{description}
+\item[\color{red} HAMILTONICITY STRUCTURE] We know that the Delaunay Triangulation of a set of points need not be Hamiltonian. In fact \textit{detecting}
       Hamiltonicity of a Delaunay Triangulation is famously $NP$-complete \cite{dillencourt1996finding} 
 
       Two useful facts before we proceed: 
 
      \begin{description}
-       \item[Folklore] The cube of any connected, unweighted, graph is known to be Hamiltonian. 
+       \item[Folklore] The cube of any connected, unweighted, graph is Hamiltonian. 
              \footnote{It is sufficient to prove this fact for any tree, and then use it on the spanning tree of the given graph}. 
        \item[Fleischner's theorem  \cite{georgakopoulos2009short}] The square of 
-             Any 2-vertex connected, unweighted, graph is Hamiltonian. \footnote{This last theorem certainly applies to Delaunay triangulations of general point-sets.  By the square of a delaunay triangulation, I mean to say: throw away the edge weights and consider the square of the underlying unweighted graph. Once the new edges are added, consider them weighted with the natural euclidean distance between their endpoints}
+             any 2-vertex connected, unweighted, graph is Hamiltonian. 
+          \footnote{This last theorem certainly applies to Delaunay triangulations of general point-sets. By the square of a delaunay triangulation, I mean to say: throw away the edge weights and consider the square of the underlying unweighted graph. Once the new edges are added, consider them weighted with the natural euclidean distance between their endpoints}
      \end{description}
 
-     And so two questions suggest themselves here:
+     And so the following questions are natural:
 
      \begin{itemize}
       \item Based on the experiments results shown in this report, can we 
             claim  $TSP \subseteq DT^{k}$ or $TSP \subseteq MST^{k}$ in $\RR^2$ 
-           for a \textit{small} fixed $k$? I'd wager $k=2,3$ or at worst some 
-           very slowly growing function of $n$ ($\log (n)$ maybe?) 
+           for a \textit{small} constant $k$? I'd wager $k=2,3$ or, at worst, some 
+           very slowly growing function of $n$ \footnote{$\log (n)$ maybe?}
 
-      \item For $MST^3$, how good is the shortest (or any!) hamilton cycle 
-            in approximating the TSP? Surely this is known? Will computing such a shortest cycle in this special graph 
-            be polytime? Needs more experiments to hone this question. 
+      \item For $G=MST^3$, how good is the any (or the shortest??) Hamilton cycle through $G$
+            in approximating the TSP? \footnote{This is a cute vertex analog of the standard edge-doubling based 2-OPT heuristic, but is detecting such a cycle for a small MST power polytime? I'd bet yes. Probably the FPT experts have something to say on this topic.}  
+            Surely, this must be known, right?  For the arrangement of $n$ points at the roots of unity suggests that the 
+            approximation could be as bad as 3. 
 
+       \item What is the likelihood of $MST^2$ of $n$ points $\in \RR^2$ in general position being Hamltonian? 
+             Any characterization of such point-sets? 
+
+       \item Given a set of points in $\RR^2$, does *ANY* 
+             (weakly/strongly) simple polygon and *ANY* triangulation on those 
+             points have an edge in common? This is surely not true, right?!
       \end{itemize}
 
 
+\item[\color{red} TSP $\rarr$ Delaunay] 
 
-\item (Wild H.W. Question?) Given a set of points in $\RR^2$, does *ANY* 
-      (weakly or strongly) simple polygon and *ANY* triangulation on those 
-      points have some edges in common?
-\end{itemize}
+\begin{itemize}
+   \item  Suppose by some magic black box (Concorde!) one has obtained the TSP tour through $n$ points.  
+          Can we then compute the Delaunay Triangulation of the point-set in $O(n)$ time? It certainly seems so going by the high number of edges 
+          in the TSP common to the Delaunay as suggested by the tests in this writeup. Maybe the Okabe book on Voronoi etc. has something on this?
+          It's, of course, complete baloney to compute triangulations like this in practise but when did \textit{that} ever stop a computer scientist 
+          from being metaphysical? \smiley
+
+   \item  Is the Min Weight (MW), or even better, the Min-Angle Maximizing (MAM) Triangulation of the TSP and its external pockets close 
+          to being Delaunay in some sense\footnote{e.g. how good is the maximum value of the minimum angle in a triangle over all triangles different from OPT}?  
+          Note that both MW and MAM triangulations of simple polygons can be computed by D.P. 
+\end{itemize}  
+
+ %\item[Approximation by Sharing] If a simple polygon $P$ on $n$ points shares $\theta n$ edges with the Delaunay 
+%      Triangulation, for some constant (i.e. independent of $n$) $\theta$ close to 1 
+%      are there bounds on the approximation factor (as a function of $\theta$) of how good $P$ is compared to TSP? 
+
+
+\end{description}
+
+
+
 
 \end{appendices}

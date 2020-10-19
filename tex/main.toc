@@ -21,28 +21,30 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {6.1}$k\text {-}$NNG}{18}{subsection.6.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {6.2}Delaunay Triangulation}{19}{subsection.6.2}
+\contentsline {subsection}{\numberline {6.2}Delaunay Triangulation}{20}{subsection.6.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {6.3}Minimum Spanning Tree}{20}{subsection.6.3}
+\contentsline {subsection}{\numberline {6.3}Minimum Spanning Tree}{21}{subsection.6.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {6.4}The Onion}{21}{subsection.6.4}
+\contentsline {subsection}{\numberline {6.4}The Onion}{22}{subsection.6.4}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {6.5}Traveling Saleman Tour (Cycle)}{23}{subsection.6.5}
+\contentsline {subsection}{\numberline {6.5}Traveling Saleman Tour (Cycle)}{24}{subsection.6.5}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {6.5.1}* Using the \texttt {tsp} library}{23}{subsubsection.6.5.1}
+\contentsline {subsubsection}{\numberline {6.5.1}* Using the \texttt {tsp} library}{25}{subsubsection.6.5.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {6.5.2}* Using the Pyconcorde library}{24}{subsubsection.6.5.2}
+\contentsline {subsubsection}{\numberline {6.5.2}* Using the Pyconcorde library}{26}{subsubsection.6.5.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {7}Rendering the graphs}{25}{section.7}
+\contentsline {subsection}{\numberline {6.6}Graph Powers}{27}{subsection.6.6}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {8}Finding common edges between two graphs}{26}{section.8}
+\contentsline {section}{\numberline {7}Rendering the graphs}{27}{section.7}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {9}Hypothesis testing!}{27}{section.9}
+\contentsline {section}{\numberline {8}Finding common edges between two graphs}{28}{section.8}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{Appendices}{29}{section*.3}
+\contentsline {section}{\numberline {9}Hypothesis testing!}{29}{section.9}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{Appendix \numberline {I\tmspace +\thickmuskip {.2777em}\tmspace +\thickmuskip {.2777em}}Installing and running the Code}{29}{Appendix.a.A}
+\contentsline {section}{Appendices}{31}{section*.8}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {I\tmspace +\thickmuskip {.2777em}\tmspace +\thickmuskip {.2777em}.1}Interactive Mode}{29}{subsection.a.A.1}
+\contentsline {section}{Appendix \numberline {I\tmspace +\thickmuskip {.2777em}\tmspace +\thickmuskip {.2777em}}Installing and running the Code}{31}{Appendix.a.A}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{Appendix \numberline {II\tmspace +\thickmuskip {.2777em}\tmspace +\thickmuskip {.2777em}}Laundry-list of Questions/Variants/Conjectures}{30}{Appendix.a.B}
+\contentsline {subsection}{\numberline {I\tmspace +\thickmuskip {.2777em}\tmspace +\thickmuskip {.2777em}.1}Interactive Mode}{31}{subsection.a.A.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{Appendix \numberline {II\tmspace +\thickmuskip {.2777em}\tmspace +\thickmuskip {.2777em}}Laundry-list of Questions/Variants/Conjectures}{32}{Appendix.a.B}

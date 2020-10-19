@@ -52,7 +52,7 @@ import yaml
 \subsection{TSPLIB data-sets}
 
 \autoref{fig:tsplib} is a screenshot of the entire opening page of \cite{reinelt1991tsplib}
-that should more than suffice as an intro to this popular benchmark data-set for various TSP-like problems. 
+that should more than suffice as an intro to this popular set of benchmarks for various TSP-like problems. \footnote{Prof. Sandor Fekete has a much larger collection of interesting TSP data-sets, I believe?}
 
 \begin{figure}[htbp]
   \centering
@@ -78,7 +78,7 @@ were converted into the convenient YAML format and copied into the
 \color{blue}
 \texttt{./sym-tsp-tsplib/instances/sym-tsp-tsplib/instances/euclidean\_instances\_yaml/} 
 \end{displayquote}
-directory. Unless otherwise noted, \textit{we will retrict our attention to this directory when talking about working with TSPLIB data}. 
+directory. \textit{\textbf{Unless otherwise noted, we will retrict our attention to this directory when talking about TSPLIB data.}}
 
 To see what the point-sets look like peep into the folder \verb|tsplib_euc2d_pictures_of_instances| contained in the top level directory of the code. 
 Note that the numbers affixed to each instance name indicate the number of points in that instance. See \autoref{fig:tsplibinstances} for some examples. 
@@ -301,7 +301,8 @@ from prettytable import PrettyTable
 <<Compute TSP and find common edges with various spanning graphs>>=
 tsp_graph = get_concorde_tsp_graph(run.points)
 graph_fns = [(get_delaunay_tri_graph, 'Delaunay Triangulation'), \
-             (get_mst_graph         , 'Minimum Spanning Tree')]
+             (get_mst_graph         , 'Minimum Spanning Tree'), \
+             (get_onion_graph       , 'Onion') ]
 
 tbl             = PrettyTable()
 tbl.field_names = ["Spanning Graph (G)", "G", "G \cap T", "T", "(G \cap T)/T"]
@@ -474,6 +475,14 @@ numbering across all graphs: namely, the order in which the points occur in the 
 
 \subsection{$k\text{-}$NNG}
 
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=5cm]{./miscimages/1nng-example.png}
+  \includegraphics[width=5cm]{./miscimages/2nng-example.png}
+  \includegraphics[width=5cm]{./miscimages/3nng-example.png}
+  \caption{\label{fig:knng} Generating the $k$-NNG graphs with Scikit-Learn for various value of $k$ on the same set of 30 randomly generated points. Note that we are considering these graphs as undirected.}
+\end{figure}
+
 We use the nearest neighbor routine from the Scikit-learn \cite{pedregosa2011scikit} library. The documentation
 for the various nearest neighor methods implemented therein can be found at 
 \url{https://bit.ly/3nTQkqV}. Note that $k\text{-}$ nearest-neighbors of a point
@@ -481,25 +490,21 @@ includes the point itself. Thus we use $(k+1)$ in the argument to the \verb|Near
 function below. 
 
 <<Functions for generating various graphs>>=
-
 def get_knng_graph(points,k):
      from sklearn.neighbors import NearestNeighbors
-
      points     = np.array(points)
      coords     = [{"coods":pt} for pt in points]
      knng_graph = nx.Graph()
      knng_graph.add_nodes_from(zip(range(len(points)), coords))
-
      nbrs = NearestNeighbors(n_neighbors=(k+1), algorithm='ball_tree').fit(points)
      distances, indices = nbrs.kneighbors(points)
-
      edge_list = []
+
      for nbidxs in indices:
           nfix = nbidxs[0]
           edge_list.extend([(nfix,nvar) for nvar in nbidxs[1:]])
 
      knng_graph.add_edges_from(  edge_list  )
-
      knng_graph.graph['type']   = str(k)+'nng'
      knng_graph.graph['weight'] =  None # TODO, also edge weights for each edge!!!
      return knng_graph
@@ -507,6 +512,13 @@ def get_knng_graph(points,k):
 
 
 \subsection{Delaunay Triangulation}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=7cm]{./miscimages/dt-example.png}
+  \caption{\label{fig:dt} Example of a Delaunay Triangulation computed by SciPy on 30 randomly generated points}
+\end{figure}
+
 
 We use the  \href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.Delaunay.html}{blackbox routine} 
 for computing this graph implmeneted in Scipy \cite{virtanen2020scipy}. 
@@ -545,6 +557,13 @@ def get_delaunay_tri_graph(points):
 
 \subsection{Minimum Spanning Tree}
 
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=6cm]{./miscimages/mst-example.png}
+  \caption{\label{fig:dt} Example of a Minimum Spanning Tree computed by NetworkX on 30 randomly generated points}
+\end{figure}
+
+
 From elementary CG, we know that the MST of a set of points in the plane is a subset of the delaunay triangulation. Thus to compute the MST,
 it suffices to compute the MST of the corresponding delaunay triangulation. 
 See \href{https://networkx.github.io/documentation/stable/reference/algorithms/generated/networkx.algorithms.tree.mst.minimum_spanning_edges.html}{this page}
@@ -566,75 +585,110 @@ def get_mst_graph(points):
 
 \subsection{The Onion}
 
-Here we compute the convex-hull of the point-set, delete the points from the hull. 
-Compute the convex hull of the smalle point-set and keep repeating this process
-until we run out of points. 
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=6cm]{./miscimages/onion-example.png}
+  \caption{\label{fig:dt} Example of the Onion graph computed with computed with QHull (through SciPy) on 30 randomly generated points }
+\end{figure}
+
+
+
+Here we compute successive convex-hull of the point-set: compute the convex hull of the points, delete the hull points, 
+compute the convex hull of this smaller point-set, repeating this process till we run out of points. 
 
 The resulting sequence of convex layers form a graph which we call the onion. 
 
 <<Functions for generating various graphs>>=
 
 def get_onion_graph(points):
-
      from scipy.spatial import ConvexHull
-
      points      = np.asarray(points)     
      points_tmp  = points.copy()
      numpts      = len(points)
-
      onion_graph = nx.Graph()
      numpts_proc = -1
 
      << Definition of \verb|circular_edge_zip|>>
-
      while len(points_tmp) >= 3:
-           hull            = ConvexHull(points_tmp)
-           pts_on_hull     = [points_tmp[i] for i in hull.vertices]
-           coords          = [{"coods":pt} for pt in pts_on_hull]
+           <<Generate convex hull of points remaining in \verb|points_tmp|>>
+           <<Update \verb|onion_graph|>>
+           <<Remove points reported in the convex hull from \verb|points_tmp|>>
 
-           new_node_idxs   = range(numpts_proc+1, numpts_proc+len(hull.vertices)+1)
-           onion_graph.add_nodes_from(zip(new_node_idxs, coords))
-           onion_graph.add_edges_from(circular_edge_zip(new_node_idxs))
-
-           numpts_proc  = numpts_proc + len(hull.vertices)
-           rem_pts_idxs = list(set(range(len(points_tmp)))-set(hull.vertices)) 
-           points_tmp   = [ points_tmp[idx] for idx in rem_pts_idxs ]
-           coords       = [{"coods":pt} for pt in points]
-     
-           if len(points_tmp) == 2:
-               p, l = numpts_proc+1, numpts_proc+2
-               onion_graph.add_node(p)
-               onion_graph.add_node(l)
-               onion_graph.nodes[p]['cood'] = points_tmp[0]
-               onion_graph.nodes[l]['cood'] = points_tmp[1]
-               onion_graph.add_edge(p,l)
-
-           elif len(points_tmp) == 1:
-               l = numpts_proc+1 
-               onion_graph.add_node(l)
-               onion_graph.nodes[l]['cood'] = points_tmp[0]
-               break
-
+     if len(points_tmp) == 2:
+          <<Join two remaining points by an edge in \verb|onion_graph|>>
+     elif len(points_tmp) == 1:
+          <<Add the remaining points as a node in \verb|onion_graph|>>
+ 
      onion_graph.graph['type'] = 'onion'
      return onion_graph
 @
 
-This function basically given a set of node ids of a graph provided as a list of 
-integers, returns a cycle consisting of edges with successive nodes joined in
-the order provided. e.g. $[1,2,3] \rarr [(1,2),(2,3),(3,1)]$. 
+
+Note that the convex hull is computed by Scipy using the Qhull library as mentioned in the \href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.ConvexHull.html}{docs}. 
+<<Generate convex hull of points remaining in \verb|points_tmp|>>=
+hull            = ConvexHull(points_tmp)
+pts_on_hull     = [points_tmp[i] for i in hull.vertices]
+coords          = [{"coods":pt} for pt in pts_on_hull]
+@
+
+
+<<Update \verb|onion_graph|>>=
+new_node_idxs   = range(numpts_proc+1, numpts_proc+len(hull.vertices)+1)
+onion_graph.add_nodes_from(zip(new_node_idxs, coords))
+onion_graph.add_edges_from(circular_edge_zip(new_node_idxs))
+@
+
+
+Given a set of node ids of a graph provided as a list of 
+integers, the following function, returns a cycle of edges with successive nodes joined in
+the order provided. e.g. $[1,2,3] \rarr [(1,2),(2,3),(3,1)]$. Convenient to have this defined 
+separately. 
 
 << Definition of \verb|circular_edge_zip|>>=
 def circular_edge_zip(xs):
-
-    xs = list(xs) # in the event, that zip or ranges are passed as arguments
+    xs = list(xs) # in the event that xs is of the zip or range type 
     if len(xs) in [0,1] :
          zipl = []
     elif len(xs) == 2 :
          zipl = [(xs[0],xs[1])]
     else:
-         print(xs)
          zipl = list(zip(xs,xs[1:]+xs[:1]))
     return zipl
+
+@
+
+
+
+
+<<Remove points reported in the convex hull from \verb|points_tmp|>>=
+numpts_proc  = numpts_proc + len(hull.vertices)
+rem_pts_idxs = list(set(range(len(points_tmp)))-set(hull.vertices)) 
+points_tmp   = [ points_tmp[idx] for idx in rem_pts_idxs ]
+coords       = [{"coods":pt} for pt in points]
+@
+
+
+There are two edge cases: when only two points and one point remain. These cases, cannot be handled by Qhull (It reports an error at the terminal,
+saying it needs at least three points must be provided as input). Hence the separate treatment in the following two chunks. 
+
+
+When two nodes, remain, we just join them by an edge. 
+
+<<Join two remaining points by an edge in \verb|onion_graph|>>=
+p, l = numpts_proc+1, numpts_proc+2
+onion_graph.add_node(p)
+onion_graph.add_node(l)
+onion_graph.nodes[p]['coods'] = points_tmp[0]
+onion_graph.nodes[l]['coods'] = points_tmp[1]
+onion_graph.add_edge(p,l)
+@
+
+No edges to add here, just the node. 
+
+<<Add the remaining points as a node in \verb|onion_graph|>>=
+l = numpts_proc+1 
+onion_graph.add_node(l)
+onion_graph.nodes[l]['cood'] = points_tmp[0]
 @
 
 
@@ -642,14 +696,20 @@ def circular_edge_zip(xs):
 
 \subsection{Traveling Saleman Tour (Cycle)}
 
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=6cm]{./miscimages/conc-example.png}
+  \caption{\label{fig:dt} Example of an \underline{optimal} TSP tour computed with Concorde  on 30 randomly generated points }
+\end{figure}
+
+
 We use two separate independent routines that each compute the TSP. One is the 
 \verb|tsp| module available at \link{https://pypi.org/project/tsp/}
 the other being, Concorde, through its Python interface (whose github page can be accessed at 
 \link{https://github.com/jvkersch/pyconcorde}. Anedoctally speaking the first solver works relatively 
 quickly on point-sets upto size 30. Because of its simplicity, we used it in the intial stages of writing
 this report. It is clearly not competitive with Concorde (which can solve a 300 size instances in a couple of seconds), 
-but it offers a useful backup routine, in the event that your machine faces problems installing the 
-PyConcorde library. 
+but it serves as a useful backup routine, in the event that a machine faces problems with the installation of PyConcorde.
 
 \subsubsection{* Using the \texttt{tsp} library}
 <<Functions for generating various graphs>>=
@@ -707,6 +767,10 @@ rounded to an integer using \verb|int()|. For a sufficiently large value \verb|s
 ordering of points reported by Concorde should be the same as  if the algorithm was run on the 
 unscaled points. 
 
+Note that Concorde crashes when you pass it only three points. Probably something to do with
+its internals. Of course for the case of one or two points, the package explcitly informs us that we must pass
+a longer list. 
+
 <<Functions for generating various graphs>>=
 def get_concorde_tsp_graph(points, scaling_factor=1000):
      from concorde.tsp import TSPSolver
@@ -736,6 +800,8 @@ def get_concorde_tsp_graph(points, scaling_factor=1000):
 
 
 
+\subsection{Graph Powers}
+
 
 
 \section{Rendering the graphs}
@@ -743,6 +809,8 @@ def get_concorde_tsp_graph(points, scaling_factor=1000):
 For this we just draw each edge of the geometric graph as a straight line segment 
 between the points( each of which happens to be a node of the graph). 
 
+For the special case of the TSP, we render it as a polygon patch, because the interior
+needs to be colored. 
 <<Functions for plotting and interacting>>=
 def render_graph(G,fig,ax):
      if G is None:
@@ -752,6 +820,8 @@ def render_graph(G,fig,ax):
           <<Iterate through graph edges and draw as segments>>
      else:
           <<Draw tour as polygon patch>>
+          
+     ax.axis('off') # turn off box surrounding plot
      fig.canvas.draw()
 @
 
@@ -760,7 +830,7 @@ edgecol = None
 if G.graph['type'] == 'mst':
      edgecol = 'g'
 elif G.graph['type'] == 'onion':
-     edgecol = 'k'
+     edgecol = 'gray'
 elif G.graph['type'] in ['conc','pytsp']:
      edgecol = 'r'
 elif G.graph['type'] == 'dt':
@@ -771,11 +841,22 @@ elif G.graph['type'][-3:] == 'nng':
 
 
 <<Iterate through graph edges and draw as segments>>=
+
+for elt in list(G.nodes(data=True)):
+     print(elt)
+
 for  (nidx1, nidx2) in G.edges:
     x1, y1 = G.nodes[nidx1]['coods']
     x2, y2 = G.nodes[nidx2]['coods']
     ax.plot([x1,x2],[y1,y2],'-', color=edgecol)
 @
+
+Because the \textit{interior} of the tour has to be colored, we render it as a polygon patch, and not
+just as a bunch of edges. Since I've stored the tour as a generic graph, 
+the \verb|.edges| data member of such a container, does not necessarily report 
+the edges in the order encountered along the TSP. 
+
+But this order can trivially be extracted using depth first search. 
 
 <<Draw tour as polygon patch>>=
 from networkx.algorithms.traversal.depth_first_search import dfs_edges
@@ -785,11 +866,12 @@ for (nidx1, nidx2) in dfs_edges(G):
        node_coods.append(G.nodes[nidx2]['coods'])
 
 node_coods = np.asarray(node_coods)
-
 from matplotlib.patches import Polygon
 from matplotlib.collections import PatchCollection
 
-polygon = Polygon(node_coods, closed=True, facecolor=(255/255, 255/255, 102/255,0.5), edgecolor='k', linewidth=1)
+polygon = Polygon(node_coods, closed=True, \
+                  facecolor=(255/255, 255/255, 102/255,0.5), \
+                  edgecolor='k', linewidth=1)
 ax.add_patch(polygon)
 @
 
