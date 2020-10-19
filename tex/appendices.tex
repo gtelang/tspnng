@@ -75,14 +75,25 @@ If you have any trouble --- or detect a bug! ---  we can hash things out on Slac
              Any 2-vertex connected, unweighted, graph is Hamiltonian. \footnote{This last theorem certainly applies to Delaunay triangulations of general point-sets.  By the square of a delaunay triangulation, I mean to say: throw away the edge weights and consider the square of the underlying unweighted graph. Once the new edges are added, consider them weighted with the natural euclidean distance between their endpoints}
      \end{description}
 
-      Based on the experiments results shown in this report, can we 
-      claim  $TSP \subseteq DT^{k}$ 
-      or $TSP \subseteq MST^{k}$ in $\RR^2$ for a \textit{small} fixed $k$? I'd wager $k=2,3$ 
-      or at worst some very slowly growing function of $n$ ($\log (n)$ maybe?) 
+     And so two questions suggest themselves here:
+
+     \begin{itemize}
+      \item Based on the experiments results shown in this report, can we 
+            claim  $TSP \subseteq DT^{k}$ or $TSP \subseteq MST^{k}$ in $\RR^2$ 
+           for a \textit{small} fixed $k$? I'd wager $k=2,3$ or at worst some 
+           very slowly growing function of $n$ ($\log (n)$ maybe?) 
+
+      \item For $MST^3$, how good is the shortest (or any!) hamilton cycle 
+            in approximating the TSP? Surely this is known? Will computing such a shortest cycle in this special graph 
+            be polytime? Needs more experiments to hone this question. 
+
+      \end{itemize}
 
 
-       
 
+\item (Wild H.W. Question?) Given a set of points in $\RR^2$, does *ANY* 
+      (weakly or strongly) simple polygon and *ANY* triangulation on those 
+      points have some edges in common?
 \end{itemize}
 
 \end{appendices}

@@ -173,6 +173,7 @@ def wrapperkeyPressHandler(fig,ax, run):
                      algo_str = input(Fore.YELLOW + "Enter code for the graph you need to span the points:\n" + Style.RESET_ALL  +\
                                           "(knng)   k-Nearest Neighbor Graph        \n"            +\
                                           "(mst)    Minimum Spanning Tree           \n"            +\
+                                          "(onion)  Onion                           \n"            +\
                                           "(dt)     Delaunay Triangulation         \n"             +\
                                           "(conc)   TSP computed by the Concorde TSP library \n" +
                                           "(pytsp)  TSP computed by the pure Python TSP library \n")
@@ -185,6 +186,9 @@ def wrapperkeyPressHandler(fig,ax, run):
 
                      elif algo_str == 'mst':
                           geometric_graph = get_mst_graph(run.points)
+
+                     elif algo_str == 'onion':
+                          geometric_graph = get_onion_graph(run.points)
 
                      elif algo_str == 'dt':
                            geometric_graph = get_delaunay_tri_graph(run.points)
@@ -251,6 +255,8 @@ def render_graph(G,fig,ax):
      edgecol = None
      if G.graph['type'] == 'mst':
           edgecol = 'g'
+     elif G.graph['type'] == 'onion':
+          edgecol = 'k'
      elif G.graph['type'] in ['conc','pytsp']:
           edgecol = 'r'
      elif G.graph['type'] == 'dt':
@@ -336,6 +342,60 @@ def get_mst_graph(points):
                                                               algorithm='kruskal')
      mst_graph.graph['type']   = 'mst'
      return mst_graph
+
+def get_onion_graph(points):
+
+     from scipy.spatial import ConvexHull
+
+     points      = np.asarray(points)     
+     points_tmp  = points.copy()
+     numpts      = len(points)
+
+     onion_graph = nx.Graph()
+     numpts_proc = -1
+
+     def circular_edge_zip(xs):
+
+         xs = list(xs) # in the event, that zip or ranges are passed as arguments
+         if len(xs) in [0,1] :
+              zipl = []
+         elif len(xs) == 2 :
+              zipl = [(xs[0],xs[1])]
+         else:
+              print(xs)
+              zipl = list(zip(xs,xs[1:]+xs[:1]))
+         return zipl
+
+     while len(points_tmp) >= 3:
+           hull            = ConvexHull(points_tmp)
+           pts_on_hull     = [points_tmp[i] for i in hull.vertices]
+           coords          = [{"coods":pt} for pt in pts_on_hull]
+
+           new_node_idxs   = range(numpts_proc+1, numpts_proc+len(hull.vertices)+1)
+           onion_graph.add_nodes_from(zip(new_node_idxs, coords))
+           onion_graph.add_edges_from(circular_edge_zip(new_node_idxs))
+
+           numpts_proc  = numpts_proc + len(hull.vertices)
+           rem_pts_idxs = list(set(range(len(points_tmp)))-set(hull.vertices)) 
+           points_tmp   = [ points_tmp[idx] for idx in rem_pts_idxs ]
+           coords       = [{"coods":pt} for pt in points]
+     
+           if len(points_tmp) == 2:
+               p, l = numpts_proc+1, numpts_proc+2
+               onion_graph.add_node(p)
+               onion_graph.add_node(l)
+               onion_graph.nodes[p]['cood'] = points_tmp[0]
+               onion_graph.nodes[l]['cood'] = points_tmp[1]
+               onion_graph.add_edge(p,l)
+
+           elif len(points_tmp) == 1:
+               l = numpts_proc+1 
+               onion_graph.add_node(l)
+               onion_graph.nodes[l]['cood'] = points_tmp[0]
+               break
+
+     onion_graph.graph['type'] = 'onion'
+     return onion_graph
 def get_py_tsp_graph(points):
      import tsp
      points = np.array(points)

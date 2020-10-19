@@ -25,22 +25,24 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {6.3}Minimum Spanning Tree}{20}{subsection.6.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {6.4}Traveling Saleman Tour (Cycle)}{20}{subsection.6.4}
+\contentsline {subsection}{\numberline {6.4}The Onion}{21}{subsection.6.4}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {6.4.1}* Using the \texttt {tsp} library}{20}{subsubsection.6.4.1}
+\contentsline {subsection}{\numberline {6.5}Traveling Saleman Tour (Cycle)}{23}{subsection.6.5}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {6.4.2}* Using the Pyconcorde library}{22}{subsubsection.6.4.2}
+\contentsline {subsubsection}{\numberline {6.5.1}* Using the \texttt {tsp} library}{23}{subsubsection.6.5.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {7}Rendering the graphs}{23}{section.7}
+\contentsline {subsubsection}{\numberline {6.5.2}* Using the Pyconcorde library}{24}{subsubsection.6.5.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {8}Finding common edges between two graphs}{24}{section.8}
+\contentsline {section}{\numberline {7}Rendering the graphs}{25}{section.7}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {9}Hypothesis testing!}{25}{section.9}
+\contentsline {section}{\numberline {8}Finding common edges between two graphs}{26}{section.8}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{Appendices}{27}{section*.3}
+\contentsline {section}{\numberline {9}Hypothesis testing!}{27}{section.9}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{Appendix \numberline {I\tmspace +\thickmuskip {.2777em}\tmspace +\thickmuskip {.2777em}}Installing and running the Code}{27}{Appendix.a.A}
+\contentsline {section}{Appendices}{29}{section*.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {I\tmspace +\thickmuskip {.2777em}\tmspace +\thickmuskip {.2777em}.1}Interactive Mode}{27}{subsection.a.A.1}
+\contentsline {section}{Appendix \numberline {I\tmspace +\thickmuskip {.2777em}\tmspace +\thickmuskip {.2777em}}Installing and running the Code}{29}{Appendix.a.A}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{Appendix \numberline {II\tmspace +\thickmuskip {.2777em}\tmspace +\thickmuskip {.2777em}}Laundry-list of Questions/Variants/Conjectures}{28}{Appendix.a.B}
+\contentsline {subsection}{\numberline {I\tmspace +\thickmuskip {.2777em}\tmspace +\thickmuskip {.2777em}.1}Interactive Mode}{29}{subsection.a.A.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{Appendix \numberline {II\tmspace +\thickmuskip {.2777em}\tmspace +\thickmuskip {.2777em}}Laundry-list of Questions/Variants/Conjectures}{30}{Appendix.a.B}
