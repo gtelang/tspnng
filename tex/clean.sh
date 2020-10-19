@@ -1,0 +1,11 @@
+rm *.aux
+rm *.toc
+rm *.run.xml
+rm *.idx
+rm *.log
+rm *.pre
+rm *.blg
+rm *.bbl
+rm *-blx.bib
+rm *~
+rm *.out

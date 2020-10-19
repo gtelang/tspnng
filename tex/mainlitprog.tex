@@ -475,19 +475,24 @@ numbering across all graphs: namely, the order in which the points occur in the 
 
 \subsection{$k\text{-}$NNG}
 
+\definecolor{bisque}{rgb}{1.0, 0.89, 0.77}
+\renewcommand\fbox{\fcolorbox{bisque}{white}}
+\setlength\fboxrule{0.1pt}
+
 \begin{figure}[ht]
   \centering
-  \includegraphics[width=5cm]{./miscimages/1nng-example.png}
-  \includegraphics[width=5cm]{./miscimages/2nng-example.png}
-  \includegraphics[width=5cm]{./miscimages/3nng-example.png}
+  \fbox{\includegraphics[width=5cm]{./miscimages/1nng-example.png}} \hfill
+  \fbox{\includegraphics[width=5cm]{./miscimages/2nng-example.png}} \hfill
+  \fbox{\includegraphics[width=5cm]{./miscimages/3nng-example.png}}
   \caption{\label{fig:knng} Generating the $k$-NNG graphs with Scikit-Learn for various value of $k$ on the same set of 30 randomly generated points. Note that we are considering these graphs as undirected.}
 \end{figure}
 
+
 We use the nearest neighbor routine from the Scikit-learn \cite{pedregosa2011scikit} library. The documentation
 for the various nearest neighor methods implemented therein can be found at 
-\url{https://bit.ly/3nTQkqV}. Note that $k\text{-}$ nearest-neighbors of a point
-includes the point itself. Thus we use $(k+1)$ in the argument to the \verb|NearestNeighbors| 
-function below. 
+\url{https://bit.ly/3nTQkqV}. Note that for the nearest-neighbor function of sklearn the $k\text{-}$ nearest-neighbors of a point
+includes the point itself. Thus we use $(k+1)$ in the argument to the \verb|NearestNeighbors| function below, and take the last $k$
+elements in the list returned --- the neighbors of a point are reported by that function in increasing order of distance from that point. 
 
 \nwenddocs{}\nwbegincode{35}\sublabel{NWaGG5Z-2XNY09-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-1}}}\moddef{Functions for generating various graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{\relax}{NWaGG5Z-2XNY09-2}\nwenddeflinemarkup
 def get_knng_graph(points,k):
@@ -560,7 +565,7 @@ def get_delaunay_tri_graph(points):
 \begin{figure}[ht]
   \centering
   \includegraphics[width=6cm]{./miscimages/mst-example.png}
-  \caption{\label{fig:dt} Example of a Minimum Spanning Tree computed by NetworkX on 30 randomly generated points}
+  \caption{\label{fig:mst} Example of a Minimum Spanning Tree computed by NetworkX on 30 randomly generated points}
 \end{figure}
 
 
@@ -588,7 +593,7 @@ def get_mst_graph(points):
 \begin{figure}[H]
   \centering
   \includegraphics[width=6cm]{./miscimages/onion-example.png}
-  \caption{\label{fig:dt} Example of the Onion graph computed with computed with QHull (through SciPy) on 30 randomly generated points }
+  \caption{\label{fig:onion} Example of the Onion graph computed with computed with QHull (through SciPy) on 30 randomly generated points }
 \end{figure}
 
 
@@ -596,7 +601,7 @@ def get_mst_graph(points):
 Here we compute successive convex-hull of the point-set: compute the convex hull of the points, delete the hull points, 
 compute the convex hull of this smaller point-set, repeating this process till we run out of points. 
 
-The resulting sequence of convex layers form a graph which we call the onion. 
+The resulting sequence of convex layers form a graph called the onion. 
 
 \nwenddocs{}\nwbegincode{41}\sublabel{NWaGG5Z-2XNY09-4}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-4}}}\moddef{Functions for generating various graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-2XNY09-3}{NWaGG5Z-2XNY09-5}\nwenddeflinemarkup
 
@@ -699,7 +704,7 @@ onion_graph.nodes[l]['cood'] = points_tmp[0]
 \begin{figure}[ht]
   \centering
   \includegraphics[width=6cm]{./miscimages/conc-example.png}
-  \caption{\label{fig:dt} Example of an \underline{optimal} TSP tour computed with Concorde  on 30 randomly generated points }
+  \caption{\label{fig:tsp} Example of an \underline{optimal} TSP tour computed with Concorde  on 30 randomly generated points }
 \end{figure}
 
 
