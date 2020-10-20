@@ -60,7 +60,7 @@
 \usepackage{needspace}  
 \usepackage{mathtools}
 \usepackage{subfig}
-\usepackage{etoolbox}
+\usepackage{etoolbox} 
 \usepackage{color}
 \usepackage{pifont}
 % For italicizing quotes: https://tex.stackexchange.com/a/288556/17858, 
@@ -113,6 +113,7 @@
 \definecolor{linkcolor}{rgb}{0.1, 0.60, 0.20}
 \usepackage{todonotes}
 \usepackage{booktabs}
+\usepackage{longtable}
 \usepackage[%
       raiselinks,%
       pdfhighlight=/O,%
@@ -203,3 +204,11 @@
 
 %mainly for emojis
 \usepackage{tikzsymbols}
+
+% for colored frame boxes
+\newcommand{\cfbox}[2]{%
+    \colorlet{currentcolor}{.}%
+    {\color{#1}%
+    \fbox{\color{currentcolor}#2}}%
+}
+

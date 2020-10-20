@@ -7,5 +7,4 @@ rm *.pre
 rm *.blg
 rm *.bbl
 rm *-blx.bib
-rm *~
 rm *.out

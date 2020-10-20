@@ -1,6 +1,122 @@
+\newpage
 \begin{appendices}
-\renewcommand{\thesection}{\Roman{section}\;\;}
-%%% Just continue as you would usually have while writing the the main part of the document. 
+%\renewcommand{\thesection}{\Roman{section}\;\;}
+\renewcommand{\thesection}{\Alph{section}}
+
+
+\section{Symmetric Euclidean Instances in TSPLIB}
+
+This is the the \textbf{\underline{subset}} of files within TSPLIB corresponding to symmetric Euclidean 2D instances. 
+The number inside each instance name denotes the number of points e.g. \verb|pcb1173.tsp| contains 1173 points in $\RR^2$. 
+As has already been mentioned for the sake of convenience, I've converted the coordinates in these files into the YAML 
+format for easy parsing. 
+
+These YAML files have been stored in the folder
+
+\begin{displayquote}
+\color{blue} \Large
+\begin{center}
+\texttt{./sym-tsp-tsplib/instances/euclidean\_instances\_yaml/}
+\end{center}
+\end{displayquote}
+
+The original files (i.e the ones with \verb|.tsp| extension) can be found in 
+
+\begin{displayquote}
+\begin{center}
+\texttt{./sym-tsp-tsplib/instances/tsplib\_symmetric\_tsp\_instances}
+\end{center}
+\end{displayquote}
+
+\renewcommand\fbox{\fcolorbox{black}{white}}
+\setlength\fboxrule{0.1pt}
+\fbox{
+  \begin{multicols}{4}
+    \begin{itemize}
+\item \texttt{a280.tsp}
+\item \texttt{berlin52.tsp}
+\item \texttt{bier127.tsp}
+\item \texttt{brd14051.tsp}
+\item \texttt{ch130.tsp}
+\item \texttt{ch150.tsp}
+\item \texttt{d1291.tsp}
+\item \texttt{d15112.tsp}
+\item \texttt{d1655.tsp}
+\item \texttt{d18512.tsp}
+\item \texttt{d198.tsp}
+\item \texttt{d2103.tsp}
+\item \texttt{d493.tsp}
+\item \texttt{d657.tsp}
+\item \texttt{eil101.tsp}
+\item \texttt{eil51.tsp}
+\item \texttt{eil76.tsp}
+\item \texttt{fl1400.tsp}
+\item \texttt{fl1577.tsp}
+\item \texttt{fl3795.tsp}
+\item \texttt{fl417.tsp}
+\item \texttt{fnl4461.tsp}
+\item \texttt{gil262.tsp}
+\item \texttt{kroA100.tsp}
+\item \texttt{kroA150.tsp}
+\item \texttt{kroA200.tsp}
+\item \texttt{kroB100.tsp}
+\item \texttt{kroB150.tsp}
+\item \texttt{kroB200.tsp}
+\item \texttt{kroC100.tsp}
+\item \texttt{kroD100.tsp}
+\item \texttt{kroE100.tsp}
+\item \texttt{lin105.tsp}
+\item \texttt{lin318.tsp}
+\item \texttt{linhp318.tsp}
+\item \texttt{nrw1379.tsp}
+\item \texttt{p654.tsp}
+\item \texttt{pcb1173.tsp}
+\item \texttt{pcb3038.tsp}
+\item \texttt{pcb442.tsp}
+\item \texttt{pr1002.tsp}
+\item \texttt{pr107.tsp}
+\item \texttt{pr124.tsp}
+\item \texttt{pr136.tsp}
+\item \texttt{pr144.tsp}
+\item \texttt{pr152.tsp}
+\item \texttt{pr226.tsp}
+\item \texttt{pr2392.tsp}
+\item \texttt{pr264.tsp}
+\item \texttt{pr299.tsp}
+\item \texttt{pr439.tsp}
+\item \texttt{pr76.tsp}
+\item \texttt{rat195.tsp}
+\item \texttt{rat575.tsp}
+\item \texttt{rat783.tsp}
+\item \texttt{rat99.tsp}
+\item \texttt{rd100.tsp}
+\item \texttt{rd400.tsp}
+\item \texttt{rl11849.tsp}
+\item \texttt{rl1304.tsp}
+\item \texttt{rl1323.tsp}
+\item \texttt{rl1889.tsp}
+\item \texttt{rl5915.tsp}
+\item \texttt{rl5934.tsp}
+\item \texttt{st70.tsp}
+\item \texttt{ts225.tsp}
+\item \texttt{tsp225.tsp}
+\item \texttt{u1060.tsp}
+\item \texttt{u1432.tsp}
+\item \texttt{u159.tsp}
+\item \texttt{u1817.tsp}
+\item \texttt{u2152.tsp}
+\item \texttt{u2319.tsp}
+\item \texttt{u574.tsp}
+\item \texttt{u724.tsp}
+\item \texttt{usa13509.tsp}
+\item \texttt{vm1084.tsp}
+\item \texttt{vm1748.tsp}
+    \end{itemize}
+    \end{multicols}
+}
+
+\input{data.tex} % Separate data file for storing and loading tables.
+
 \section{Installing and running the Code}
 \label{sec:install}
 
@@ -34,6 +150,8 @@ any one of:
 \item \verb|python src/main.py --file <points.yaml>|
 \end{itemize}
 
+
+
 \subsection{Interactive Mode}
 
 In this mode, one can mouse-in points onto a canvas (with double-clicks), run various network algorithms 
@@ -58,6 +176,8 @@ Please ignore it! It doesn't affect any of the results. Something in the
 the internals of Matplotlib that uses Qt triggers that message. \shrug. 
 
 If you have any trouble --- or detect a bug! ---  we can hash things out on Slack, Github or email.
+
+
 
 \section{Laundry-list of Questions/Variants/Conjectures}
  \label{sec:questions}
@@ -130,10 +250,7 @@ If you have any trouble --- or detect a bug! ---  we can hash things out on Slac
  %\item[Approximation by Sharing] If a simple polygon $P$ on $n$ points shares $\theta n$ edges with the Delaunay 
 %      Triangulation, for some constant (i.e. independent of $n$) $\theta$ close to 1 
 %      are there bounds on the approximation factor (as a function of $\theta$) of how good $P$ is compared to TSP? 
-
-
 \end{description}
-
 
 
 
