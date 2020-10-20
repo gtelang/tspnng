@@ -281,34 +281,31 @@ def render_graph(G,fig,ax):
                  node_coods.append(G.nodes[nidx2]['coods'])
 
           node_coods = np.asarray(node_coods)
-
           from matplotlib.patches import Polygon
           from matplotlib.collections import PatchCollection
 
-          polygon = Polygon(node_coods, closed=True, facecolor=(255/255, 255/255, 102/255,0.5), edgecolor='k', linewidth=1)
+          polygon = Polygon(node_coods, closed=True, \
+                            facecolor=(255/255, 255/255, 102/255,0.5), \
+                            edgecolor='k', linewidth=1)
           ax.add_patch(polygon)
           
-     ax.axis('off')
+     ax.axis('off') # turn off box surrounding plot
      fig.canvas.draw()
-
 def get_knng_graph(points,k):
      from sklearn.neighbors import NearestNeighbors
-
      points     = np.array(points)
      coords     = [{"coods":pt} for pt in points]
      knng_graph = nx.Graph()
      knng_graph.add_nodes_from(zip(range(len(points)), coords))
-
      nbrs = NearestNeighbors(n_neighbors=(k+1), algorithm='ball_tree').fit(points)
      distances, indices = nbrs.kneighbors(points)
-
      edge_list = []
+
      for nbidxs in indices:
           nfix = nbidxs[0]
           edge_list.extend([(nfix,nvar) for nvar in nbidxs[1:]])
 
      knng_graph.add_edges_from(  edge_list  )
-
      knng_graph.graph['type']   = str(k)+'nng'
      knng_graph.graph['weight'] =  None # TODO, also edge weights for each edge!!!
      return knng_graph
@@ -359,7 +356,7 @@ def get_onion_graph(points):
      numpts_proc = -1
 
      def circular_edge_zip(xs):
-         xs = list(xs) # in the event, that zip or ranges are passed as arguments
+         xs = list(xs) # in the event that xs is of the zip or range type 
          if len(xs) in [0,1] :
               zipl = []
          elif len(xs) == 2 :
