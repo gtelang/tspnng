@@ -11,3 +11,5 @@ Oname.res
 name.res
 *~
 pyconcorde/
+src/buttons.py
+src/textbox.py
