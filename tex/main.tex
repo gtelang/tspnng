@@ -26,7 +26,20 @@
   {\colorsection}
 \titlespacing*{\section}{0pt}{\baselineskip}{\baselineskip}
 \newcommand{\colorsection}[1]{%
-  \colorbox{green!10}{\parbox{\dimexpr\textwidth-2\fboxsep}{\thesection\;\; #1}}}
+  \colorbox{green!20}{\parbox{\dimexpr\textwidth-2\fboxsep}{\thesection\;\; #1}}}
+%-----------------------------
+\definecolor{aureolin}{rgb}{0.99, 0.93, 0.0}
+\definecolor{buff}{rgb}{0.94, 0.86, 0.51}
+\titleformat{name=\subsection}[block]
+  {\scshape\rmfamily\Large}
+  {}
+  {0pt}
+  {\colorsubsection}
+\titlespacing*{\subsection}{0pt}{\baselineskip}{\baselineskip}
+\newcommand{\colorsubsection}[1]{%
+  \colorbox{aureolin!30}{\parbox{\dimexpr\textwidth-2\fboxsep}{\thesubsection\;\; #1}}}
+
+
 %-------- Indices
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
