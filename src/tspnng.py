@@ -266,8 +266,8 @@ def render_graph(G,fig,ax):
           edgecol = 'm'
      if G.graph['type'] not in ['conc', 'pytsp']:
           
-          for elt in list(G.nodes(data=True)):
-               print(elt)
+          #for elt in list(G.nodes(data=True)):
+          #     print(elt)
 
           for  (nidx1, nidx2) in G.edges:
               x1, y1 = G.nodes[nidx1]['coods']

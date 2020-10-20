@@ -847,8 +847,8 @@ elif G.graph['type'][-3:] == 'nng':
 
 <<Iterate through graph edges and draw as segments>>=
 
-for elt in list(G.nodes(data=True)):
-     print(elt)
+#for elt in list(G.nodes(data=True)):
+#     print(elt)
 
 for  (nidx1, nidx2) in G.edges:
     x1, y1 = G.nodes[nidx1]['coods']

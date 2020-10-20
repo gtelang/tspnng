@@ -117,8 +117,8 @@ The original files (i.e the ones with \verb|.tsp| extension) can be found in
 }
 \normalsize
 
-\newpage
-\input{data.tex} % Separate data file for storing and loading tables.
+%\newpage
+%\input{data.tex} % Separate data file for storing and loading tables.
 
 \newpage
 \section{Installing and running the Code}
@@ -265,7 +265,7 @@ If you have any trouble --- or detect a bug! ---  we can hash things out on Slac
 \item[\color{red} TSP $\longsquiggly$ DELAUNAY] 
 
 \begin{itemize}
-   \item  (Worst idea in history??) Suppose by some magic black box (Concorde! \Winkey) one has obtained the TSP tour through $n$ points.  
+   \item  (Worst idea ever??) Suppose by some magic black box (Concorde! \Winkey) one has obtained the TSP tour through $n$ points.  
           Can we then compute the Delaunay Triangulation (or MST. Recall $MST \subseteq DT$  ) of the point-set 
           in $O(n)$ time? It certainly seems so going by the high number of edges in the TSP common to the Delaunay 
           and MST as suggested by the tests in this writeup. Surely the $TSP \rarr MST$ question in $O(n)$ time has been studied?

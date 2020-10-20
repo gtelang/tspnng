@@ -12,12 +12,23 @@
      a generalization of the famously $NP$-hard Travelling Salesman Problem \footnote{In this report by ``$TSP$'', we mean $TSP$-cycle and not $TSP$-path, although the question is still interesting for the path case. One reason for focusing only on the path case, is that the Concorde library (to the author's knowledge) computes only optimal cycle solutions and *not* optimal path solutions!}. 
      One line of attack was to get at some kind of structure theorem by identifying  a candidate set of good edges from which a near-optimal solution to the 
      horsefly problem could be constructed. But first off, would this approach work for the special case of the  TSP?  Answering
-     \textit{``$TSP \cap NNG \stackrel{?}{=} \varnothing$''} seemed like a good place to start.  However, all attempts  
-     at constructing examples where the intersection is \textit{empty} failed . And so did a
+     \textit{``$TSP \cap NNG \stackrel{?}{=} \varnothing$''} seemed like a good place to start.  
+
+     It is easy to construct point-sets where the segment joining the closest pair of points need not lie along the TSP tour. See \autoref{fig:closestpair}
+
+     \begin{figure}[ht]
+       \centering
+       \includegraphics[width=6cm]{miscimages/closest-pair-example.eps}
+       \caption{\label{fig:closestpair} Example where the segment joining the closest pair of points does not lie along the TSP tour}
+     \end{figure}
+
+
+
+     However, all attempts at constructing examples where the intersection with the 1-NNG is \textit{empty} failed. \footnote{Notice that \autoref{fig:closestpair} is not a counterexample!}And so did a
      literature search! The closest matching reference we found was \cite{hougardy2014edge} which \textit{eliminates} edges 
      that cannot be part of a Euclidean TSP tour on a given instance of points, based on checking a few simple, local geometric inequalities. \footnote{The author believes this will be a userful reference for future work}
      There was also a very much related discussion thread on David Eppstein's \href{https://www.ics.uci.edu/~eppstein/junkyard/dt-not-tsp.html}{webpage}. 
-     A small counter-example is given near the bottom of that link. 
+     A small counter-example to Michael Shamos' conjecutre from his unpublished notes --- that the TSP is a \textit{subgraph} of the Delaunay --- is given near the bottom of that link. 
      
      But the thread says nothing about whether the DT \textit{must} intersect the TSP at least a certain fraction of times, or indeed even once. \footnote{Perhaps, we can follow up with Dillencourt or Eppstein if they have notes on this?}
 
@@ -26,9 +37,8 @@
      is taken in \href{https://www.researchgate.net/publication/215753374_An_On_log_n_Heuristic_for_the_Euclidean_Traveling_Salesman_Problem}{this technical report} 
 
      Knowledge of some family of easily computed edges that are necessarily part of a TSP solution could potentially be used to speed up some 
-     of the existing solutions to TSP using combinatorial optimization methods; see, e.g., Concorde \cite{applegate2009certification} and other papers of Bill Cook.
-
-     \footnote{The landmark PTAS'es for the TSP, such as those of Mitchell \cite{mitchell1999guillotine} and Arora\cite{arora1996polynomial},  are too complicated to be put into code (yes, even Python!). On the other hand, the Concorde library \cite{applegate2009certification} or Helsgaun's methods\cite{helsgaun2000effective}  use a whole kitchen-sink of practical techniques such as $k$-local swaps, branch-and-bound, branch-and-cut to generate  near-optimal (if not optimal) tours very fast. But it would be interesting to investigate the behavior of the various graphs with respect to the techniques used in the PTAS'es of Mitchell and Arora. Maybe we can augment them with the probabilistic method (the pigeon-hole principle on steroids!) or something from Ramsey Theory to prove the existence of an intersection??}
+     of the existing solutions to TSP using combinatorial optimization methods; see, e.g., Concorde \cite{applegate2009certification} and other papers of Bill Cook
+     \footnote{The landmark PTAS'es for the TSP, such as those of Mitchell \cite{mitchell1999guillotine} and Arora\cite{arora1996polynomial},  are too complicated to be put into code (yes, even Python!). On the other hand, the Concorde library \cite{applegate2009certification} or Helsgaun's methods\cite{helsgaun2000effective}  use a whole kitchen-sink of practical techniques such as $k$-local swaps, branch-and-bound, branch-and-cut to generate  near-optimal (if not optimal) tours very fast. But it would be interesting to investigate the behavior of the various graphs with respect to the techniques used in the PTAS'es of Mitchell and Arora. Maybe we can augment them with the probabilistic method (the pigeon-hole principle on steroids!) or something from Ramsey Theory to prove the existence of an intersection??}.
 
      To spur our intuition,  we investigate the conjecture experimentally in this short report 
      \footnote{This report has been written as a literate program \cite{knuth1984literate,ramsey2008noweb} to weave together the code, documentations, explanations and generated data into the same document. Brickbats and bouqets on the author's preliminary stab at Literate Programming are most welcome.}
