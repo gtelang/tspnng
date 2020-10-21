@@ -17,7 +17,9 @@
 \setlength{\droptitle}{-60pt}
 \usepackage{marginnote}
 % to take away the error unknown float option `H'
-\usepackage{float}             
+\usepackage{float}
+\restylefloat{table} % to force table placement using H. See https://stackoverflow.com/a/1674386
+            
 % Making caption font smaller on figures and tables.  
 % https://stackoverflow.com/a/27243065/505306
 \usepackage{caption} 
@@ -211,6 +213,17 @@
     {\color{#1}%
     \fbox{\color{currentcolor}#2}}%
 }
+
+
+% For trademark and copyright symbols
+\usepackage{mathdesign}
+
+% for line breaks within a table cell
+\usepackage{pbox}
+
+
+\usepackage{colortbl}
+
 
 \newcommand{\ala}{\`a la }
 \newcommand{\Ala}{\`A la }

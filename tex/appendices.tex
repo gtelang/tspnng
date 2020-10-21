@@ -129,7 +129,7 @@ open a terminal and run the command, \texttt{git clone https://github.com/gtelan
 
 The only other prerequisites for running the code, are the 
 \href{https://www.anaconda.com/products/individual}{Anaconda} distribution of Python 3 
-and a couple of other packages.  To check if the Python executable is in your path (and that it is Python 3.7\texttt{+}) 
+and a couple of other packages.  To check if the Python executable is in your path \footnote{and that it is Python 3.7 or above}
 run the command \verb|python --version|. If it succeeds, you have installed Anaconda! 
 
 The additional packages required can be installed by: 
@@ -149,10 +149,29 @@ To run the program, \texttt{cd} into the code's top-level folder, then type \foo
 any one of: 
 
 \begin{itemize}
-\item \verb|python src/main.py --interactive|
-%\item \verb|python src/main.py --batchtest|
-\item \verb|python src/main.py --file <points.yaml> ## TODO!
+\item \texttt{python src/main.py --interactive}
+%\item \texttt{python src/main.py --batchtest}
+\item \texttt{python src/main.py --file <points.yaml>} ## TODO!
 \end{itemize}
+
+\newpage
+
+\begin{mdframed}[backgroundcolor=black!10,rightline=false,leftline=false]
+\textbf{UPDATE}: (\textit{Thanks Logan!!}) Some of you \textit{might} face problems running the code if you work with the newest Anaconda distribution
+of Python 3.8.6, rather than Python 3.7.3 which I use. 
+
+If you face this issue, please look at the screenshot \autoref{fig:loganinstall} of Logan's email to fix the problem. 
+I leave my installation instructions above unchanged, in the event it works for some of you, so that you don't have to bother
+mucking about with code-internals. 
+
+In any event, Logan's suggested fix, is simple enough. 
+   
+\begin{figure}[H]
+  \centering
+  \fbox{\includegraphics[width=16cm]{./miscimages/logan.png}}
+  \caption{\label{fig:loganinstall} Screenshot of Logan's email with an installation fix}
+\end{figure}
+\end{mdframed}
 
 
 
@@ -197,7 +216,7 @@ P.S: You may see a warning --- as I do --- in the terminal during key-presses:
 
 \begin{quote}
 \color{blue}
-\verb|CoreApplication::exec: The event loop is already running|
+\texttt{CoreApplication::exec: The event loop is already running}
 \end{quote}
 
 {\color{red} Please ignore it!} It doesn't affect any of the results. Something in the
@@ -206,6 +225,7 @@ If you have any trouble --- or detect a bug! ---  we can hash things out on Slac
 }
 }
 \end{mdframed}
+
 \newpage
 \section{Laundry-list of Questions/Variants/Conjectures}
  \label{sec:questions}
@@ -328,6 +348,56 @@ to the Lin-Kernighan heuristic for the traveling salesman problem is $PLS$-compl
 %      Triangulation, for some constant (i.e. independent of $n$) $\theta$ close to 1 
 %      are there bounds on the approximation factor (as a function of $\theta$) of how good $P$ is compared to TSP? 
 \end{description}
+
+
+\newpage
+\section{Machine Details}
+
+The code is being developed on a laptop, with the following specs:
+
+\definecolor{graylt}{rgb}{0.75, 0.75, 0.75}
+\footnotesize
+\texttt{
+\begin{center}
+ \begin{tabular}{r!{\color{graylt}\vrule}l}
+   Operating System &   Linux Mint 18.3 Cinnamon 64-bit \\
+   Cinnamon Version &   3.6.6                           \\
+   Linux Kernel     &   1.10.0-38-generic               \\
+   Processor        &   Intel{\tiny\textcopyright} Core$^{\text{TM}}$ i5-4300U CPU @ 1.90 GHz x 2 \\
+   Memory           &   7.5 GiB                         \\
+   Hard Drives      &   109.0 GB                        \\
+   Graphics Card    &   Intel Corporation Haswell-ULT Integrated Graphics Controller
+  \end{tabular}
+\end{center}}
+\normalsize     
+ 
+The Anaconda distribution on the machine has the following configuration: (output of `\texttt{conda info}')
+
+
+\footnotesize
+\texttt{
+\begin{center}
+ \begin{tabular}{r!{\color{graylt}\vrule}l}
+      \arrayrulecolor{graylt}
+          active environment & None \\  
+       user config file & /home/xxxx/.condarc \\ 
+ populated config files &  \\ 
+          conda version & 4.7.10 \\ 
+    conda-build version & 3.18.8 \\ 
+         python version & 3.7.3.final.0 \\ 
+       virtual packages &  \\ 
+       base environment & /home/xxxx/anaconda3  (read only) \\ \hline
+           channel URLs & \pbox{20cm}{\url{https://repo.anaconda.com/pkgs/main/linux-64} \\ \url{https://repo.anaconda.com/pkgs/main/noarch} \\  \url{https://repo.anaconda.com/pkgs/r/linux-64} \\ \url{https://repo.anaconda.com/pkgs/r/noarch} } \\  \hline
+          package cache & \pbox{20cm}{\texttt{/home/xxxx/anaconda3/pkgs} \\ \texttt{/home/xxxx/.conda/pkgs} } \\ \hline
+       envs directories & \pbox{20cm}{\texttt{/home/xxxx/.conda/envs} \\ \texttt{/home/xxxx/anaconda3/envs}} \\ \hline
+               platform & linux-64 \\  \hline
+             user-agent & \pbox{20cm}{conda/4.7.10 requests/2.22.0 CPython/3.7.3 \\ Linux/4.10.0-38-generic linuxmint/18.3 glibc/2.23} \\ \hline
+                UID:GID & 1000:1000 \\ 
+             netrc file & None \\ 
+           offline mode & False 
+  \end{tabular}
+\end{center}}
+\normalsize 
 
 
 
