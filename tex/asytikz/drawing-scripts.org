@@ -1,0 +1,83 @@
+#+TITLE: Drawing scripts
+* Intro
+This file contains scripts for making various mathematical drawings using
+Asymptote, Graphviz, Povray, TikZ etc; especially those figures that 
+are too tedious to draw manually with Inkscape. 
+
+This file is best viewed and edited with Emacs, since it has support for tangling and 
+syntax highlighting inside code-blocks. To tangle *all* code blocks in this file use 
+the keystrokes ~C-c C-v t~ (https://kb.iu.edu/d/aghb)
+
+** Asymptote
+To run Asymptote on the ~.asy~ scripts use the command ~asy -V -f pdf test.asy~
+This generates the image into a file ~test.pdf~. The ~-V~ option opens the generated
+pdf image in your system pdf viewer; omit this flag if you want to, /especially/ 
+when batch-processing a bunch of Asymptote scripts. 
+
+#+BEGIN_SRC asy :tangle test.asy
+label("Hello World");
+#+END_SRC
+
+** TikZ
+I don't know much TikZ, but you can write the code blocks exactly 
+like the asymptote code blocks and tangle the TikZ code into a TeX file.  
+(Change ~asy~ in the code above to ~tex~). Then in your Latex file 
+where you want to include the image just do the usual ~\input~ TikZ thing. 
+
+** Graphviz
+** Povray
+
+* Drawing Code
+* *scratch*
+** Histogram example from Asymptote webpage
+
+#+BEGIN_SRC asy :tangle test.asy
+import graph;
+import stats;
+
+size(400,200,IgnoreAspect);
+
+int n=10000;
+real[] a=new real[n];
+for(int i=0; i < n; ++i) a[i]=Gaussrand();
+
+draw(graph(Gaussian,min(a),max(a)),blue);
+
+// Optionally calculate "optimal" number of bins a la Shimazaki and Shinomoto.
+int N=bins(a);
+
+histogram(a,min(a),max(a),N,normalize=true,low=0,lightred,black,bars=false);
+
+xaxis("$x$",BottomTop,LeftTicks);
+yaxis("$dP/dx$",LeftRight,RightTicks(trailingzero));
+#+END_SRC
+
+** Cubic Spline example from Asymptote webpage
+#+BEGIN_SRC asy :tangle spline.asy
+import graph;
+import interpolate;
+
+size(15cm,15cm,IgnoreAspect);
+
+real a=1997, b=2002;
+int n=5;
+real[] xpt=a+sequence(n+1)*(b-a)/n;
+real[] ypt={31,36,26,22,21,24};
+horner h=diffdiv(xpt,ypt);
+fhorner L=fhorner(h);
+
+scale(false,true);
+
+pen p=linewidth(1);
+
+draw(graph(L,a,b),dashed+black+p,"Lagrange interpolation");
+draw(graph(xpt,ypt,Hermite(natural)),red+p,"natural spline");
+draw(graph(xpt,ypt,Hermite(monotonic)),blue+p,"monotone spline");
+xaxis("$x$",BottomTop,LeftTicks(Step=1,step=0.25));
+yaxis("$y$",LeftRight,RightTicks(Step=5));
+
+dot(pairs(xpt,ypt),4bp+gray(0.3));
+
+attach(legend(),point(10S),30S);
+
+#+END_SRC
