@@ -1,5 +1,3 @@
-
-
 \section{Overall structure of \texttt{tspnng.py}}
 
 The \texttt{tspnng.py} file at a high level divided into the following chunks, 
@@ -921,7 +919,49 @@ def graphs_intersect_p(g1,g2):
      return flag
 @
 
+\section{Checking Hamiltonicity}
+
+During experiments, we will often require to check if a graph is Hamiltonian. Of course
+this task is $NP$-complete, but it is easy to implement a naive backtracking routine 
+that should be competitive enough for dense graphs with upto 50 nodes , 
+or larger but sparser sparse graphs. Such a routine will be particularly helpful
+for honing hypotheses and generating interesting examples. 
+
+Because the author is lazy, he will unabashedly copy and paste code for such a routine from  
+\url{https://gist.github.com/mikkelam/ab7966e7ab1c441f947b}
+
+If needed, it could be sped up by other algorithmic techniques. 
+But the time for such micro-optimization, like that of casting 
+Excalibur back into the Lake, is far off. 
+
+
+<<Generic utility classes and functions>>=
+def hamilton(G):
+    F = [(G,[list(G.nodes())[0]])]
+    n = G.number_of_nodes()
+    while F:
+        graph,path = F.pop()
+        confs = []
+        neighbors = (node for node in graph.neighbors(path[-1]) 
+                     if node != path[-1]) #exclude self loops
+        for neighbor in neighbors:
+            conf_p = path[:]
+            conf_p.append(neighbor)
+            conf_g = nx.Graph(graph)
+            conf_g.remove_node(path[-1])
+            confs.append((conf_g,conf_p))
+        for g,p in confs:
+            if len(p)==n:
+                return p
+            else:
+                F.append((g,p))
+    return None
+@
+
+
+
 \section{Hypothesis testing!}
+
 
 <<Testing hypotheses>>=
 @

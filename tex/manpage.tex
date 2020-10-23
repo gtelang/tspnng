@@ -10,7 +10,7 @@
                    
   \item[DESCRIPTION] The question posed in the title came about while working on the Horsefly problem, 
      a generalization of the famously $NP$-hard Travelling Salesman Problem \footnote{In this report by ``$TSP$'', we mean $TSP$-cycle and not $TSP$-path, although the question is still interesting for the path case. One reason for focusing only on the path case, is that the Concorde library (to the author's knowledge) computes only optimal cycle solutions and *not* optimal path solutions!}. 
-     One line of attack was to get at some kind of structure theorem by identifying  a candidate set of good edges from which a near-optimal solution to the 
+     One line of attack tried was to get at some kind of structure theorem by ``guessing''  a candidate set of good edges from which a near-optimal solution to the 
      horsefly problem could be constructed. But first off, would this approach work for the special case of the  TSP?  Answering
      \textit{``$TSP \cap NNG \stackrel{?}{=} \varnothing$''} seemed like a good place to start.  
 
@@ -22,7 +22,7 @@
        \caption{\label{fig:closestpair} Example where the segment (blue) joining the closest pair of points does not lie along the TSP tour (gray)}
      \end{figure}
 
-     One can also construct a family of instances, where the nearest neighbor graph intersects the TSP tour, exactly twice as shown in \autoref{fig:ladder}. 
+     One can also easily construct a family of instances, where the nearest neighbor graph intersects the TSP tour, exactly twice as shown in \autoref{fig:ladder}. 
 
      However, all attempts at constructing examples where the intersection with the 1-NNG is \textit{empty} failed. \footnote{Notice that \autoref{fig:closestpair} is not a counterexample!}And so did a
      literature search! The closest matching reference we found was \cite{hougardy2014edge} which \textit{eliminates} edges 
@@ -38,8 +38,8 @@
        \caption{\label{fig:ladder} Example where the nearest neighbor graph shares \textit{only} two edges with the TSP, The edges of the abstract nearest neighbor graph (red) are superimposed on top of the TSP tour (gray) through the given points. But note that the TSP tour shares each of its edge with the 2-NNG. }
      \end{figure}
 
-     See also this \href{https://web.colby.edu/thegeometricviewpoint/2015/03/09/delauney-triangulations-and-the-traveling-salesman/}{blogpost} on the topic, which 
-     talks about using the Delaunay Triangulations for generating heuristically good (no bounds are given) TSP tours. Another approach using Del Tris
+     See this \href{https://web.colby.edu/thegeometricviewpoint/2015/03/09/delauney-triangulations-and-the-traveling-salesman/}{blogpost} on the topic, which 
+     talks about using them for generating heuristically good (no bounds are given) TSP cycles. Another approach using del tris
      is taken in \href{https://www.researchgate.net/publication/215753374_An_On_log_n_Heuristic_for_the_Euclidean_Traveling_Salesman_Problem}{this technical report} 
 
      Knowledge of some family of easily computed edges that are necessarily part of a TSP solution could potentially be used to speed up some 
@@ -52,7 +52,7 @@
      Concorde can compute the optimal solutions in nearly all the instances; the certificate of optimality --- as always! --- coming from the comparsion of the computed tour-length against 
      a lower bounds (also computed by Concorde).
 
-     For starters,  we investigate the following questions \footnote{Experimental answers to other questions will be barnacled onto the report as it grows}: 
+     For starters,  we investigate the following questions \footnote{Experimental answers to other questions will be barnacled onto the report as it keeps growing.}: 
      for each symmetric 2-D Euclidean TSP instance from TSPLIB for which we have an optimal solution, does
 
      \begin{itemize}
@@ -73,5 +73,6 @@
      If you don't have  Python 3.7+ on your machine, download the free  \href{https://www.anaconda.com/products/individual}{Anaconda} distro of Python; 
      it comes with most of the batteries included. See Appendix \autoref{sec:install} for instructions on how to install and run the code. 
 
+     \textit{Yalla}, what are we waiting for? Let's go!
 
 \end{description}

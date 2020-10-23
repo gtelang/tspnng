@@ -1,6 +1,4 @@
-\nwfilename{mainlitprog.nw}\nwbegindocs{0}\nwdocspar% ===> this file was generated automatically by noweave --- better not edit it
-
-\section{Overall structure of \texttt{tspnng.py}}
+\nwfilename{mainlitprog.nw}\nwbegindocs{0}\section{Overall structure of \texttt{tspnng.py}}% ===> this file was generated automatically by noweave --- better not edit it
 
 The \texttt{tspnng.py} file at a high level divided into the following chunks, 
 each of which is expanded upon in the coming sections. The \texttt{main.py} file used to run the \texttt{main()} function
@@ -177,7 +175,7 @@ transparently encodes any (appropriate) Python dictionary into a YAML file. In t
 def write_to_yaml_file(data, dir_name, file_name):
    with open(dir_name + '/' + file_name, 'w') as outfile:
           yaml.dump( data, outfile, default_flow_style = False)
-\nwalsodefined{\\{NWaGG5Z-4cZhfD-2}}\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{12}\nwdocspar
+\nwalsodefined{\\{NWaGG5Z-4cZhfD-2}\\{NWaGG5Z-4cZhfD-3}}\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{12}\nwdocspar
 
 
 \section{Setting up TSPNNGInput class}
@@ -187,7 +185,7 @@ any other auxiliary information. It basically functions as a convenience wrapper
 the main input data (basically a bunch of points in $\RR^2$) and a wrapper function around 
 various graph generators such as TSP, Delaunary, $k\text{-}$NNG etc. 
 
-\nwenddocs{}\nwbegincode{13}\sublabel{NWaGG5Z-4cZhfD-2}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-2}}}\moddef{Generic utility classes and functions~{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-4cZhfD-1}{\relax}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{13}\sublabel{NWaGG5Z-4cZhfD-2}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-2}}}\moddef{Generic utility classes and functions~{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-4cZhfD-1}{NWaGG5Z-4cZhfD-3}\nwenddeflinemarkup
 class TSPNNGInput:
       def __init__(self, points=[]):
           self.points            = points
@@ -921,10 +919,52 @@ def graphs_intersect_p(g1,g2):
      return flag
 \nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{78}\nwdocspar
 
+\section{Checking Hamiltonicity}
+
+During experiments, we will often require to check if a graph is Hamiltonian. Of course
+this task is $NP$-complete, but it is easy to implement a naive backtracking routine 
+that should be competitive enough for dense graphs with upto 50 nodes , 
+or larger but sparser sparse graphs. Such a routine will be particularly helpful
+for honing hypotheses and generating interesting examples. 
+
+Because the author is lazy, he will unabashedly copy and paste code for such a routine from  
+\url{https://gist.github.com/mikkelam/ab7966e7ab1c441f947b}
+
+If needed, it could be sped up by other algorithmic techniques. 
+But the time for such micro-optimization, like that of casting 
+Excalibur back into the Lake, is far off. 
+
+
+\nwenddocs{}\nwbegincode{79}\sublabel{NWaGG5Z-4cZhfD-3}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-3}}}\moddef{Generic utility classes and functions~{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-4cZhfD-2}{\relax}\nwenddeflinemarkup
+def hamilton(G):
+    F = [(G,[list(G.nodes())[0]])]
+    n = G.number_of_nodes()
+    while F:
+        graph,path = F.pop()
+        confs = []
+        neighbors = (node for node in graph.neighbors(path[-1]) 
+                     if node != path[-1]) #exclude self loops
+        for neighbor in neighbors:
+            conf_p = path[:]
+            conf_p.append(neighbor)
+            conf_g = nx.Graph(graph)
+            conf_g.remove_node(path[-1])
+            confs.append((conf_g,conf_p))
+        for g,p in confs:
+            if len(p)==n:
+                return p
+            else:
+                F.append((g,p))
+    return None
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{80}\nwdocspar
+
+
+
 \section{Hypothesis testing!}
 
-\nwenddocs{}\nwbegincode{79}\sublabel{NWaGG5Z-3pWXcO-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3pWXcO-1}}}\moddef{Testing hypotheses~{\nwtagstyle{}\subpageref{NWaGG5Z-3pWXcO-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwenddeflinemarkup
-\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{80}\nwdocspar
+
+\nwenddocs{}\nwbegincode{81}\sublabel{NWaGG5Z-3pWXcO-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3pWXcO-1}}}\moddef{Testing hypotheses~{\nwtagstyle{}\subpageref{NWaGG5Z-3pWXcO-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwenddeflinemarkup
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{82}\nwdocspar
 
 
 
@@ -945,7 +985,7 @@ def graphs_intersect_p(g1,g2):
 \nwixlogsorted{c}{{Functions for plotting and interacting}{NWaGG5Z-3DI44N-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-3DI44N-1}\nwixd{NWaGG5Z-3DI44N-2}\nwixd{NWaGG5Z-3DI44N-3}\nwixd{NWaGG5Z-3DI44N-4}\nwixd{NWaGG5Z-3DI44N-5}}}%
 \nwixlogsorted{c}{{Generate convex hull of points remaining in \verb|points_tmp|}{NWaGG5Z-1qB5IG-1}{\nwixu{NWaGG5Z-2XNY09-4}\nwixd{NWaGG5Z-1qB5IG-1}}}%
 \nwixlogsorted{c}{{Generate TSP cycle and convert into NetworkX graph}{NWaGG5Z-ixiQd-1}{\nwixu{NWaGG5Z-2XNY09-5}\nwixd{NWaGG5Z-ixiQd-1}}}%
-\nwixlogsorted{c}{{Generic utility classes and functions}{NWaGG5Z-4cZhfD-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-4cZhfD-1}\nwixd{NWaGG5Z-4cZhfD-2}}}%
+\nwixlogsorted{c}{{Generic utility classes and functions}{NWaGG5Z-4cZhfD-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-4cZhfD-1}\nwixd{NWaGG5Z-4cZhfD-2}\nwixd{NWaGG5Z-4cZhfD-3}}}%
 \nwixlogsorted{c}{{Headers}{NWaGG5Z-2BmRoZ-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-2BmRoZ-1}\nwixd{NWaGG5Z-2BmRoZ-2}}}%
 \nwixlogsorted{c}{{Iterate through graph edges and draw as segments}{NWaGG5Z-2RD3q9-1}{\nwixu{NWaGG5Z-3DI44N-5}\nwixd{NWaGG5Z-2RD3q9-1}}}%
 \nwixlogsorted{c}{{Join two remaining points by an edge in \verb|onion_graph|}{NWaGG5Z-1QE0qW-1}{\nwixu{NWaGG5Z-2XNY09-4}\nwixd{NWaGG5Z-1QE0qW-1}}}%
