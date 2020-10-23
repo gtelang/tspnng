@@ -4,6 +4,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from colorama import Fore, Style
 
+def main3():
+    tspnng.expt_intersection_behavior()
+
+
 def main2():
     d="./sym-tsp-tsplib/instances/euclidean_instances_yaml/"
     picdir = './tsplib_euc2d_pictures_of_instances/'
@@ -42,6 +46,7 @@ def main2():
 
 def main1():
     tspnng.run_handler()
+
 
 if __name__=='__main__':
     main1()

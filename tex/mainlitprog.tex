@@ -14,11 +14,11 @@ independently of this document for convenience because it will be subject to con
 \LA{}Functions for plotting and interacting~{\nwtagstyle{}\subpageref{NWaGG5Z-3DI44N-1}}\RA{}
 \LA{}Functions for generating various graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-1}}\RA{}
 \LA{}Functions dealing with intersecting two geometric graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-b3I3C-1}}\RA{}
-\LA{}Testing hypotheses~{\nwtagstyle{}\subpageref{NWaGG5Z-3pWXcO-1}}\RA{}
+\LA{}Experiments~{\nwtagstyle{}\subpageref{NWaGG5Z-3zYcKb-1}}\RA{}
 \nwnotused{tspnng.py}\nwendcode{}\nwbegindocs{2}\nwdocspar
 
 
-\nwenddocs{}\nwbegincode{3}\sublabel{NWaGG5Z-2BmRoZ-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-2BmRoZ-1}}}\moddef{Headers~{\nwtagstyle{}\subpageref{NWaGG5Z-2BmRoZ-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{\relax}{NWaGG5Z-2BmRoZ-2}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{3}\sublabel{NWaGG5Z-2BmRoZ-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-2BmRoZ-1}}}\moddef{Headers~{\nwtagstyle{}\subpageref{NWaGG5Z-2BmRoZ-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwenddeflinemarkup
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 from matplotlib import rc
@@ -29,6 +29,7 @@ import scipy as sp
 import numpy as np
 import random
 import networkx as nx
+from prettytable import PrettyTable
 
 from sklearn.cluster import KMeans
 import argparse, os, sys, time
@@ -37,7 +38,7 @@ init() # this line does nothing on Linux/Mac,
        # but is important for Windows to display
        # colored text. See https://pypi.org/project/colorama/
 import yaml
-\nwalsodefined{\\{NWaGG5Z-2BmRoZ-2}}\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{4}\nwdocspar
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{4}\nwdocspar
 
 
 \section{Data Generation}
@@ -290,43 +291,40 @@ First we compute the TSP and then print a table mentioning how many of its edges
 standard graphs. See \url{https://pypi.org/project/prettytable/} for more information on the 
 prettytable module used to output data to terminal. 
 
-For computing the $k$-NNG we compute from $k=1$ upto a value of $k=2+\sqrt{n}$ where $n$ is the number of input points.
-This allows a ``natural'' way to scale the value of $k$ for increasing values of $n$. 
+For computing the $k$-NNG we compute from $k=1$ upto a value of $k=2+\sqrt{n}$ where $n$ is the number 
+of input points. This allows a ``natural'' way to scale the value of $k$ for increasing values of $n$. 
 
-\nwenddocs{}\nwbegincode{21}\sublabel{NWaGG5Z-2BmRoZ-2}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-2BmRoZ-2}}}\moddef{Headers~{\nwtagstyle{}\subpageref{NWaGG5Z-2BmRoZ-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-2BmRoZ-1}{\relax}\nwenddeflinemarkup
-from prettytable import PrettyTable
-\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{22}\nwdocspar
-
-
-\nwenddocs{}\nwbegincode{23}\sublabel{NWaGG5Z-1xEGS-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-1xEGS-1}}}\moddef{Compute TSP and find common edges with various spanning graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-1xEGS-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-3DI44N-3}}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{21}\sublabel{NWaGG5Z-1xEGS-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-1xEGS-1}}}\moddef{Compute TSP and find common edges with various spanning graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-1xEGS-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-3DI44N-3}}\nwenddeflinemarkup
 tsp_graph = get_concorde_tsp_graph(run.points)
 graph_fns = [(get_delaunay_tri_graph, 'Delaunay Triangulation (D)'), \\
              (get_mst_graph         , 'Minimum Spanning Tree (M)'), \\
              (get_onion_graph       , 'Onion') ]
 
 from functools import partial
-for k in range(1,2+int(np.sqrt(len(run.points)))): 
+for k in range(1,5): 
    graph_fns.append((partial(get_knng_graph, k=k), str(k)+'_NNG'))
 
 tbl             = PrettyTable()
 tbl.field_names = ["Spanning Graph (G)", "G", "G \\cap T", "T", "(G \\cap T)/T"]
+num_tsp_edges   = len(tsp_graph.edges)
 
-num_tsp_edges = len(tsp_graph.edges)
 for ctr, (fn_body, fn_name) in zip(range(1,1+len(graph_fns)), graph_fns):
      geometric_graph = fn_body(run.points)
      num_graph_edges = len(geometric_graph.edges)
      common_edges    = list_common_edges(tsp_graph, geometric_graph)
      num_common_edges_with_tsp = len(common_edges)
 
-     tbl.add_row([fn_name,                   \\
+     tbl.add_row([fn_name,                 \\
                 num_graph_edges,           \\
                 num_common_edges_with_tsp, \\
                 num_tsp_edges,             \\
                 "\{perc:3.2f\}".format(perc=1e2*num_common_edges_with_tsp/num_tsp_edges)+ ' %' ])
+                
+print("Table of number of edges in indicated graph")
 print(tbl)
 render_graph(tsp_graph,fig,ax)
 fig.canvas.draw()
-\nwused{\\{NWaGG5Z-3DI44N-3}}\nwendcode{}\nwbegindocs{24}\nwdocspar
+\nwused{\\{NWaGG5Z-3DI44N-3}}\nwendcode{}\nwbegindocs{22}\nwdocspar
 
 In a kind of ``dual'' demo, we now compute and render the various geometric graphs, and then mention how many 
 edges each graph has in common with the TSP. Thus we can explore the intersection of the TSP with a graph
@@ -335,7 +333,7 @@ from the point-of-view of both the TSP and the graph.
 The user should type the code enclosed in the brackets (e.g. `\verb|dt|' for delaunay triangulation) to generate the 
 indicated graph that spans the points. 
 
-\nwenddocs{}\nwbegincode{25}\sublabel{NWaGG5Z-33qwdb-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-33qwdb-1}}}\moddef{Compute spanning graph~{\nwtagstyle{}\subpageref{NWaGG5Z-33qwdb-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-3DI44N-3}}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{23}\sublabel{NWaGG5Z-33qwdb-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-33qwdb-1}}}\moddef{Compute spanning graph~{\nwtagstyle{}\subpageref{NWaGG5Z-33qwdb-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-3DI44N-3}}\nwenddeflinemarkup
 algo_str = input(Fore.YELLOW + "Enter code for the graph you need to span the points:\\n" + Style.RESET_ALL  +\\
                      "(knng)   k-Nearest Neighbor Graph        \\n"            +\\
                      "(mst)    Minimum Spanning Tree           \\n"            +\\
@@ -369,23 +367,24 @@ else:
       print(Fore.YELLOW, "I did not recognize that option.", Style.RESET_ALL)
       geometric_graph = None
 
-common_edges = list_common_edges(get_concorde_tsp_graph(run.points), geometric_graph)
-print("------------------------------------------------------------------------------")
-print("Number of edges in " + algo_str + " graph (TOTAL)                          :", len(geometric_graph.edges))
-print("Number of edges in " + algo_str + " graph which are also in Concorde TSP   :", len(common_edges))
+tsp_graph = get_concorde_tsp_graph(run.points)
+common_edges = list_common_edges( tsp_graph, geometric_graph)
+print(Fore.YELLOW+"------------------------------------------------------------------------------"+Style.RESET_ALL)
+print("Number of edges in " + algo_str + " graph                                :", len(geometric_graph.edges))
+print(Fore.YELLOW, "\\nNumber of edges in " + algo_str + " graph which are also in Concorde TSP :", len(common_edges))
+print("Number of edges in " + "Concorde TSP                              :", len(tsp_graph.edges))
 print("------------------------------------------------------------------------------", Style.RESET_ALL)
-
 
 
 ax.set_title("Graph Type: " + geometric_graph.graph['type'] + '\\n Number of nodes: ' + str(len(run.points)), fontdict=\{'fontsize':25\})
 render_graph(geometric_graph,fig,ax)
 fig.canvas.draw()
-\nwused{\\{NWaGG5Z-3DI44N-3}}\nwendcode{}\nwbegindocs{26}\nwdocspar
+\nwused{\\{NWaGG5Z-3DI44N-3}}\nwendcode{}\nwbegindocs{24}\nwdocspar
 
 If you want to enter a uniformly or non-uniformly distributed point-set in the unit-square press \verb|`u`| or \verb|`n`|
 respectively after being prompted. 
 
-\nwenddocs{}\nwbegincode{27}\sublabel{NWaGG5Z-1TJD4t-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-1TJD4t-1}}}\moddef{Enter type of point set to generate~{\nwtagstyle{}\subpageref{NWaGG5Z-1TJD4t-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-3DI44N-3}}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{25}\sublabel{NWaGG5Z-1TJD4t-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-1TJD4t-1}}}\moddef{Enter type of point set to generate~{\nwtagstyle{}\subpageref{NWaGG5Z-1TJD4t-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-3DI44N-3}}\nwenddeflinemarkup
 numpts = int(input("\\nHow many points should I generate?: ")) 
 run.clearAllStates()
 ax.cla()
@@ -408,7 +407,7 @@ for site in run.points:
 
 ax.set_title('Points generated: ' + str(len(run.points)), fontdict=\{'fontsize':25\})
 fig.canvas.draw()
-\nwused{\\{NWaGG5Z-3DI44N-3}}\nwendcode{}\nwbegindocs{28}\nwdocspar
+\nwused{\\{NWaGG5Z-3DI44N-3}}\nwendcode{}\nwbegindocs{26}\nwdocspar
 
 
 
@@ -416,17 +415,17 @@ Sometimes, you just want to clear the edges of the network from the graph, so th
 a new graph can be rendered in its place on the points. For that, you need to press
 `x` or `X`. 
 
-\nwenddocs{}\nwbegincode{29}\sublabel{NWaGG5Z-3ttuy9-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3ttuy9-1}}}\moddef{Clear all line segments from the canvas~{\nwtagstyle{}\subpageref{NWaGG5Z-3ttuy9-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-3DI44N-3}}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{27}\sublabel{NWaGG5Z-3ttuy9-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3ttuy9-1}}}\moddef{Clear all line segments from the canvas~{\nwtagstyle{}\subpageref{NWaGG5Z-3ttuy9-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-3DI44N-3}}\nwenddeflinemarkup
 print(Fore.GREEN, 'Removing network edges from canvas' ,Style.RESET_ALL)
 ax.lines=[]
 applyAxCorrection(ax)
 fig.canvas.draw()
-\nwused{\\{NWaGG5Z-3DI44N-3}}\nwendcode{}\nwbegindocs{30}\nwdocspar
+\nwused{\\{NWaGG5Z-3DI44N-3}}\nwendcode{}\nwbegindocs{28}\nwdocspar
 
 If you want to wipe the canvas and the point-cloud data (and everything else \ldots) clean, 
 then press \verb|`c`|. 
 
-\nwenddocs{}\nwbegincode{31}\sublabel{NWaGG5Z-itHJV-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-itHJV-1}}}\moddef{Clear all states and the canvas~{\nwtagstyle{}\subpageref{NWaGG5Z-itHJV-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-3DI44N-3}}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{29}\sublabel{NWaGG5Z-itHJV-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-itHJV-1}}}\moddef{Clear all states and the canvas~{\nwtagstyle{}\subpageref{NWaGG5Z-itHJV-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-3DI44N-3}}\nwenddeflinemarkup
 run.clearAllStates()
 ax.cla()
                                  
@@ -436,7 +435,7 @@ ax.set_yticks([])
                                     
 fig.texts = []
 fig.canvas.draw()
-\nwused{\\{NWaGG5Z-3DI44N-3}}\nwendcode{}\nwbegindocs{32}\nwdocspar
+\nwused{\\{NWaGG5Z-3DI44N-3}}\nwendcode{}\nwbegindocs{30}\nwdocspar
 
 
 
@@ -446,7 +445,7 @@ Often the \verb|ax| object has to be reset and cleaned of the various segment an
 aspect ratio of the \verb|ax| object to be 1.0. These ``cleanup'' functions that were called in some of the code blocks above 
 are implemented next. 
 
-\nwenddocs{}\nwbegincode{33}\sublabel{NWaGG5Z-3DI44N-4}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3DI44N-4}}}\moddef{Functions for plotting and interacting~{\nwtagstyle{}\subpageref{NWaGG5Z-3DI44N-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-3DI44N-3}{NWaGG5Z-3DI44N-5}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{31}\sublabel{NWaGG5Z-3DI44N-4}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3DI44N-4}}}\moddef{Functions for plotting and interacting~{\nwtagstyle{}\subpageref{NWaGG5Z-3DI44N-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-3DI44N-3}{NWaGG5Z-3DI44N-5}\nwenddeflinemarkup
 def applyAxCorrection(ax):
       ax.set_xlim([xlim[0], xlim[1]])
       ax.set_ylim([ylim[0], ylim[1]])
@@ -466,7 +465,7 @@ def clearAxPolygonPatches(ax):
             patch.remove()
     ax.lines[:]=[]
     applyAxCorrection(ax)
-\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{34}\nwdocspar
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{32}\nwdocspar
 
 
 \section{Generating various geometric graphs}
@@ -498,7 +497,7 @@ for the various nearest neighor methods implemented therein can be found at
 includes the point itself. Thus we use $(k+1)$ in the argument to the \verb|NearestNeighbors| function below, and take the last $k$
 elements in the list returned --- the neighbors of a point are reported by that function in increasing order of distance from that point. 
 
-\nwenddocs{}\nwbegincode{35}\sublabel{NWaGG5Z-2XNY09-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-1}}}\moddef{Functions for generating various graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{\relax}{NWaGG5Z-2XNY09-2}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{33}\sublabel{NWaGG5Z-2XNY09-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-1}}}\moddef{Functions for generating various graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{\relax}{NWaGG5Z-2XNY09-2}\nwenddeflinemarkup
 def get_knng_graph(points,k):
      from sklearn.neighbors import NearestNeighbors
      points     = np.array(points)
@@ -517,7 +516,7 @@ def get_knng_graph(points,k):
      knng_graph.graph['type']   = str(k)+'nng'
      knng_graph.graph['weight'] =  None # TODO, also edge weights for each edge!!!
      return knng_graph
-\nwalsodefined{\\{NWaGG5Z-2XNY09-2}\\{NWaGG5Z-2XNY09-3}\\{NWaGG5Z-2XNY09-4}\\{NWaGG5Z-2XNY09-5}\\{NWaGG5Z-2XNY09-6}}\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{36}\nwdocspar
+\nwalsodefined{\\{NWaGG5Z-2XNY09-2}\\{NWaGG5Z-2XNY09-3}\\{NWaGG5Z-2XNY09-4}\\{NWaGG5Z-2XNY09-5}\\{NWaGG5Z-2XNY09-6}}\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{34}\nwdocspar
 
 
 \subsection{Delaunay Triangulation}
@@ -532,7 +531,7 @@ def get_knng_graph(points,k):
 We use the  \href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.Delaunay.html}{blackbox routine} 
 for computing this graph implmeneted in Scipy \cite{virtanen2020scipy}. 
 
-\nwenddocs{}\nwbegincode{37}\sublabel{NWaGG5Z-2XNY09-2}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-2}}}\moddef{Functions for generating various graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-2XNY09-1}{NWaGG5Z-2XNY09-3}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{35}\sublabel{NWaGG5Z-2XNY09-2}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-2}}}\moddef{Functions for generating various graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-2XNY09-1}{NWaGG5Z-2XNY09-3}\nwenddeflinemarkup
 def get_delaunay_tri_graph(points):
      from scipy.spatial import Delaunay
      points       = np.array(points)
@@ -561,7 +560,7 @@ def get_delaunay_tri_graph(points):
      deltri_graph.graph['type']   = 'dt'
 
      return deltri_graph
-\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{38}\nwdocspar
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{36}\nwdocspar
 
 
 \subsection{Minimum Spanning Tree}
@@ -579,7 +578,7 @@ See \href{https://networkx.github.io/documentation/stable/reference/algorithms/g
 for a documentation of the code in NetworkX used to compute the MST on an abstract weighted undirected graph. Note that along with the Kruskal method (used below), both Prim's and Boruvka's 
 algorithms have also been implemented in that library. 
 
-\nwenddocs{}\nwbegincode{39}\sublabel{NWaGG5Z-2XNY09-3}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-3}}}\moddef{Functions for generating various graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-2XNY09-2}{NWaGG5Z-2XNY09-4}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{37}\sublabel{NWaGG5Z-2XNY09-3}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-3}}}\moddef{Functions for generating various graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-2XNY09-2}{NWaGG5Z-2XNY09-4}\nwenddeflinemarkup
 
 def get_mst_graph(points):
 
@@ -589,7 +588,7 @@ def get_mst_graph(points):
                                                               algorithm='kruskal')
      mst_graph.graph['type']   = 'mst'
      return mst_graph
-\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{40}\nwdocspar
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{38}\nwdocspar
 
 
 \subsection{The Onion}
@@ -607,7 +606,7 @@ compute the convex hull of this smaller point-set, repeating this process till w
 
 The resulting sequence of convex layers form a graph called the onion. 
 
-\nwenddocs{}\nwbegincode{41}\sublabel{NWaGG5Z-2XNY09-4}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-4}}}\moddef{Functions for generating various graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-2XNY09-3}{NWaGG5Z-2XNY09-5}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{39}\sublabel{NWaGG5Z-2XNY09-4}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-4}}}\moddef{Functions for generating various graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-2XNY09-3}{NWaGG5Z-2XNY09-5}\nwenddeflinemarkup
 
 def get_onion_graph(points):
      from scipy.spatial import ConvexHull
@@ -630,22 +629,22 @@ def get_onion_graph(points):
  
      onion_graph.graph['type'] = 'onion'
      return onion_graph
-\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{42}\nwdocspar
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{40}\nwdocspar
 
 
 Note that the convex hull is computed by Scipy using the Qhull library as mentioned in the \href{https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.ConvexHull.html}{docs}. 
-\nwenddocs{}\nwbegincode{43}\sublabel{NWaGG5Z-1qB5IG-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-1qB5IG-1}}}\moddef{Generate convex hull of points remaining in \verb|points_tmp|~{\nwtagstyle{}\subpageref{NWaGG5Z-1qB5IG-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-2XNY09-4}}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{41}\sublabel{NWaGG5Z-1qB5IG-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-1qB5IG-1}}}\moddef{Generate convex hull of points remaining in \verb|points_tmp|~{\nwtagstyle{}\subpageref{NWaGG5Z-1qB5IG-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-2XNY09-4}}\nwenddeflinemarkup
 hull            = ConvexHull(points_tmp)
 pts_on_hull     = [points_tmp[i] for i in hull.vertices]
 coords          = [\{"coods":pt\} for pt in pts_on_hull]
-\nwused{\\{NWaGG5Z-2XNY09-4}}\nwendcode{}\nwbegindocs{44}\nwdocspar
+\nwused{\\{NWaGG5Z-2XNY09-4}}\nwendcode{}\nwbegindocs{42}\nwdocspar
 
 
-\nwenddocs{}\nwbegincode{45}\sublabel{NWaGG5Z-24g2s3-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-24g2s3-1}}}\moddef{Update \verb|onion_graph|~{\nwtagstyle{}\subpageref{NWaGG5Z-24g2s3-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-2XNY09-4}}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{43}\sublabel{NWaGG5Z-24g2s3-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-24g2s3-1}}}\moddef{Update \verb|onion_graph|~{\nwtagstyle{}\subpageref{NWaGG5Z-24g2s3-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-2XNY09-4}}\nwenddeflinemarkup
 new_node_idxs   = range(numpts_proc+1, numpts_proc+len(hull.vertices)+1)
 onion_graph.add_nodes_from(zip(new_node_idxs, coords))
 onion_graph.add_edges_from(circular_edge_zip(new_node_idxs))
-\nwused{\\{NWaGG5Z-2XNY09-4}}\nwendcode{}\nwbegindocs{46}\nwdocspar
+\nwused{\\{NWaGG5Z-2XNY09-4}}\nwendcode{}\nwbegindocs{44}\nwdocspar
 
 
 Given a set of node ids of a graph provided as a list of 
@@ -653,7 +652,7 @@ integers, the following function, returns a cycle of edges with successive nodes
 the order provided. e.g. $[1,2,3] \rarr [(1,2),(2,3),(3,1)]$. Convenient to have this defined 
 separately. 
 
-\nwenddocs{}\nwbegincode{47}\sublabel{NWaGG5Z-2QHw3A-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-2QHw3A-1}}}\moddef{ Definition of \verb|circular_edge_zip|~{\nwtagstyle{}\subpageref{NWaGG5Z-2QHw3A-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-2XNY09-4}}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{45}\sublabel{NWaGG5Z-2QHw3A-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-2QHw3A-1}}}\moddef{ Definition of \verb|circular_edge_zip|~{\nwtagstyle{}\subpageref{NWaGG5Z-2QHw3A-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-2XNY09-4}}\nwenddeflinemarkup
 def circular_edge_zip(xs):
     xs = list(xs) # in the event that xs is of the zip or range type 
     if len(xs) in [0,1] :
@@ -664,17 +663,17 @@ def circular_edge_zip(xs):
          zipl = list(zip(xs,xs[1:]+xs[:1]))
     return zipl
 
-\nwused{\\{NWaGG5Z-2XNY09-4}}\nwendcode{}\nwbegindocs{48}\nwdocspar
+\nwused{\\{NWaGG5Z-2XNY09-4}}\nwendcode{}\nwbegindocs{46}\nwdocspar
 
 
 
 
-\nwenddocs{}\nwbegincode{49}\sublabel{NWaGG5Z-ArYW6-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-ArYW6-1}}}\moddef{Remove points reported in the convex hull from \verb|points_tmp|~{\nwtagstyle{}\subpageref{NWaGG5Z-ArYW6-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-2XNY09-4}}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{47}\sublabel{NWaGG5Z-ArYW6-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-ArYW6-1}}}\moddef{Remove points reported in the convex hull from \verb|points_tmp|~{\nwtagstyle{}\subpageref{NWaGG5Z-ArYW6-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-2XNY09-4}}\nwenddeflinemarkup
 numpts_proc  = numpts_proc + len(hull.vertices)
 rem_pts_idxs = list(set(range(len(points_tmp)))-set(hull.vertices)) 
 points_tmp   = [ points_tmp[idx] for idx in rem_pts_idxs ]
 coords       = [\{"coods":pt\} for pt in points]
-\nwused{\\{NWaGG5Z-2XNY09-4}}\nwendcode{}\nwbegindocs{50}\nwdocspar
+\nwused{\\{NWaGG5Z-2XNY09-4}}\nwendcode{}\nwbegindocs{48}\nwdocspar
 
 
 There are two edge cases: when only two points and one point remain. These cases, cannot be handled by Qhull (It reports an error at the terminal,
@@ -683,22 +682,22 @@ saying it needs at least three points must be provided as input). Hence the sepa
 
 When two nodes, remain, we just join them by an edge. 
 
-\nwenddocs{}\nwbegincode{51}\sublabel{NWaGG5Z-1QE0qW-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-1QE0qW-1}}}\moddef{Join two remaining points by an edge in \verb|onion_graph|~{\nwtagstyle{}\subpageref{NWaGG5Z-1QE0qW-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-2XNY09-4}}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{49}\sublabel{NWaGG5Z-1QE0qW-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-1QE0qW-1}}}\moddef{Join two remaining points by an edge in \verb|onion_graph|~{\nwtagstyle{}\subpageref{NWaGG5Z-1QE0qW-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-2XNY09-4}}\nwenddeflinemarkup
 p, l = numpts_proc+1, numpts_proc+2
 onion_graph.add_node(p)
 onion_graph.add_node(l)
 onion_graph.nodes[p]['coods'] = points_tmp[0]
 onion_graph.nodes[l]['coods'] = points_tmp[1]
 onion_graph.add_edge(p,l)
-\nwused{\\{NWaGG5Z-2XNY09-4}}\nwendcode{}\nwbegindocs{52}\nwdocspar
+\nwused{\\{NWaGG5Z-2XNY09-4}}\nwendcode{}\nwbegindocs{50}\nwdocspar
 
 No edges to add here, just the node. 
 
-\nwenddocs{}\nwbegincode{53}\sublabel{NWaGG5Z-2GN3bQ-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-2GN3bQ-1}}}\moddef{Add the remaining points as a node in \verb|onion_graph|~{\nwtagstyle{}\subpageref{NWaGG5Z-2GN3bQ-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-2XNY09-4}}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{51}\sublabel{NWaGG5Z-2GN3bQ-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-2GN3bQ-1}}}\moddef{Add the remaining points as a node in \verb|onion_graph|~{\nwtagstyle{}\subpageref{NWaGG5Z-2GN3bQ-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-2XNY09-4}}\nwenddeflinemarkup
 l = numpts_proc+1 
 onion_graph.add_node(l)
 onion_graph.nodes[l]['cood'] = points_tmp[0]
-\nwused{\\{NWaGG5Z-2XNY09-4}}\nwendcode{}\nwbegindocs{54}\nwdocspar
+\nwused{\\{NWaGG5Z-2XNY09-4}}\nwendcode{}\nwbegindocs{52}\nwdocspar
 
 
 
@@ -721,7 +720,7 @@ this report. It is clearly not competitive with Concorde (which can solve a 300 
 but it serves as a useful backup routine, in the event that a machine faces problems with the installation of PyConcorde.
 
 \subsubsection{* Using the \texttt{tsp} library}
-\nwenddocs{}\nwbegincode{55}\sublabel{NWaGG5Z-2XNY09-5}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-5}}}\moddef{Functions for generating various graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-2XNY09-4}{NWaGG5Z-2XNY09-6}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{53}\sublabel{NWaGG5Z-2XNY09-5}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-5}}}\moddef{Functions for generating various graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-2XNY09-4}{NWaGG5Z-2XNY09-6}\nwenddeflinemarkup
 def get_py_tsp_graph(points):
      import tsp
      points = np.array(points)
@@ -730,10 +729,10 @@ def get_py_tsp_graph(points):
      \LA{}Compute weight of each edge and total edge weight~{\nwtagstyle{}\subpageref{NWaGG5Z-3homP2-1}}\RA{}
      \LA{}Set graph attributes~{\nwtagstyle{}\subpageref{NWaGG5Z-1NBtrs-1}}\RA{}     
      return tsp_graph
-\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{56}\nwdocspar
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{54}\nwdocspar
 
 
-\nwenddocs{}\nwbegincode{57}\sublabel{NWaGG5Z-ixiQd-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-ixiQd-1}}}\moddef{Generate TSP cycle and convert into NetworkX graph~{\nwtagstyle{}\subpageref{NWaGG5Z-ixiQd-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-2XNY09-5}}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{55}\sublabel{NWaGG5Z-ixiQd-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-ixiQd-1}}}\moddef{Generate TSP cycle and convert into NetworkX graph~{\nwtagstyle{}\subpageref{NWaGG5Z-ixiQd-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-2XNY09-5}}\nwenddeflinemarkup
 t              = tsp.tsp(points)
 idxs_along_tsp = t[1]
 tsp_graph      = nx.Graph()
@@ -742,10 +741,10 @@ tsp_graph.add_nodes_from(zip(range(len(points)), coords))
 edge_list = list(zip(idxs_along_tsp, idxs_along_tsp[1:])) + \\
                   [(idxs_along_tsp[-1],idxs_along_tsp[0])]
 tsp_graph.add_edges_from(  edge_list  )
-\nwused{\\{NWaGG5Z-2XNY09-5}}\nwendcode{}\nwbegindocs{58}\nwdocspar
+\nwused{\\{NWaGG5Z-2XNY09-5}}\nwendcode{}\nwbegindocs{56}\nwdocspar
 
 
-\nwenddocs{}\nwbegincode{59}\sublabel{NWaGG5Z-3homP2-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3homP2-1}}}\moddef{Compute weight of each edge and total edge weight~{\nwtagstyle{}\subpageref{NWaGG5Z-3homP2-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-2XNY09-5}}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{57}\sublabel{NWaGG5Z-3homP2-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3homP2-1}}}\moddef{Compute weight of each edge and total edge weight~{\nwtagstyle{}\subpageref{NWaGG5Z-3homP2-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-2XNY09-5}}\nwenddeflinemarkup
 total_weight_of_edges = 0.0
 for edge in tsp_graph.edges:
 
@@ -756,12 +755,12 @@ for edge in tsp_graph.edges:
 
       tsp_graph.edges[n1,n2]['weight'] = edge_wt
       total_weight_of_edges = total_weight_of_edges + edge_wt 
-\nwused{\\{NWaGG5Z-2XNY09-5}}\nwendcode{}\nwbegindocs{60}\nwdocspar
+\nwused{\\{NWaGG5Z-2XNY09-5}}\nwendcode{}\nwbegindocs{58}\nwdocspar
 
-\nwenddocs{}\nwbegincode{61}\sublabel{NWaGG5Z-1NBtrs-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-1NBtrs-1}}}\moddef{Set graph attributes~{\nwtagstyle{}\subpageref{NWaGG5Z-1NBtrs-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-2XNY09-5}}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{59}\sublabel{NWaGG5Z-1NBtrs-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-1NBtrs-1}}}\moddef{Set graph attributes~{\nwtagstyle{}\subpageref{NWaGG5Z-1NBtrs-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-2XNY09-5}}\nwenddeflinemarkup
 tsp_graph.graph['weight'] = total_weight_of_edges
 tsp_graph.graph['type']   = 'pytsp'
-\nwused{\\{NWaGG5Z-2XNY09-5}}\nwendcode{}\nwbegindocs{62}\nwdocspar
+\nwused{\\{NWaGG5Z-2XNY09-5}}\nwendcode{}\nwbegindocs{60}\nwdocspar
 
 
 \subsubsection{* Using the Pyconcorde library}
@@ -780,7 +779,7 @@ Note that Concorde crashes when you pass it only three points. Probably somethin
 its internals. Of course for the case of one or two points, the package explcitly informs us that we must pass
 a longer list. 
 
-\nwenddocs{}\nwbegincode{63}\sublabel{NWaGG5Z-2XNY09-6}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-6}}}\moddef{Functions for generating various graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-2XNY09-5}{\relax}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{61}\sublabel{NWaGG5Z-2XNY09-6}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-6}}}\moddef{Functions for generating various graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-2XNY09-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-2XNY09-5}{\relax}\nwenddeflinemarkup
 def get_concorde_tsp_graph(points, scaling_factor=1000):
      from concorde.tsp import TSPSolver
      points = np.array(points)
@@ -805,7 +804,7 @@ def get_concorde_tsp_graph(points, scaling_factor=1000):
      concorde_tsp_graph.graph['found_tour_p'] = solution.found_tour
      concorde_tsp_graph.graph['weight'] = None ### TODO!! 
      return concorde_tsp_graph
-\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{64}\nwdocspar
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{62}\nwdocspar
 
 
 
@@ -820,7 +819,7 @@ between the points( each of which happens to be a node of the graph).
 
 For the special case of the TSP, we render it as a polygon patch, because the interior
 needs to be colored. 
-\nwenddocs{}\nwbegincode{65}\sublabel{NWaGG5Z-3DI44N-5}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3DI44N-5}}}\moddef{Functions for plotting and interacting~{\nwtagstyle{}\subpageref{NWaGG5Z-3DI44N-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-3DI44N-4}{\relax}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{63}\sublabel{NWaGG5Z-3DI44N-5}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3DI44N-5}}}\moddef{Functions for plotting and interacting~{\nwtagstyle{}\subpageref{NWaGG5Z-3DI44N-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-3DI44N-4}{\relax}\nwenddeflinemarkup
 def render_graph(G,fig,ax):
      if G is None:
             return
@@ -832,9 +831,9 @@ def render_graph(G,fig,ax):
           
      ax.axis('off') # turn off box surrounding plot
      fig.canvas.draw()
-\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{66}\nwdocspar
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{64}\nwdocspar
 
-\nwenddocs{}\nwbegincode{67}\sublabel{NWaGG5Z-3Ujbzt-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3Ujbzt-1}}}\moddef{Set up edge colors depending on graph type~{\nwtagstyle{}\subpageref{NWaGG5Z-3Ujbzt-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-3DI44N-5}}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{65}\sublabel{NWaGG5Z-3Ujbzt-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3Ujbzt-1}}}\moddef{Set up edge colors depending on graph type~{\nwtagstyle{}\subpageref{NWaGG5Z-3Ujbzt-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-3DI44N-5}}\nwenddeflinemarkup
 edgecol = None
 if G.graph['type'] == 'mst':
      edgecol = 'g'
@@ -846,10 +845,10 @@ elif G.graph['type'] == 'dt':
      edgecol = 'b'
 elif G.graph['type'][-3:] == 'nng':
      edgecol = 'm'
-\nwused{\\{NWaGG5Z-3DI44N-5}}\nwendcode{}\nwbegindocs{68}\nwdocspar
+\nwused{\\{NWaGG5Z-3DI44N-5}}\nwendcode{}\nwbegindocs{66}\nwdocspar
 
 
-\nwenddocs{}\nwbegincode{69}\sublabel{NWaGG5Z-2RD3q9-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-2RD3q9-1}}}\moddef{Iterate through graph edges and draw as segments~{\nwtagstyle{}\subpageref{NWaGG5Z-2RD3q9-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-3DI44N-5}}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{67}\sublabel{NWaGG5Z-2RD3q9-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-2RD3q9-1}}}\moddef{Iterate through graph edges and draw as segments~{\nwtagstyle{}\subpageref{NWaGG5Z-2RD3q9-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-3DI44N-5}}\nwenddeflinemarkup
 
 #for elt in list(G.nodes(data=True)):
 #     print(elt)
@@ -858,7 +857,7 @@ for  (nidx1, nidx2) in G.edges:
     x1, y1 = G.nodes[nidx1]['coods']
     x2, y2 = G.nodes[nidx2]['coods']
     ax.plot([x1,x2],[y1,y2],'-', color=edgecol)
-\nwused{\\{NWaGG5Z-3DI44N-5}}\nwendcode{}\nwbegindocs{70}\nwdocspar
+\nwused{\\{NWaGG5Z-3DI44N-5}}\nwendcode{}\nwbegindocs{68}\nwdocspar
 
 Because the \textit{interior} of the tour has to be colored, we render it as a polygon patch, and not
 just as a bunch of edges. Since I've stored the tour as a generic graph, 
@@ -867,7 +866,7 @@ the edges in the order encountered along the TSP.
 
 But this order can trivially be extracted using depth first search. 
 
-\nwenddocs{}\nwbegincode{71}\sublabel{NWaGG5Z-KZycx-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-KZycx-1}}}\moddef{Draw tour as polygon patch~{\nwtagstyle{}\subpageref{NWaGG5Z-KZycx-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-3DI44N-5}}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{69}\sublabel{NWaGG5Z-KZycx-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-KZycx-1}}}\moddef{Draw tour as polygon patch~{\nwtagstyle{}\subpageref{NWaGG5Z-KZycx-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-3DI44N-5}}\nwenddeflinemarkup
 from networkx.algorithms.traversal.depth_first_search import dfs_edges
 node_coods = []
 for (nidx1, nidx2) in dfs_edges(G):
@@ -882,7 +881,7 @@ polygon = Polygon(node_coods, closed=True, \\
                   facecolor=(255/255, 255/255, 102/255,0.5), \\
                   edgecolor='k', linewidth=1)
 ax.add_patch(polygon)
-\nwused{\\{NWaGG5Z-3DI44N-5}}\nwendcode{}\nwbegindocs{72}\nwdocspar
+\nwused{\\{NWaGG5Z-3DI44N-5}}\nwendcode{}\nwbegindocs{70}\nwdocspar
 
 
 
@@ -894,18 +893,18 @@ but the indices recorded in the nodes may be in a different order.
 Hence, we explicitly define edges from two different graphs on the same set of nodes
 as being equal, if they are equal as sorted lists.
 
-\nwenddocs{}\nwbegincode{73}\sublabel{NWaGG5Z-b3I3C-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-b3I3C-1}}}\moddef{Functions dealing with intersecting two geometric graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-b3I3C-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{\relax}{NWaGG5Z-b3I3C-2}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{71}\sublabel{NWaGG5Z-b3I3C-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-b3I3C-1}}}\moddef{Functions dealing with intersecting two geometric graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-b3I3C-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{\relax}{NWaGG5Z-b3I3C-2}\nwenddeflinemarkup
 def edge_equal_p(e1,e2):
      e1 = sorted(list(e1))
      e2 = sorted(list(e2))
      return (e1==e2)
-\nwalsodefined{\\{NWaGG5Z-b3I3C-2}\\{NWaGG5Z-b3I3C-3}}\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{74}\nwdocspar
+\nwalsodefined{\\{NWaGG5Z-b3I3C-2}\\{NWaGG5Z-b3I3C-3}}\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{72}\nwdocspar
 
 To find the set of edges common to two graphs on the same set of nodes, we take take each
 edge from one of the graphs and check whether it exists in the other. 
 
 
-\nwenddocs{}\nwbegincode{75}\sublabel{NWaGG5Z-b3I3C-2}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-b3I3C-2}}}\moddef{Functions dealing with intersecting two geometric graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-b3I3C-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-b3I3C-1}{NWaGG5Z-b3I3C-3}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{73}\sublabel{NWaGG5Z-b3I3C-2}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-b3I3C-2}}}\moddef{Functions dealing with intersecting two geometric graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-b3I3C-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-b3I3C-1}{NWaGG5Z-b3I3C-3}\nwenddeflinemarkup
 def list_common_edges(g1, g2):
      common_edges = []
      for e1 in g1.edges:
@@ -913,17 +912,17 @@ def list_common_edges(g1, g2):
              if  edge_equal_p(e1,e2):
                   common_edges.append(e1)
      return common_edges
-\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{76}\nwdocspar
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{74}\nwdocspar
 
 Finally, just a small function that tests if two graphs intersect. 
 
-\nwenddocs{}\nwbegincode{77}\sublabel{NWaGG5Z-b3I3C-3}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-b3I3C-3}}}\moddef{Functions dealing with intersecting two geometric graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-b3I3C-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-b3I3C-2}{\relax}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{75}\sublabel{NWaGG5Z-b3I3C-3}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-b3I3C-3}}}\moddef{Functions dealing with intersecting two geometric graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-b3I3C-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-b3I3C-2}{\relax}\nwenddeflinemarkup
 def graphs_intersect_p(g1,g2):
      flag = False
      if list_common_edges(g1,g2):     
           flag = True 
      return flag
-\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{78}\nwdocspar
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{76}\nwdocspar
 
 \section{Checking Hamiltonicity}
 
@@ -937,11 +936,11 @@ Because the author is lazy, he will unabashedly copy and paste code for such a r
 \url{https://gist.github.com/mikkelam/ab7966e7ab1c441f947b}
 
 If needed, it could be sped up by other algorithmic techniques. 
-But the time for such micro-optimization, like that of casting 
+But the time for such micro-optimizations, like that of casting 
 Excalibur back into the Lake, is far off. 
 
 
-\nwenddocs{}\nwbegincode{79}\sublabel{NWaGG5Z-4cZhfD-3}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-3}}}\moddef{Generic utility classes and functions~{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-4cZhfD-2}{\relax}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{77}\sublabel{NWaGG5Z-4cZhfD-3}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-3}}}\moddef{Generic utility classes and functions~{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-4cZhfD-2}{\relax}\nwenddeflinemarkup
 def hamilton(G):
     F = [(G,[list(G.nodes())[0]])]
     n = G.number_of_nodes()
@@ -962,15 +961,114 @@ def hamilton(G):
             else:
                 F.append((g,p))
     return None
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{78}\nwdocspar
+
+
+
+\section{Experiments}
+\subsection{Intersection behavior for uniformly randomly generated instances}
+
+
+
+In this experiment we take point clouds of size \verb|ptsmin|, \verb|ptsmin+skipval|, \verb|ptsmin+2*skipval| $\ldots$ uptil \verb|ptsmax| (or thereabouts) 
+For each such point-cloud  size we generate \verb|numrunsper| point-clouds, and then find how often the 
+TSP generated with Concorde and the various graph types intersect one another (in terms of percentage).
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=18cm]{./exptimages/expt_intersection_behavior.pdf}
+  \caption{\label{fig:interscn} Over uniformly randomly generated instances in $[0,1]^2$ the percentage of the intersections of 1-nng, mst, delaunay with TSP is plotted. }
+\end{figure}
+
+For each point-cloud size we plot we calculate the average percentage and then plot the resulting 
+curve. Also to account for error, we also shade the interval lying one standard deviation below the mean 
+and one standard deviation above i.e. $[\mu-\sigma, \mu+\sigma]$ is shaded for each point-cloud size. 
+
+
+%{\color{red} Why is $\mu+\sigma$ going slightly over 100 for delaunay?? This is a minor technical issue however, can be fixed later} 
+
+
+\nwenddocs{}\nwbegincode{79}\sublabel{NWaGG5Z-3zYcKb-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3zYcKb-1}}}\moddef{Experiments~{\nwtagstyle{}\subpageref{NWaGG5Z-3zYcKb-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwenddeflinemarkup
+def expt_intersection_behavior():
+     expt_name           = 'expt_intersection_behavior'
+     expt_plot_file_extn = '.pdf'
+
+     ptsmin   = 10
+     ptsmax   = 200
+     skipval  = 10
+
+     numrunsper    = 20
+     cols_1nng     = \{\}
+     cols_mst      = \{\}
+     cols_delaunay = \{\}
+     for numpts in range(ptsmin,ptsmax,skipval):
+          cols_1nng[numpts]     = []
+          cols_mst[numpts]      = []
+          cols_delaunay[numpts] = []
+          for runcount in range(numrunsper):
+               pts           = uniform_points(numpts)
+               nng1_graph    = get_knng_graph(pts,k=1)
+               mst_graph     = get_mst_graph(pts)
+               del_graph     = get_delaunay_tri_graph(pts)
+               conctsp_graph = get_concorde_tsp_graph(pts)
+               
+               cols_1nng[numpts].append(100*len(list_common_edges(nng1_graph,conctsp_graph))/len(conctsp_graph.edges) )
+               cols_mst[numpts].append(100*len(list_common_edges(mst_graph,conctsp_graph)) /len(conctsp_graph.edges) )
+               cols_delaunay[numpts].append(100*len(list_common_edges(del_graph,conctsp_graph)) /len(conctsp_graph.edges) )
+
+     fig, ax = plt.subplots()
+     ax.set_title(r"Intersection \\% between Euc. 2D TSP and Various Graphs" "\\n"  r"on Random Uniform points in $[0,1]^2$", fontdict=\{'fontsize':15\})
+     ax.set_xlim([ptsmin,ptsmax-skipval])
+     ax.set_ylim([0,110])
+     ax.set_xlabel("Number of points in point-cloud")
+     ax.set_ylabel("Percentage")
+     ax.set_xticks(range(ptsmin,ptsmax,skipval))
+     
+     def arithmetic_mean(nums):
+          return sum(nums)/len(nums)
+     
+     cols_1nng_min = [ min(cols_1nng[key]) for key in sorted(cols_1nng)]
+     cols_1nng_max = [ max(cols_1nng[key]) for key in sorted(cols_1nng)]
+     cols_1nng_am  = np.asarray([ arithmetic_mean(cols_1nng[key]) for key in sorted(cols_1nng)])
+     cols_1nng_std = np.asarray([ np.std(cols_1nng[key]) for key in sorted(cols_1nng)])
+     
+     cols_mst_min = [ min(cols_mst[key]) for key in sorted(cols_mst)]
+     cols_mst_max = [ max(cols_mst[key]) for key in sorted(cols_mst)]
+     cols_mst_am  = np.asarray([ arithmetic_mean(cols_mst[key]) for key in sorted(cols_mst)])
+     cols_mst_std = np.asarray([ np.std(cols_mst[key]) for key in sorted(cols_mst)])
+     
+     cols_delaunay_min = [ min(cols_delaunay[key]) for key in sorted(cols_delaunay)]
+     cols_delaunay_max = [ max(cols_delaunay[key]) for key in sorted(cols_delaunay)]
+     cols_delaunay_am = np.asarray([ arithmetic_mean(cols_delaunay[key]) for key in sorted(cols_delaunay)])
+     cols_delaunay_std = np.asarray([ np.std(cols_delaunay[key]) for key in sorted(cols_delaunay)])
+
+     xs = range(ptsmin,ptsmax,skipval)
+
+     ax.plot(xs,cols_delaunay_am,'go-', label='Delaunay')
+     #ax.fill_between(xs, cols_delaunay_min, cols_delaunay_max,  color='g', alpha=0.3)     
+     ax.fill_between(xs, cols_delaunay_am-cols_delaunay_std, \\
+                         cols_delaunay_am+cols_delaunay_std ,  color='g', alpha=0.3)     
+     
+     ax.plot(xs,cols_mst_am,'bo-', label='MST')
+     #ax.fill_between(xs, cols_mst_min, cols_mst_max,  color='b', alpha=0.3)     
+     ax.fill_between(xs, cols_mst_am-cols_mst_std, \\
+                         cols_mst_am+cols_mst_std ,  color='b', alpha=0.3)     
+
+     ax.plot(xs,cols_1nng_am,'ro-', label='1-NNG')
+     #ax.fill_between(xs, cols_1nng_min, cols_1nng_max,  color='r', alpha=0.3)     
+     ax.fill_between(xs, cols_1nng_am-cols_1nng_std, \\
+                         cols_1nng_am+cols_1nng_std ,  color='r', alpha=0.3)     
+
+     ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+     ax.grid(color='gray',linestyle='--',linewidth=0.5)
+     plt.savefig(expt_name+expt_plot_file_extn, bbox_inches='tight')
+     print("Plot File written to disk")
 \nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{80}\nwdocspar
+     
+\subsection{Intersection behavior for TSPLIB instances}
 
 
 
-\section{Hypothesis testing!}
-
-
-\nwenddocs{}\nwbegincode{81}\sublabel{NWaGG5Z-3pWXcO-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3pWXcO-1}}}\moddef{Testing hypotheses~{\nwtagstyle{}\subpageref{NWaGG5Z-3pWXcO-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwenddeflinemarkup
-\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{82}\nwdocspar
 
 
 
@@ -986,20 +1084,20 @@ def hamilton(G):
 \nwixlogsorted{c}{{Data Generation}{NWaGG5Z-2uhtAA-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-2uhtAA-1}}}%
 \nwixlogsorted{c}{{Draw tour as polygon patch}{NWaGG5Z-KZycx-1}{\nwixu{NWaGG5Z-3DI44N-5}\nwixd{NWaGG5Z-KZycx-1}}}%
 \nwixlogsorted{c}{{Enter type of point set to generate}{NWaGG5Z-1TJD4t-1}{\nwixu{NWaGG5Z-3DI44N-3}\nwixd{NWaGG5Z-1TJD4t-1}}}%
+\nwixlogsorted{c}{{Experiments}{NWaGG5Z-3zYcKb-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-3zYcKb-1}}}%
 \nwixlogsorted{c}{{Functions dealing with intersecting two geometric graphs}{NWaGG5Z-b3I3C-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-b3I3C-1}\nwixd{NWaGG5Z-b3I3C-2}\nwixd{NWaGG5Z-b3I3C-3}}}%
 \nwixlogsorted{c}{{Functions for generating various graphs}{NWaGG5Z-2XNY09-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-2XNY09-1}\nwixd{NWaGG5Z-2XNY09-2}\nwixd{NWaGG5Z-2XNY09-3}\nwixd{NWaGG5Z-2XNY09-4}\nwixd{NWaGG5Z-2XNY09-5}\nwixd{NWaGG5Z-2XNY09-6}}}%
 \nwixlogsorted{c}{{Functions for plotting and interacting}{NWaGG5Z-3DI44N-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-3DI44N-1}\nwixd{NWaGG5Z-3DI44N-2}\nwixd{NWaGG5Z-3DI44N-3}\nwixd{NWaGG5Z-3DI44N-4}\nwixd{NWaGG5Z-3DI44N-5}}}%
 \nwixlogsorted{c}{{Generate convex hull of points remaining in \verb|points_tmp|}{NWaGG5Z-1qB5IG-1}{\nwixu{NWaGG5Z-2XNY09-4}\nwixd{NWaGG5Z-1qB5IG-1}}}%
 \nwixlogsorted{c}{{Generate TSP cycle and convert into NetworkX graph}{NWaGG5Z-ixiQd-1}{\nwixu{NWaGG5Z-2XNY09-5}\nwixd{NWaGG5Z-ixiQd-1}}}%
 \nwixlogsorted{c}{{Generic utility classes and functions}{NWaGG5Z-4cZhfD-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-4cZhfD-1}\nwixd{NWaGG5Z-4cZhfD-2}\nwixd{NWaGG5Z-4cZhfD-3}}}%
-\nwixlogsorted{c}{{Headers}{NWaGG5Z-2BmRoZ-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-2BmRoZ-1}\nwixd{NWaGG5Z-2BmRoZ-2}}}%
+\nwixlogsorted{c}{{Headers}{NWaGG5Z-2BmRoZ-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-2BmRoZ-1}}}%
 \nwixlogsorted{c}{{Iterate through graph edges and draw as segments}{NWaGG5Z-2RD3q9-1}{\nwixu{NWaGG5Z-3DI44N-5}\nwixd{NWaGG5Z-2RD3q9-1}}}%
 \nwixlogsorted{c}{{Join two remaining points by an edge in \verb|onion_graph|}{NWaGG5Z-1QE0qW-1}{\nwixu{NWaGG5Z-2XNY09-4}\nwixd{NWaGG5Z-1QE0qW-1}}}%
 \nwixlogsorted{c}{{Remove points reported in the convex hull from \verb|points_tmp|}{NWaGG5Z-ArYW6-1}{\nwixu{NWaGG5Z-2XNY09-4}\nwixd{NWaGG5Z-ArYW6-1}}}%
 \nwixlogsorted{c}{{Set graph attributes}{NWaGG5Z-1NBtrs-1}{\nwixu{NWaGG5Z-2XNY09-5}\nwixd{NWaGG5Z-1NBtrs-1}}}%
 \nwixlogsorted{c}{{Set up edge colors depending on graph type}{NWaGG5Z-3Ujbzt-1}{\nwixu{NWaGG5Z-3DI44N-5}\nwixd{NWaGG5Z-3Ujbzt-1}}}%
 \nwixlogsorted{c}{{Synthetic data}{NWaGG5Z-1lO5Wy-1}{\nwixu{NWaGG5Z-2uhtAA-1}\nwixd{NWaGG5Z-1lO5Wy-1}}}%
-\nwixlogsorted{c}{{Testing hypotheses}{NWaGG5Z-3pWXcO-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-3pWXcO-1}}}%
 \nwixlogsorted{c}{{TSPLIB data}{NWaGG5Z-Bg7qX-1}{\nwixu{NWaGG5Z-2uhtAA-1}\nwixd{NWaGG5Z-Bg7qX-1}}}%
 \nwixlogsorted{c}{{tspnng.py}{NWaGG5Z-HXUTc-1}{\nwixd{NWaGG5Z-HXUTc-1}}}%
 \nwixlogsorted{c}{{Update \verb|onion_graph|}{NWaGG5Z-24g2s3-1}{\nwixu{NWaGG5Z-2XNY09-4}\nwixd{NWaGG5Z-24g2s3-1}}}%

@@ -483,4 +483,77 @@ def graphs_intersect_p(g1,g2):
      if list_common_edges(g1,g2):     
           flag = True 
      return flag
+def expt_intersection_behavior():
+     expt_name           = 'expt_intersection_behavior'
+     expt_plot_file_extn = '.pdf'
 
+     ptsmin   = 10
+     ptsmax   = 200
+     skipval  = 10
+
+     numrunsper    = 20
+     cols_1nng     = {}
+     cols_mst      = {}
+     cols_delaunay = {}
+     for numpts in range(ptsmin,ptsmax,skipval):
+          cols_1nng[numpts]     = []
+          cols_mst[numpts]      = []
+          cols_delaunay[numpts] = []
+          for runcount in range(numrunsper):
+               pts           = uniform_points(numpts)
+               nng1_graph    = get_knng_graph(pts,k=1)
+               mst_graph     = get_mst_graph(pts)
+               del_graph     = get_delaunay_tri_graph(pts)
+               conctsp_graph = get_concorde_tsp_graph(pts)
+               
+               cols_1nng[numpts].append(100*len(list_common_edges(nng1_graph,conctsp_graph))/len(conctsp_graph.edges) )
+               cols_mst[numpts].append(100*len(list_common_edges(mst_graph,conctsp_graph)) /len(conctsp_graph.edges) )
+               cols_delaunay[numpts].append(100*len(list_common_edges(del_graph,conctsp_graph)) /len(conctsp_graph.edges) )
+
+     fig, ax = plt.subplots()
+     ax.set_title(r"Intersection \% between Euc. 2D TSP and Various Graphs" "\n"  r"on Random Uniform points in $[0,1]^2$", fontdict={'fontsize':15})
+     ax.set_xlim([ptsmin,ptsmax-skipval])
+     ax.set_ylim([0,110])
+     ax.set_xlabel("Number of points in point-cloud")
+     ax.set_ylabel("Percentage")
+     ax.set_xticks(range(ptsmin,ptsmax,skipval))
+     
+     def arithmetic_mean(nums):
+          return sum(nums)/len(nums)
+     
+     cols_1nng_min = [ min(cols_1nng[key]) for key in sorted(cols_1nng)]
+     cols_1nng_max = [ max(cols_1nng[key]) for key in sorted(cols_1nng)]
+     cols_1nng_am  = np.asarray([ arithmetic_mean(cols_1nng[key]) for key in sorted(cols_1nng)])
+     cols_1nng_std = np.asarray([ np.std(cols_1nng[key]) for key in sorted(cols_1nng)])
+     
+     cols_mst_min = [ min(cols_mst[key]) for key in sorted(cols_mst)]
+     cols_mst_max = [ max(cols_mst[key]) for key in sorted(cols_mst)]
+     cols_mst_am  = np.asarray([ arithmetic_mean(cols_mst[key]) for key in sorted(cols_mst)])
+     cols_mst_std = np.asarray([ np.std(cols_mst[key]) for key in sorted(cols_mst)])
+     
+     cols_delaunay_min = [ min(cols_delaunay[key]) for key in sorted(cols_delaunay)]
+     cols_delaunay_max = [ max(cols_delaunay[key]) for key in sorted(cols_delaunay)]
+     cols_delaunay_am = np.asarray([ arithmetic_mean(cols_delaunay[key]) for key in sorted(cols_delaunay)])
+     cols_delaunay_std = np.asarray([ np.std(cols_delaunay[key]) for key in sorted(cols_delaunay)])
+
+     xs = range(ptsmin,ptsmax,skipval)
+
+     ax.plot(xs,cols_delaunay_am,'go-', label='Delaunay')
+     #ax.fill_between(xs, cols_delaunay_min, cols_delaunay_max,  color='g', alpha=0.3)     
+     ax.fill_between(xs, cols_delaunay_am-cols_delaunay_std, \
+                         cols_delaunay_am+cols_delaunay_std ,  color='g', alpha=0.3)     
+     
+     ax.plot(xs,cols_mst_am,'bo-', label='MST')
+     #ax.fill_between(xs, cols_mst_min, cols_mst_max,  color='b', alpha=0.3)     
+     ax.fill_between(xs, cols_mst_am-cols_mst_std, \
+                         cols_mst_am+cols_mst_std ,  color='b', alpha=0.3)     
+
+     ax.plot(xs,cols_1nng_am,'ro-', label='1-NNG')
+     #ax.fill_between(xs, cols_1nng_min, cols_1nng_max,  color='r', alpha=0.3)     
+     ax.fill_between(xs, cols_1nng_am-cols_1nng_std, \
+                         cols_1nng_am+cols_1nng_std ,  color='r', alpha=0.3)     
+
+     ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+     ax.grid(color='gray',linestyle='--',linewidth=0.5)
+     plt.savefig(expt_name+expt_plot_file_extn, bbox_inches='tight')
+     print("Plot File written to disk")
