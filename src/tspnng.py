@@ -9,6 +9,7 @@ import scipy as sp
 import numpy as np
 import random
 import networkx as nx
+from prettytable import PrettyTable
 
 from sklearn.cluster import KMeans
 import argparse, os, sys, time
@@ -17,7 +18,6 @@ init() # this line does nothing on Linux/Mac,
        # but is important for Windows to display
        # colored text. See https://pypi.org/project/colorama/
 import yaml
-from prettytable import PrettyTable
 
 def get_names_of_all_euclidean2D_instances(dirpath=\
          "./sym-tsp-tsplib/instances/euclidean_instances_yaml/" ):
@@ -78,6 +78,26 @@ class TSPNNGInput:
 
       def generate_geometric_graph(self,graph_code):
            pass
+def hamilton(G):
+    F = [(G,[list(G.nodes())[0]])]
+    n = G.number_of_nodes()
+    while F:
+        graph,path = F.pop()
+        confs = []
+        neighbors = (node for node in graph.neighbors(path[-1]) 
+                     if node != path[-1]) #exclude self loops
+        for neighbor in neighbors:
+            conf_p = path[:]
+            conf_p.append(neighbor)
+            conf_g = nx.Graph(graph)
+            conf_g.remove_node(path[-1])
+            confs.append((conf_g,conf_p))
+        for g,p in confs:
+            if len(p)==n:
+                return p
+            else:
+                F.append((g,p))
+    return None
 def run_handler():
     fig, ax =  plt.subplots()
     run = TSPNNGInput()
@@ -148,9 +168,13 @@ def wrapperkeyPressHandler(fig,ax, run):
                      fig.canvas.draw()                   
                elif event.key in ['t' or 'T']:
                      tsp_graph = get_concorde_tsp_graph(run.points)
-                     graph_fns = [(get_delaunay_tri_graph, 'Delaunay Triangulation'), \
-                                  (get_mst_graph         , 'Minimum Spanning Tree'), \
+                     graph_fns = [(get_delaunay_tri_graph, 'Delaunay Triangulation (D)'), \
+                                  (get_mst_graph         , 'Minimum Spanning Tree (M)'), \
                                   (get_onion_graph       , 'Onion') ]
+
+                     from functools import partial
+                     for k in range(1,5): 
+                        graph_fns.append((partial(get_knng_graph, k=k), str(k)+'_NNG'))
 
                      tbl             = PrettyTable()
                      tbl.field_names = ["Spanning Graph (G)", "G", "G \cap T", "T", "(G \cap T)/T"]
@@ -167,6 +191,8 @@ def wrapperkeyPressHandler(fig,ax, run):
                                      num_common_edges_with_tsp, \
                                      num_tsp_edges,             \
                                      "{perc:3.2f}".format(perc=1e2*num_common_edges_with_tsp/num_tsp_edges)+ ' %' ])
+                                     
+                     print("Table of number of edges in indicated graph")
                      print(tbl)
                      render_graph(tsp_graph,fig,ax)
                      fig.canvas.draw()

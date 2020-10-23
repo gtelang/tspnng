@@ -29,6 +29,7 @@ import scipy as sp
 import numpy as np
 import random
 import networkx as nx
+from prettytable import PrettyTable
 
 from sklearn.cluster import KMeans
 import argparse, os, sys, time
@@ -290,17 +291,18 @@ First we compute the TSP and then print a table mentioning how many of its edges
 standard graphs. See \url{https://pypi.org/project/prettytable/} for more information on the 
 prettytable module used to output data to terminal. 
 
-
-<<Headers>>=
-from prettytable import PrettyTable
-@
-
+For computing the $k$-NNG we compute from $k=1$ upto a value of $k=2+\sqrt{n}$ where $n$ is the number 
+of input points. This allows a ``natural'' way to scale the value of $k$ for increasing values of $n$. 
 
 <<Compute TSP and find common edges with various spanning graphs>>=
 tsp_graph = get_concorde_tsp_graph(run.points)
-graph_fns = [(get_delaunay_tri_graph, 'Delaunay Triangulation'), \
-             (get_mst_graph         , 'Minimum Spanning Tree'), \
+graph_fns = [(get_delaunay_tri_graph, 'Delaunay Triangulation (D)'), \
+             (get_mst_graph         , 'Minimum Spanning Tree (M)'), \
              (get_onion_graph       , 'Onion') ]
+
+from functools import partial
+for k in range(1,5): 
+   graph_fns.append((partial(get_knng_graph, k=k), str(k)+'_NNG'))
 
 tbl             = PrettyTable()
 tbl.field_names = ["Spanning Graph (G)", "G", "G \cap T", "T", "(G \cap T)/T"]
@@ -317,6 +319,8 @@ for ctr, (fn_body, fn_name) in zip(range(1,1+len(graph_fns)), graph_fns):
                 num_common_edges_with_tsp, \
                 num_tsp_edges,             \
                 "{perc:3.2f}".format(perc=1e2*num_common_edges_with_tsp/num_tsp_edges)+ ' %' ])
+                
+print("Table of number of edges in indicated graph")
 print(tbl)
 render_graph(tsp_graph,fig,ax)
 fig.canvas.draw()

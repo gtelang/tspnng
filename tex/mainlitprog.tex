@@ -290,6 +290,8 @@ First we compute the TSP and then print a table mentioning how many of its edges
 standard graphs. See \url{https://pypi.org/project/prettytable/} for more information on the 
 prettytable module used to output data to terminal. 
 
+For computing the $k$-NNG we compute from $k=1$ upto a value of $k=2+\sqrt{n}$ where $n$ is the number of input points.
+This allows a ``natural'' way to scale the value of $k$ for increasing values of $n$. 
 
 \nwenddocs{}\nwbegincode{21}\sublabel{NWaGG5Z-2BmRoZ-2}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-2BmRoZ-2}}}\moddef{Headers~{\nwtagstyle{}\subpageref{NWaGG5Z-2BmRoZ-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-2BmRoZ-1}{\relax}\nwenddeflinemarkup
 from prettytable import PrettyTable
@@ -298,9 +300,13 @@ from prettytable import PrettyTable
 
 \nwenddocs{}\nwbegincode{23}\sublabel{NWaGG5Z-1xEGS-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-1xEGS-1}}}\moddef{Compute TSP and find common edges with various spanning graphs~{\nwtagstyle{}\subpageref{NWaGG5Z-1xEGS-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-3DI44N-3}}\nwenddeflinemarkup
 tsp_graph = get_concorde_tsp_graph(run.points)
-graph_fns = [(get_delaunay_tri_graph, 'Delaunay Triangulation'), \\
-             (get_mst_graph         , 'Minimum Spanning Tree'), \\
+graph_fns = [(get_delaunay_tri_graph, 'Delaunay Triangulation (D)'), \\
+             (get_mst_graph         , 'Minimum Spanning Tree (M)'), \\
              (get_onion_graph       , 'Onion') ]
+
+from functools import partial
+for k in range(1,2+int(np.sqrt(len(run.points)))): 
+   graph_fns.append((partial(get_knng_graph, k=k), str(k)+'_NNG'))
 
 tbl             = PrettyTable()
 tbl.field_names = ["Spanning Graph (G)", "G", "G \\cap T", "T", "(G \\cap T)/T"]
