@@ -18,19 +18,25 @@
 
      \begin{figure}[ht]
        \centering
-       \includegraphics[width=6cm]{miscimages/closest-pair-example.eps}
-       \caption{\label{fig:closestpair} Example where the segment joining the closest pair of points does not lie along the TSP tour}
+       \includegraphics[width=5cm]{asytikz/closest-pair-example.pdf}
+       \caption{\label{fig:closestpair} Example where the segment (blue) joining the closest pair of points does not lie along the TSP tour (gray)}
      \end{figure}
 
-
+     One can also construct a family of instances, where the nearest neighbor graph intersects the TSP tour, exactly twice as shown in \autoref{fig:ladder}. 
 
      However, all attempts at constructing examples where the intersection with the 1-NNG is \textit{empty} failed. \footnote{Notice that \autoref{fig:closestpair} is not a counterexample!}And so did a
      literature search! The closest matching reference we found was \cite{hougardy2014edge} which \textit{eliminates} edges 
      that cannot be part of a Euclidean TSP tour on a given instance of points, based on checking a few simple, local geometric inequalities. \footnote{The author believes this will be a userful reference for future work}
      There was also a very much related discussion thread on David Eppstein's \href{https://www.ics.uci.edu/~eppstein/junkyard/dt-not-tsp.html}{webpage}. 
      A small counter-example to Michael Shamos' conjecutre from his unpublished notes --- that the TSP is a \textit{subgraph} of the Delaunay --- is given near the bottom of that link. 
-     
+      
      But the thread says nothing about whether the DT \textit{must} intersect the TSP at least a certain fraction of times, or indeed even once. \footnote{Perhaps, we can follow up with Dillencourt or Eppstein if they have notes on this?}
+    
+      \begin{figure}[H]
+       \centering
+       \includegraphics[width=10cm]{asytikz/ladder.pdf}
+       \caption{\label{fig:ladder} Example where the nearest neighbor graph shares \textit{only} two edges with the TSP, The edges of the abstract nearest neighbor graph (red) are superimposed on top of the TSP tour (gray) through the given points. But note that the TSP tour shares each of its edge with the 2-NNG. }
+     \end{figure}
 
      See also this \href{https://web.colby.edu/thegeometricviewpoint/2015/03/09/delauney-triangulations-and-the-traveling-salesman/}{blogpost} on the topic, which 
      talks about using the Delaunay Triangulations for generating heuristically good (no bounds are given) TSP tours. Another approach using Del Tris
@@ -41,7 +47,7 @@
      \footnote{The landmark PTAS'es for the TSP, such as those of Mitchell \cite{mitchell1999guillotine} and Arora\cite{arora1996polynomial},  are too complicated to be put into code (yes, even Python!). On the other hand, the Concorde library \cite{applegate2009certification} or Helsgaun's methods\cite{helsgaun2000effective}  use a whole kitchen-sink of practical techniques such as $k$-local swaps, branch-and-bound, branch-and-cut to generate  near-optimal (if not optimal) tours very fast. But it would be interesting to investigate the behavior of the various graphs with respect to the techniques used in the PTAS'es of Mitchell and Arora. Maybe we can augment them with the probabilistic method (the pigeon-hole principle on steroids!) or something from Ramsey Theory to prove the existence of an intersection??}.
 
      To spur our intuition,  we investigate the conjecture experimentally in this short report 
-     \footnote{This report has been written as a literate program \cite{knuth1984literate,ramsey2008noweb} to weave together the code, documentations, explanations and generated data into the same document. Brickbats and bouqets on the author's preliminary stab at Literate Programming are most welcome.}
+     \footnote{This report has been written as a literate program \cite{knuth1984literate,ramsey2008noweb} to weave together the code, documentations, explanations, references and generated data into the same document. Brickbats and bouqets on the author's preliminary stab at Literate Programming are most welcome.}
      using TSPLIB and Concorde in tandem. TSPLIB \cite{reinelt1991tsplib} is an online collection of medium to large scale instances of the Metric, the Euclidean and a few other variants of the TSP 
      Concorde can compute the optimal solutions in nearly all the instances; the certificate of optimality --- as always! --- coming from the comparsion of the computed tour-length against 
      a lower bounds (also computed by Concorde).

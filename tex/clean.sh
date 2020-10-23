@@ -8,3 +8,5 @@ rm *.blg
 rm *.bbl
 rm *-blx.bib
 rm *.out
+rm *.res
+rm *.sol

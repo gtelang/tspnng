@@ -28,6 +28,73 @@ where you want to include the image just do the usual ~\input~ TikZ thing.
 ** Povray
 
 * Drawing Code
+** Closest Pair Example
+#+BEGIN_SRC asy :tangle closest-pair-example.asy
+size(6cm);
+settings.outformat = "pdf";
+
+pair p=(0,1);
+pair q=(0,-1);
+
+pair ln = (-3.5,1.5);
+pair rn = (3.5,1.5);
+
+pair ls = (-3.5,-1.5);
+pair rs = (3.5,-1.5);
+
+
+draw(p--q,1.5+blue);
+draw(ln--p--rn--rs--q--ls--cycle, 1+gray);
+int dotsz=8;
+dot(p,dotsz+black);
+dot(q,dotsz+black);
+dot(ln,dotsz+black);
+dot(rn,dotsz+black);
+dot(ls,dotsz+black);
+dot(rs,dotsz+black);
+
+#+END_SRC
+
+** Ladder Example
+#+BEGIN_SRC asy :tangle ladder.asy
+size(5cm);
+settings.outformat = "pdf";
+
+
+for (int i=-3 ;  i<= 2 ; ++i){
+      draw((2*i,0)--(2*i+2,0), gray);
+      draw((2*i,1)--(2*i+2,1),gray);
+}
+
+real l = 3;
+draw((-2*l,0)--(-2*l,1),gray);
+draw((2*l,0)--(2*l,1),gray);
+
+
+draw((-2*l,1){(-1,1)}..{(1,1)}(-2*l,0),red);
+draw((2*l,1){(1,1)}..{(-1,1)}(2*l,0),red);
+
+for (int i=-2 ;  i<= 2 ; ++i){
+
+      draw((2*i,0)--(2*i,1),red);
+      dot((2*i,1));
+      dot((2*i,0));
+}
+
+
+
+
+dot((2*l,1));
+dot((2*l,0));
+dot((-2*l,1));
+dot((-2*l,0));
+
+
+
+#+END_SRC
+
+
+
 * *scratch*
 ** Histogram example from Asymptote webpage
 
