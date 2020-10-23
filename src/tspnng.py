@@ -178,15 +178,15 @@ def wrapperkeyPressHandler(fig,ax, run):
 
                      tbl             = PrettyTable()
                      tbl.field_names = ["Spanning Graph (G)", "G", "G \cap T", "T", "(G \cap T)/T"]
+                     num_tsp_edges   = len(tsp_graph.edges)
 
-                     num_tsp_edges = len(tsp_graph.edges)
                      for ctr, (fn_body, fn_name) in zip(range(1,1+len(graph_fns)), graph_fns):
                           geometric_graph = fn_body(run.points)
                           num_graph_edges = len(geometric_graph.edges)
                           common_edges    = list_common_edges(tsp_graph, geometric_graph)
                           num_common_edges_with_tsp = len(common_edges)
 
-                          tbl.add_row([fn_name,                   \
+                          tbl.add_row([fn_name,                 \
                                      num_graph_edges,           \
                                      num_common_edges_with_tsp, \
                                      num_tsp_edges,             \
@@ -230,12 +230,13 @@ def wrapperkeyPressHandler(fig,ax, run):
                            print(Fore.YELLOW, "I did not recognize that option.", Style.RESET_ALL)
                            geometric_graph = None
 
-                     common_edges = list_common_edges(get_concorde_tsp_graph(run.points), geometric_graph)
-                     print("------------------------------------------------------------------------------")
-                     print("Number of edges in " + algo_str + " graph (TOTAL)                          :", len(geometric_graph.edges))
-                     print("Number of edges in " + algo_str + " graph which are also in Concorde TSP   :", len(common_edges))
+                     tsp_graph = get_concorde_tsp_graph(run.points)
+                     common_edges = list_common_edges( tsp_graph, geometric_graph)
+                     print(Fore.YELLOW+"------------------------------------------------------------------------------"+Style.RESET_ALL)
+                     print("Number of edges in " + algo_str + " graph                                :", len(geometric_graph.edges))
+                     print(Fore.YELLOW, "\nNumber of edges in " + algo_str + " graph which are also in Concorde TSP :", len(common_edges))
+                     print("Number of edges in " + "Concorde TSP                              :", len(tsp_graph.edges))
                      print("------------------------------------------------------------------------------", Style.RESET_ALL)
-
 
 
                      ax.set_title("Graph Type: " + geometric_graph.graph['type'] + '\n Number of nodes: ' + str(len(run.points)), fontdict={'fontsize':25})
