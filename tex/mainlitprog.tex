@@ -176,7 +176,7 @@ transparently encodes any (appropriate) Python dictionary into a YAML file. In t
 def write_to_yaml_file(data, dir_name, file_name):
    with open(dir_name + '/' + file_name, 'w') as outfile:
           yaml.dump( data, outfile, default_flow_style = False)
-\nwalsodefined{\\{NWaGG5Z-4cZhfD-2}\\{NWaGG5Z-4cZhfD-3}}\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{12}\nwdocspar
+\nwalsodefined{\\{NWaGG5Z-4cZhfD-2}\\{NWaGG5Z-4cZhfD-3}\\{NWaGG5Z-4cZhfD-4}}\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{12}\nwdocspar
 
 
 \section{Setting up TSPNNGInput class}
@@ -940,7 +940,7 @@ But the time for such micro-optimizations, like that of casting
 Excalibur back into the Lake, is far off. 
 
 
-\nwenddocs{}\nwbegincode{77}\sublabel{NWaGG5Z-4cZhfD-3}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-3}}}\moddef{Generic utility classes and functions~{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-4cZhfD-2}{\relax}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{77}\sublabel{NWaGG5Z-4cZhfD-3}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-3}}}\moddef{Generic utility classes and functions~{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-4cZhfD-2}{NWaGG5Z-4cZhfD-4}\nwenddeflinemarkup
 def hamilton(G):
     F = [(G,[list(G.nodes())[0]])]
     n = G.number_of_nodes()
@@ -962,6 +962,28 @@ def hamilton(G):
                 F.append((g,p))
     return None
 \nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{78}\nwdocspar
+
+\section{Perturbing points by prescribed factor randomly}
+
+Many point-sets are degenerate, i.e. have many points that are collinear
+or are co-circular. It thus helps to perturb the points slightly for which
+this is the case. 
+
+The amount of perturbation is controlled by the parameter $\alpha$ (where $\alpha=0$)
+corresponds to zero perturbation. {\color{red} Be careful when choosing $\alpha$; this 
+will depend on the point-cloud you are perturbing.}
+
+\nwenddocs{}\nwbegincode{79}\sublabel{NWaGG5Z-4cZhfD-4}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-4}}}\moddef{Generic utility classes and functions~{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-4cZhfD-3}{\relax}\nwenddeflinemarkup
+def perturb_points(points, alpha=0.01):
+     points = np.asarray(points)
+
+     for i in range(len(points)):
+         theta     = random.uniform(0,2*np.pi)
+         unitvec   = np.asarray([np.cos(theta), np.sin(theta)])
+         points[i] = points[i] + alpha * unitvec
+
+     return points
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{80}\nwdocspar
 
 
 
@@ -988,7 +1010,7 @@ and one standard deviation above i.e. $[\mu-\sigma, \mu+\sigma]$ is shaded for e
 %{\color{red} Why is $\mu+\sigma$ going slightly over 100 for delaunay?? This is a minor technical issue however, can be fixed later} 
 
 
-\nwenddocs{}\nwbegincode{79}\sublabel{NWaGG5Z-3zYcKb-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3zYcKb-1}}}\moddef{Experiments~{\nwtagstyle{}\subpageref{NWaGG5Z-3zYcKb-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{81}\sublabel{NWaGG5Z-3zYcKb-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3zYcKb-1}}}\moddef{Experiments~{\nwtagstyle{}\subpageref{NWaGG5Z-3zYcKb-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwenddeflinemarkup
 def expt_intersection_behavior():
      expt_name           = 'expt_intersection_behavior'
      expt_plot_file_extn = '.pdf'
@@ -1063,7 +1085,7 @@ def expt_intersection_behavior():
      ax.grid(color='gray',linestyle='--',linewidth=0.5)
      plt.savefig(expt_name+expt_plot_file_extn, bbox_inches='tight')
      print("Plot File written to disk")
-\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{80}\nwdocspar
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{82}\nwdocspar
      
 \subsection{Intersection behavior for TSPLIB instances}
 
@@ -1090,7 +1112,7 @@ def expt_intersection_behavior():
 \nwixlogsorted{c}{{Functions for plotting and interacting}{NWaGG5Z-3DI44N-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-3DI44N-1}\nwixd{NWaGG5Z-3DI44N-2}\nwixd{NWaGG5Z-3DI44N-3}\nwixd{NWaGG5Z-3DI44N-4}\nwixd{NWaGG5Z-3DI44N-5}}}%
 \nwixlogsorted{c}{{Generate convex hull of points remaining in \verb|points_tmp|}{NWaGG5Z-1qB5IG-1}{\nwixu{NWaGG5Z-2XNY09-4}\nwixd{NWaGG5Z-1qB5IG-1}}}%
 \nwixlogsorted{c}{{Generate TSP cycle and convert into NetworkX graph}{NWaGG5Z-ixiQd-1}{\nwixu{NWaGG5Z-2XNY09-5}\nwixd{NWaGG5Z-ixiQd-1}}}%
-\nwixlogsorted{c}{{Generic utility classes and functions}{NWaGG5Z-4cZhfD-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-4cZhfD-1}\nwixd{NWaGG5Z-4cZhfD-2}\nwixd{NWaGG5Z-4cZhfD-3}}}%
+\nwixlogsorted{c}{{Generic utility classes and functions}{NWaGG5Z-4cZhfD-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-4cZhfD-1}\nwixd{NWaGG5Z-4cZhfD-2}\nwixd{NWaGG5Z-4cZhfD-3}\nwixd{NWaGG5Z-4cZhfD-4}}}%
 \nwixlogsorted{c}{{Headers}{NWaGG5Z-2BmRoZ-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-2BmRoZ-1}}}%
 \nwixlogsorted{c}{{Iterate through graph edges and draw as segments}{NWaGG5Z-2RD3q9-1}{\nwixu{NWaGG5Z-3DI44N-5}\nwixd{NWaGG5Z-2RD3q9-1}}}%
 \nwixlogsorted{c}{{Join two remaining points by an edge in \verb|onion_graph|}{NWaGG5Z-1QE0qW-1}{\nwixu{NWaGG5Z-2XNY09-4}\nwixd{NWaGG5Z-1QE0qW-1}}}%

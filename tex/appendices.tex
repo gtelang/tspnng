@@ -282,43 +282,43 @@ If you have any trouble --- or detect a bug! ---  we can hash things out on Slac
       \end{itemize}
  
 
-\item[\color{red} TSP $\longsquiggly$ DELAUNAY] 
+% \item[\color{red} TSP $\longsquiggly$ DELAUNAY] 
 
-\begin{itemize}
-   \item  (Worst idea ever??) Suppose by some magic black box (Concorde! \Winkey) one has obtained the TSP tour through $n$ points.  
-          Can we then compute the Delaunay Triangulation (or MST. Recall $MST \subseteq DT$  ) of the point-set 
-          in $O(n)$ time? It certainly seems so going by the high number of edges in the TSP common to the Delaunay 
-          and MST as suggested by the tests in this writeup. Surely the $TSP \rarr MST$ question in $O(n)$ time has been studied?
-          Maybe the Okabe book on Voronoi etc. has something on this? 
+% \begin{itemize}
+%    \item  (Worst idea ever??) Suppose by some magic black box (Concorde! \Winkey) one has obtained the TSP tour through $n$ points.  
+%           Can we then compute the Delaunay Triangulation (or MST. Recall $MST \subseteq DT$  ) of the point-set 
+%           in $O(n)$ time? It certainly seems so going by the high number of edges in the TSP common to the Delaunay 
+%           and MST as suggested by the tests in this writeup. Surely the $TSP \rarr MST$ question in $O(n)$ time has been studied?
+%           Maybe the Okabe book on Voronoi etc. has something on this? 
           
           
-          It's, of course, utter baloney attempting to compute good triangulations or MSTs like this in practice but 
-          why should  that \textit{that} stop a computer scientist speculating from the comfort of his/her armchair?
+%           It's, of course, utter baloney attempting to compute good triangulations or MSTs like this in practice but 
+%           why should  that \textit{that} stop a computer scientist speculating from the comfort of his/her armchair?
 
 
-          In some vague sense might be related to the question of \textit{detecting}
-          if a triangulation is Delaunay is linear time (check with joe, if this problem is trivial/open/known. I mean 
-          detecting if a list is sorted is trivially doable in $O(n)$ as opposed to sorting which takes 
-          $\Omega(n \lg n)$ in comparsion model. Are there lower bounds in other models (streaming, online etc.) 
-          for Delaunay tri detection? Check with Joe, Mayank others. 
+%           In some vague sense might be related to the question of \textit{detecting}
+%           if a triangulation is Delaunay is linear time (check with joe, if this problem is trivial/open/known. I mean 
+%           detecting if a list is sorted is trivially doable in $O(n)$ as opposed to sorting which takes 
+%           $\Omega(n \lg n)$ in comparsion model. Are there lower bounds in other models (streaming, online etc.) 
+%           for Delaunay tri detection? Check with Joe, Mayank others. 
           
-          This reminescent of Melkman (i.e. simple poly chain $\rarr$ convex hull in $O(n)$). Samir Khuller also had work (SODA 1992, iirc) 
-          in which he was able to compute a $O(1)$ (1.25, was it?) approximations to low-weight spanning trees of max degree 3 on point-sets in $\RR^2$, 
-          from a \textit{given} MST in linear time. His paper hinged overall on a very simple but beautiful generalization of the $\Delta$ inequality 
-          \footnote{which bounded the perimeter of a triangle in terms of the sums of the distances of a point $X$ to the points of that triangle. When we set $X$ to any of the vertices of the triangle, we recover the standard $\Delta$ inequality. I forget the exact coefficients of that cited linear inequality, remember some $3 \sqrt{3}$ and a 4 in there.}
-          Might that be exploitable? Check! 
+%           This reminescent of Melkman (i.e. simple poly chain $\rarr$ convex hull in $O(n)$). Samir Khuller also had work (SODA 1992, iirc) 
+%           in which he was able to compute a $O(1)$ (1.25, was it?) approximations to low-weight spanning trees of max degree 3 on point-sets in $\RR^2$, 
+%           from a \textit{given} MST in linear time. His paper hinged overall on a very simple but beautiful generalization of the $\Delta$ inequality 
+%           \footnote{which bounded the perimeter of a triangle in terms of the sums of the distances of a point $X$ to the points of that triangle. When we set $X$ to any of the vertices of the triangle, we recover the standard $\Delta$ inequality. I forget the exact coefficients of that cited linear inequality, remember some $3 \sqrt{3}$ and a 4 in there.}
+%           Might that be exploitable? Check! 
 
-          Joe mentioned last week there is some nice work by Melhorn et al, on the reconstructibility properties of the TSP back from SOCG 1988(1989?) ;  Also
-          Amenta (Crust algorithm) and Dey's works on reconstruction. Maybe we can connect these two lines in some hand-wavy way?  
+%           Joe mentioned last week there is some nice work by Melhorn et al, on the reconstructibility properties of the TSP back from SOCG 1988(1989?) ;  Also
+%           Amenta (Crust algorithm) and Dey's works on reconstruction. Maybe we can connect these two lines in some hand-wavy way?  
 
-   \item  Is the Min Weight (MW), or even better, the Min-Angle Maximizing (MAM) Triangulation of the TSP and its external pockets close 
-          to being Delaunay in some sense\footnote{e.g. how good is the maximum value of the minimum angle in a triangle over all triangles different from OPT}?  
-          Note that both MW and MAM triangulations of simple polygons can be computed by D.P. Should be fun to try this out experimentally. See also Sandor's 
-          ALENEX paper from 2015 where he did something about computing "bad" triangulations (iirc he wanted to minimize maximum angle i.e. make triangle skinny), 
-          Maybe we could compare against the triangulations obtained from his code, just to see how bad the TSP $\rarr$ Delaunay heuristic is compared 
-          to the ``bad end'' of the spectrum? 
+%    \item  Is the Min Weight (MW), or even better, the Min-Angle Maximizing (MAM) Triangulation of the TSP and its external pockets close 
+%           to being Delaunay in some sense\footnote{e.g. how good is the maximum value of the minimum angle in a triangle over all triangles different from OPT}?  
+%           Note that both MW and MAM triangulations of simple polygons can be computed by D.P. Should be fun to try this out experimentally. See also Sandor's 
+%           ALENEX paper from 2015 where he did something about computing "bad" triangulations (iirc he wanted to minimize maximum angle i.e. make triangle skinny), 
+%           Maybe we could compare against the triangulations obtained from his code, just to see how bad the TSP $\rarr$ Delaunay heuristic is compared 
+%           to the ``bad end'' of the spectrum? 
 
-\end{itemize}  
+% \end{itemize}  
 
 \item[\color{red} SHOWING \cite{lin1973effective} HAS A CERTAIN FRACTION OF DELAUNAY/NNG EDGES] 
      Here we try to show that the output of the Lin Kernighan heuristic (rather than the optimal TSP) on any set of points has the postulated properties. In many practical 

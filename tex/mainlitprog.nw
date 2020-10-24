@@ -963,6 +963,28 @@ def hamilton(G):
     return None
 @
 
+\section{Perturbing points by prescribed factor randomly}
+
+Many point-sets are degenerate, i.e. have many points that are collinear
+or are co-circular. It thus helps to perturb the points slightly for which
+this is the case. 
+
+The amount of perturbation is controlled by the parameter $\alpha$ (where $\alpha=0$)
+corresponds to zero perturbation. {\color{red} Be careful when choosing $\alpha$; this 
+will depend on the point-cloud you are perturbing.}
+
+<<Generic utility classes and functions>>=
+def perturb_points(points, alpha=0.01):
+     points = np.asarray(points)
+
+     for i in range(len(points)):
+         theta     = random.uniform(0,2*np.pi)
+         unitvec   = np.asarray([np.cos(theta), np.sin(theta)])
+         points[i] = points[i] + alpha * unitvec
+
+     return points
+@
+
 
 
 \section{Experiments}

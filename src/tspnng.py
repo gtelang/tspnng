@@ -500,7 +500,7 @@ def expt_intersection_behavior():
           cols_mst[numpts]      = []
           cols_delaunay[numpts] = []
           for runcount in range(numrunsper):
-               pts           = uniform_points(numpts)
+               pts           = non_uniform_points(numpts)
                nng1_graph    = get_knng_graph(pts,k=1)
                mst_graph     = get_mst_graph(pts)
                del_graph     = get_delaunay_tri_graph(pts)
