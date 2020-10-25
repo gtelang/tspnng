@@ -595,20 +595,28 @@ def expt_intersection_behavior():
      numrunsper    = 20
      cols_1nng     = {}
      cols_mst      = {}
+     cols_gabriel      = {}
+     cols_urquhart      = {}
      cols_delaunay = {}
      for numpts in range(ptsmin,ptsmax,skipval):
           cols_1nng[numpts]     = []
           cols_mst[numpts]      = []
+          cols_gabriel[numpts]      = []
+          cols_urquhart[numpts]      = []
           cols_delaunay[numpts] = []
           for runcount in range(numrunsper):
-               pts           = uniform_points(numpts)
-               nng1_graph    = get_knng_graph(pts,k=1)
-               mst_graph     = get_mst_graph(pts)
+               pts            = uniform_points(numpts)
+               nng1_graph     = get_knng_graph(pts,k=1)
+               mst_graph      = get_mst_graph(pts)
+               gabriel_graph  = get_gabriel_graph(pts)
+               urquhart_graph = get_urquhart_graph(pts)
                del_graph     = get_delaunay_tri_graph(pts)
                conctsp_graph = get_concorde_tsp_graph(pts)
                
                cols_1nng[numpts].append(100*len(list_common_edges(nng1_graph,conctsp_graph))/len(conctsp_graph.edges) )
                cols_mst[numpts].append(100*len(list_common_edges(mst_graph,conctsp_graph)) /len(conctsp_graph.edges) )
+               cols_gabriel[numpts].append(100*len(list_common_edges(gabriel_graph,conctsp_graph)) /len(conctsp_graph.edges) )
+               cols_urquhart[numpts].append(100*len(list_common_edges(urquhart_graph,conctsp_graph)) /len(conctsp_graph.edges) )
                cols_delaunay[numpts].append(100*len(list_common_edges(del_graph,conctsp_graph)) /len(conctsp_graph.edges) )
 
      fig, ax = plt.subplots()
@@ -622,6 +630,7 @@ def expt_intersection_behavior():
      def arithmetic_mean(nums):
           return sum(nums)/len(nums)
      
+
      cols_1nng_min = [ min(cols_1nng[key]) for key in sorted(cols_1nng)]
      cols_1nng_max = [ max(cols_1nng[key]) for key in sorted(cols_1nng)]
      cols_1nng_am  = np.asarray([ arithmetic_mean(cols_1nng[key]) for key in sorted(cols_1nng)])
@@ -631,7 +640,17 @@ def expt_intersection_behavior():
      cols_mst_max = [ max(cols_mst[key]) for key in sorted(cols_mst)]
      cols_mst_am  = np.asarray([ arithmetic_mean(cols_mst[key]) for key in sorted(cols_mst)])
      cols_mst_std = np.asarray([ np.std(cols_mst[key]) for key in sorted(cols_mst)])
+   
+     cols_gabriel_min = [ min(cols_gabriel[key]) for key in sorted(cols_gabriel)]
+     cols_gabriel_max = [ max(cols_gabriel[key]) for key in sorted(cols_gabriel)]
+     cols_gabriel_am  = np.asarray([ arithmetic_mean(cols_gabriel[key]) for key in sorted(cols_gabriel)])
+     cols_gabriel_std = np.asarray([ np.std(cols_gabriel[key]) for key in sorted(cols_gabriel)])
      
+     cols_urquhart_min = [ min(cols_urquhart[key]) for key in sorted(cols_urquhart)]
+     cols_urquhart_max = [ max(cols_urquhart[key]) for key in sorted(cols_urquhart)]
+     cols_urquhart_am  = np.asarray([ arithmetic_mean(cols_urquhart[key]) for key in sorted(cols_urquhart)])
+     cols_urquhart_std = np.asarray([ np.std(cols_urquhart[key]) for key in sorted(cols_urquhart)])
+  
      cols_delaunay_min = [ min(cols_delaunay[key]) for key in sorted(cols_delaunay)]
      cols_delaunay_max = [ max(cols_delaunay[key]) for key in sorted(cols_delaunay)]
      cols_delaunay_am = np.asarray([ arithmetic_mean(cols_delaunay[key]) for key in sorted(cols_delaunay)])
@@ -639,20 +658,33 @@ def expt_intersection_behavior():
 
      xs = range(ptsmin,ptsmax,skipval)
 
-     ax.plot(xs,cols_delaunay_am,'go-', label='Delaunay')
-     #ax.fill_between(xs, cols_delaunay_min, cols_delaunay_max,  color='g', alpha=0.3)     
+     # colors of lines corresponding to various graphs
+     nng1col='r'
+     mstcol='b'
+     gabcol='g'
+     urqcol='k'
+     dtcol='m'
+ 
+     ax.plot(xs,cols_delaunay_am,'o-', label='Delaunay',color=dtcol)
      ax.fill_between(xs, cols_delaunay_am-cols_delaunay_std, \
-                         cols_delaunay_am+cols_delaunay_std ,  color='g', alpha=0.3)     
-     
-     ax.plot(xs,cols_mst_am,'bo-', label='MST')
-     #ax.fill_between(xs, cols_mst_min, cols_mst_max,  color='b', alpha=0.3)     
-     ax.fill_between(xs, cols_mst_am-cols_mst_std, \
-                         cols_mst_am+cols_mst_std ,  color='b', alpha=0.3)     
+                         cols_delaunay_am+cols_delaunay_std ,  color=dtcol, alpha=0.3)     
+  
+     ax.plot(xs,cols_gabriel_am,'o-', label='Gabriel',color=gabcol)
+     ax.fill_between(xs, cols_gabriel_am-cols_gabriel_std, \
+                         cols_gabriel_am+cols_gabriel_std ,  color=gabcol, alpha=0.3)     
 
-     ax.plot(xs,cols_1nng_am,'ro-', label='1-NNG')
-     #ax.fill_between(xs, cols_1nng_min, cols_1nng_max,  color='r', alpha=0.3)     
+     ax.plot(xs,cols_urquhart_am,'o-', label='Urquhart',color=urqcol)
+     ax.fill_between(xs, cols_urquhart_am-cols_urquhart_std, \
+                         cols_urquhart_am+cols_urquhart_std ,  color=urqcol, alpha=0.3)     
+
+
+     ax.plot(xs,cols_mst_am,'o-', label='MST',color=mstcol)
+     ax.fill_between(xs, cols_mst_am-cols_mst_std, \
+                         cols_mst_am+cols_mst_std ,  color=mstcol, alpha=0.3)     
+
+     ax.plot(xs,cols_1nng_am,'o-', label='1-NNG',color=nng1col)
      ax.fill_between(xs, cols_1nng_am-cols_1nng_std, \
-                         cols_1nng_am+cols_1nng_std ,  color='r', alpha=0.3)     
+                         cols_1nng_am+cols_1nng_std ,  color=nng1col, alpha=0.3)     
 
      ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
      ax.grid(color='gray',linestyle='--',linewidth=0.5)
