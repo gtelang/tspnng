@@ -146,29 +146,37 @@ The additional packages required can be installed by:
 %This slower package can compute tours of size upto 30 to 40 in a few seconds; lareger point-clouds will take more than a couple of minutes.  
 
 To run the program, \texttt{cd} into the code's top-level folder, then type \footnote{On Windows replace, the forward slash `/` by `\textbackslash`}
-any one of: 
+any one of (depending on your use case): 
 
+\definecolor{alizarin}{rgb}{0.82, 0.1, 0.26}
+
+{\LARGE \color{alizarin}
 \begin{itemize}
 \item \texttt{python src/main.py \textit{-}\textit{-}interactive}
-\item \texttt{python src/main.py \textit{-}\textit{-}file <points.yaml>} 
+\item \texttt{python src/main.py \textit{-}\textit{-}file \textit{<filename>}} 
 \end{itemize}
+}
 
+The `\texttt{\textit{-}\textit{-}interactive}` flag is for inserting a 
+point-set with the mouse onto the canvas. The latter is for inserting a 
+custom point set provided in a file onto the canvas  (and if needed 
+modifying the point set by adding more points). 
 
-When entering input points with a file such as \verb|points.yaml| make sure the file
-looks similar to the contents of the \verb|foo.yaml| in the home directory of the code 
-whose contents I've also shown as a screenshot in \autoref{fig:fooyaml}. Make sure that all
-coordinates are scaled so that the points in the file lie inside the unit-square. This makes
-it convenient for nice plotting and for different experiments. 
+When entering input points with a file make sure the file looks similar 
+to the contents of the \verb|foo.yaml| in the home directory of the code 
+whose contents I've also shown in \autoref{fig:fooyaml}. Make sure that 
+all coordinates are scaled so that the points in the file lie inside the unit-square. This makes it convenient 
+for nice plotting and for different experiments. 
+
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=10cm]{miscimages/fooyaml-screenshot.png}
-  \caption{\label{fig:fooyaml} Contents of the sample \texttt{foo.yaml} file in the home directory}
+  \includegraphics[width=12cm]{miscimages/fooyaml-screenshot.png}
+  \caption{\label{fig:fooyaml} Contents of the sample \texttt{foo.yaml} file in the home directory for inputting custom points into the code}
 \end{figure}
 
 
 
-\newpage
 
 \begin{mdframed}[backgroundcolor=black!10,rightline=false,leftline=false]
 \textbf{UPDATE}: (\textit{Thanks Logan!!}) Some of you \textit{might} face problems running the code if you work with the newest Anaconda distribution
@@ -189,11 +197,8 @@ In any event, Logan's suggested fix, is simple enough.
 
 
 
-\subsection{Interactive Mode}
-
-
-In this mode, one can mouse-in points onto a canvas (with double-clicks), run various network algorithms 
-and render them onto a GUI canvas. \textit{\footnotesize By the way, make sure the terminal is visible at all times during your 
+As mentioned before one can mouse-in points onto a canvas (with double-clicks), or provide points via a file (and then add additional points via a canvas), 
+run various network algorithms and render them onto a GUI canvas. \textit{\footnotesize By the way, make sure the terminal is visible at all times during your 
 interaction with the canvas, as it will often ask for input via prompts or display output information.}
 
 
