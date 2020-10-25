@@ -3,6 +3,41 @@ import yaml
 import numpy as np
 import matplotlib.pyplot as plt
 from colorama import Fore, Style
+import sys
+
+def main4():
+
+    if len(sys.argv)>=2 and sys.argv[1] == '--file':
+      filename = sys.argv[2]
+      with open(filename, 'r') as stream:
+         try:
+            file_data = yaml.safe_load(stream)
+            points    = [np.asarray(pt) for pt in file_data['points']]
+            
+            for pt in points:
+                if pt[0]<0 or pt[0]>1 or pt[1]<0 or pt[1]>1:
+                    print(Fore.RED,"One of your input points is ", pt)
+                    print(Fore.RED,"Please adjust the coordinates of your points so that ALL of them lie inside [0,1]x[0,1]",Style.RESET_ALL)
+                    sys.exit()
+
+            print("\nPoints read from the input file are ")
+            for pt in points:
+                print(" ",pt)
+            print("\nOpening interactive canvas with provided input points")
+            tspnng.run_handler(points=points)
+
+         except yaml.YAMLError as exc:
+            print(exc)
+    elif len(sys.argv)>=2 and sys.argv[1] == '--interactive':
+         tspnng.run_handler()
+    else:
+         print("Please run as one of:")
+         print(Fore.GREEN)
+         print("-->   python src/main.py --interactive")
+         print("-->   python src/main.py --file <filename.yaml>")
+         print(Style.RESET_ALL)
+         sys.exit()
+         
 
 def main3():
     tspnng.expt_intersection_behavior()
@@ -49,4 +84,4 @@ def main1():
 
 
 if __name__=='__main__':
-    main1()
+    main4()

@@ -107,16 +107,27 @@ def perturb_points(points, alpha=0.01):
          points[i] = points[i] + alpha * unitvec
 
      return points
-def run_handler():
+def run_handler(points=[]):
     fig, ax =  plt.subplots()
-    run = TSPNNGInput()
+    run = TSPNNGInput(points=points)
     
     ax.set_xlim([xlim[0], xlim[1]])
     ax.set_ylim([ylim[0], ylim[1]])
     ax.set_aspect(1.0)
     ax.set_xticks([])
     ax.set_yticks([])
-      
+ 
+    patchSize  = (xlim[1]-xlim[0])/130.0
+
+    for pt in run.points:
+       ax.add_patch( mpl.patches.Circle( pt, radius = patchSize,
+                           facecolor='blue', edgecolor='black'  ))
+
+    ax.set_title('Points Inserted: ' + str(len(run.points)), \
+                   fontdict={'fontsize':25})
+    applyAxCorrection(ax)
+    fig.canvas.draw()
+
     mouseClick   = wrapperEnterRunPointsHandler(fig,ax, run)
     fig.canvas.mpl_connect('button_press_event' , mouseClick )
       

@@ -149,10 +149,24 @@ To run the program, \texttt{cd} into the code's top-level folder, then type \foo
 any one of: 
 
 \begin{itemize}
-\item \texttt{python src/main.py --interactive}
-%\item \texttt{python src/main.py --batchtest}
-\item \texttt{python src/main.py --file <points.yaml>} ## TODO!
+\item \texttt{python src/main.py \textit{-}\textit{-}interactive}
+\item \texttt{python src/main.py \textit{-}\textit{-}file <points.yaml>} 
 \end{itemize}
+
+
+When entering input points with a file such as \verb|points.yaml| make sure the file
+looks similar to the contents of the \verb|foo.yaml| in the home directory of the code 
+whose contents I've also shown as a screenshot in \autoref{fig:fooyaml}. Make sure that all
+coordinates are scaled so that the points in the file lie inside the unit-square. This makes
+it convenient for nice plotting and for different experiments. 
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=10cm]{miscimages/fooyaml-screenshot.png}
+  \caption{\label{fig:fooyaml} Contents of the sample \texttt{foo.yaml} file in the home directory}
+\end{figure}
+
+
 
 \newpage
 
