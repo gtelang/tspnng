@@ -28,7 +28,7 @@ def main4():
          except yaml.YAMLError as exc:
             print(exc)
 
-    elif len(sys.argv)>=2 and sys.argv[1] == '--tsplibfile':
+    elif len(sys.argv)>=2 and sys.argv[1] == '--tsplibinstance':
         
         # this variable is added as a prefix to the filename so that the user does not have to type in a big-ass filename into the terminal
         tsplibfiledir='/home/gaurish/Dropbox/MyWiki/research-projects/TSPNNG/sym-tsp-tsplib/instances/euclidean_instances_yaml/'
