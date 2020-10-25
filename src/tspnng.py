@@ -466,8 +466,6 @@ def get_gabriel_graph(points):
     gabriel.add_nodes_from(zip(range(len(points)), coords))
 
     vor = Voronoi(points)
-    diam = np.sqrt( (vor.min_bound[0] - vor.max_bound[0])**2 +
-                    (vor.min_bound[1] - vor.max_bound[1])**2 )
     center = vor.points.mean(axis=0)
     
     for (p1, p2), (v1, v2) in zip(vor.ridge_points, vor.ridge_vertices):
@@ -486,7 +484,9 @@ def get_gabriel_graph(points):
 
             midpoint = vor.points[[p1, p2]].mean(axis=0)
             direction = np.sign(np.dot(midpoint - center, normal)) * normal
-            far_point = vor.vertices[v2] + direction * diam
+            length = max(2*np.linalg.norm(vor.points[p1]-vor.vertices[v2]),
+                         2*np.linalg.norm(vor.points[p2]-vor.vertices[v2]))
+            far_point = vor.vertices[v2] + direction * length
             
             if intersect(vor.points[p1], vor.points[p2],
                          vor.vertices[v2], far_point):
