@@ -66,7 +66,8 @@ def main4():
          print("Please run as one of:")
          print(Fore.GREEN)
          print("-->   python src/main.py --interactive")
-         print("-->   python src/main.py --file <filename.yaml>")
+         print("-->   python src/main.py --file <file.yaml>")
+         print("-->   python src/main.py --tsplibinstance <instancename>")
          print(Style.RESET_ALL)
          sys.exit()
          
