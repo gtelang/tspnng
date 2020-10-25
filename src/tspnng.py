@@ -98,6 +98,15 @@ def hamilton(G):
             else:
                 F.append((g,p))
     return None
+def perturb_points(points, alpha=0.01):
+     points = np.asarray(points)
+
+     for i in range(len(points)):
+         theta     = random.uniform(0,2*np.pi)
+         unitvec   = np.asarray([np.cos(theta), np.sin(theta)])
+         points[i] = points[i] + alpha * unitvec
+
+     return points
 def run_handler():
     fig, ax =  plt.subplots()
     run = TSPNNGInput()
@@ -170,7 +179,9 @@ def wrapperkeyPressHandler(fig,ax, run):
                      tsp_graph = get_concorde_tsp_graph(run.points)
                      graph_fns = [(get_delaunay_tri_graph, 'Delaunay Triangulation (D)'), \
                                   (get_mst_graph         , 'Minimum Spanning Tree (M)'), \
-                                  (get_onion_graph       , 'Onion') ]
+                                  (get_onion_graph       , 'Onion'),\
+                                  (get_gabriel_graph     , 'Gabriel'),\
+                                  (get_urquhart_graph    , 'Urquhart') ]
 
                      from functools import partial
                      for k in range(1,5): 
@@ -201,6 +212,8 @@ def wrapperkeyPressHandler(fig,ax, run):
                                           "(knng)   k-Nearest Neighbor Graph        \n"            +\
                                           "(mst)    Minimum Spanning Tree           \n"            +\
                                           "(onion)  Onion                           \n"            +\
+                                          "(gab)    Gabriel Graph                 \n"            +\
+                                          "(urq)    Urquhart Graph                    \n"            +\
                                           "(dt)     Delaunay Triangulation         \n"             +\
                                           "(conc)   TSP computed by the Concorde TSP library \n" +
                                           "(pytsp)  TSP computed by the pure Python TSP library \n")
@@ -216,6 +229,12 @@ def wrapperkeyPressHandler(fig,ax, run):
 
                      elif algo_str == 'onion':
                           geometric_graph = get_onion_graph(run.points)
+
+                     elif algo_str == 'gab':
+                          geometric_graph = get_gabriel_graph(run.points)
+
+                     elif algo_str == 'urq':
+                          geometric_graph = get_urquhart_graph(run.points)
 
                      elif algo_str == 'dt':
                            geometric_graph = get_delaunay_tri_graph(run.points)
@@ -285,6 +304,10 @@ def render_graph(G,fig,ax):
           edgecol = 'g'
      elif G.graph['type'] == 'onion':
           edgecol = 'gray'
+     elif G.graph['type'] == 'gabriel':
+          edgecol = (153/255, 102/255, 255/255)
+     elif G.graph['type'] == 'urq':
+          edgecol = (255/255, 102/255, 153/255)
      elif G.graph['type'] in ['conc','pytsp']:
           edgecol = 'r'
      elif G.graph['type'] == 'dt':
@@ -418,6 +441,84 @@ def get_onion_graph(points):
  
      onion_graph.graph['type'] = 'onion'
      return onion_graph
+def get_gabriel_graph(points):
+    from scipy.spatial import Voronoi
+    
+    def ccw(A,B,C):
+        return (C[1]-A[1]) * (B[0]-A[0]) > (B[1]-A[1]) * (C[0]-A[0])
+    def intersect(A,B,C,D):
+        return ccw(A,C,D) != ccw(B,C,D) and ccw(A,B,C) != ccw(A,B,D)
+    
+    points = np.array(points)
+    coords = [{"coods":pt} for pt in points]
+    gabriel = nx.Graph()
+    gabriel.add_nodes_from(zip(range(len(points)), coords))
+
+    vor = Voronoi(points)
+    diam = np.sqrt( (vor.min_bound[0] - vor.max_bound[0])**2 +
+                    (vor.min_bound[1] - vor.max_bound[1])**2 )
+    center = vor.points.mean(axis=0)
+    
+    for (p1, p2), (v1, v2) in zip(vor.ridge_points, vor.ridge_vertices):
+        if v2<0:
+            v1, v2 = v2, v1
+        if v1 >= 0: # bounded Voronoi edge
+            if intersect(vor.points[p1], vor.points[p2],
+                         vor.vertices[v1], vor.vertices[v2]):
+                gabriel.add_edge(p1,p2)
+            continue
+        else: # unbounded Voronoi edge
+            # compute "unbounded" edge
+            p1p2 = vor.points[p2] - vor.points[p1]
+            p1p2 /= np.linalg.norm(p1p2)
+            normal = np.array([-p1p2[1], p1p2[0]])
+
+            midpoint = vor.points[[p1, p2]].mean(axis=0)
+            direction = np.sign(np.dot(midpoint - center, normal)) * normal
+            far_point = vor.vertices[v2] + direction * diam
+            
+            if intersect(vor.points[p1], vor.points[p2],
+                         vor.vertices[v2], far_point):
+                gabriel.add_edge(p1,p2)
+    gabriel.graph['type'] = 'gabriel'
+    return gabriel
+def get_urquhart_graph(points):
+     from scipy.spatial import Delaunay
+     points       = np.array(points)
+     coords       = [{"coods":pt} for pt in points]
+     tri          = Delaunay(points)
+     urq_graph = nx.Graph()
+
+     urq_graph.add_nodes_from(zip(range(len(points)), coords))
+
+     edge_list = []
+     longest_edge_list = []
+     for (i,j,k) in tri.simplices:
+         edges = [(i,j),(j,k),(k,i)]
+         norms = [np.linalg.norm(points[j]-points[i]),
+                  np.linalg.norm(points[k]-points[j]),
+                  np.linalg.norm(points[i]-points[k])]
+         zipped = zip(edges,norms)
+         sorted_edges = sorted(zipped, key = lambda t: t[1])
+         longest_edge_list.append(sorted_edges[2][0])
+         edge_list.extend([(i,j),(j,k),(k,i)])    
+     urq_graph.add_edges_from( edge_list )
+     urq_graph.remove_edges_from( longest_edge_list )
+     
+     total_weight_of_edges = 0.0
+     for edge in urq_graph.edges:
+           n1, n2 = edge
+           pt1 = urq_graph.nodes[n1]['coods'] 
+           pt2 = urq_graph.nodes[n2]['coods']
+           edge_wt = np.linalg.norm(pt1-pt2)
+
+           urq_graph.edges[n1,n2]['weight'] = edge_wt
+           total_weight_of_edges = total_weight_of_edges + edge_wt 
+     
+     urq_graph.graph['weight'] = total_weight_of_edges
+     urq_graph.graph['type']   = 'urq'
+
+     return urq_graph
 def get_py_tsp_graph(points):
      import tsp
      points = np.array(points)
@@ -500,7 +601,7 @@ def expt_intersection_behavior():
           cols_mst[numpts]      = []
           cols_delaunay[numpts] = []
           for runcount in range(numrunsper):
-               pts           = non_uniform_points(numpts)
+               pts           = uniform_points(numpts)
                nng1_graph    = get_knng_graph(pts,k=1)
                mst_graph     = get_mst_graph(pts)
                del_graph     = get_delaunay_tri_graph(pts)
