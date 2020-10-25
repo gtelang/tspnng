@@ -6,7 +6,6 @@ from colorama import Fore, Style
 import sys
 
 def main4():
-
     if len(sys.argv)>=2 and sys.argv[1] == '--file':
       filename = sys.argv[2]
       with open(filename, 'r') as stream:
@@ -28,6 +27,39 @@ def main4():
 
          except yaml.YAMLError as exc:
             print(exc)
+
+    elif len(sys.argv)>=2 and sys.argv[1] == '--tsplibfile':
+        
+        # this variable is added as a prefix to the filename so that the user does not have to type in a big-ass filename into the terminal
+        tsplibfiledir='/home/gaurish/Dropbox/MyWiki/research-projects/TSPNNG/sym-tsp-tsplib/instances/euclidean_instances_yaml/'
+        filename = sys.argv[2]
+        filename = tsplibfiledir + filename + '.yml'
+        with open(filename, 'r') as stream:
+            try:
+               file_data = yaml.load(stream,Loader=yaml.Loader)
+               points=file_data['points']
+               points=[np.asarray(pt) for pt in points]
+               
+               xmax = max([pt[0] for pt in points])
+               ymax = max([pt[1] for pt in points])
+
+               print("Scaling TSPLIB points to lie in unit-square")
+
+               # The eps is for increasing the scaling factor slightly so 
+               # that all points in the data-set falls inside unit box
+               eps    = 1.0
+               M      = max(xmax,ymax) + eps
+               points = [pt/M for pt in points]
+
+               print("\nPoints read from the input file are ")
+               for pt in points:
+                     print(" ",pt)
+               print("\nOpening interactive canvas with scaled input points from TSPLIB")
+               tspnng.run_handler(points=points)
+
+            except yaml.YAMLError as exc:
+               print(exc)
+
     elif len(sys.argv)>=2 and sys.argv[1] == '--interactive':
          tspnng.run_handler()
     else:
