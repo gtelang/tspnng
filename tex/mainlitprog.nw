@@ -165,6 +165,115 @@ def non_uniform_points(numpts):
     return points
 @
 
+Other kinds of data might include multimodal distributions. I will use
+a natural method of generating these: uniformly sample $k$ points from 
+the unit-square, and create a normally distributed point set with 
+$\myfloor{n/k}$ points per point-cloud. (the $k$ points sampled are not included
+into the cloud.) 
+
+Finally the points are shifted and scaled so that they all fall within the unit-square.
+
+
+<<Generic utility classes and functions>>=
+def multimodal_points(numpts, nummodes=4, sigma=0.05):
+     
+     modes  = sp.rand(nummodes, 2).tolist()
+     points = [] 
+     for mode in modes:
+          mx, my = mode
+          samp_x = np.random.normal(mx, sigma, int(numpts/nummodes))
+          samp_y = np.random.normal(my, sigma, int(numpts/nummodes))
+          points.extend([np.asarray(pt) for pt in zip(samp_x, samp_y)])
+          
+     num_points_rem = numpts%nummodes
+     if num_points_rem != 0:
+          xrs = np.random.rand(num_points_rem)
+          yrs = np.random.rand(num_points_rem)
+          points.extend([np.asarray(pt) for pt in zip(xrs,yrs)])
+
+     points = shift_and_scale_to_unit_square(points)
+     return points
+@
+
+The next chunk implements the \verb|scale_to_unit_square| function used 
+in the last line. We implement this separately since we expect to use it 
+while generating other point-sets. 
+
+
+<<Generic utility classes and functions>>=
+def shift_and_scale_to_unit_square(points):
+     
+     # make all coordinates positive by shifting origin
+     points = [np.asarray(pt) for pt in points]
+     min_x  = min([x for (x,_) in points])
+     min_y  = min([y for (_,y) in points])
+     m      = min(min_x, min_y)
+     origin = np.asarray([m,m])
+
+     # scale to unit-square
+     points = [pt - origin for pt in points]
+     max_x  = max([x for (x,_) in points])
+     max_y  = max([y for (_,y) in points])
+     scale  = max(max_x,max_y)
+     points = [pt/scale for pt in points]
+
+     return points
+@
+
+The next function creates a series of points placed uniformly along concentric circles, whose 
+radii are in arithmetic progression. If there are any leftover points to generate, they
+are generated randomly uniformly inside the unit-square. 
+
+<<Generic utility classes and functions>>=
+def concentric_circular_points(numpts, numrings):
+     numpts_per_ring = int(numpts/numrings)
+     points          = []
+     center          = np.asarray([0.5,0.5])
+     for ring in range(numrings):
+          radius = (ring+1)*0.5/(numrings+1)
+          print("Radius computed is ", radius)
+         
+          angles = [idx * 2*np.pi/numpts_per_ring for idx in range(numpts_per_ring)]
+          xs     = [center[0] + radius * np.cos(theta) for theta in angles ]
+          ys     = [center[1] + radius * np.sin(theta) for theta in angles ]
+          points.extend([np.asarray(pt) for pt in zip(xs,ys)])
+     
+     num_points_rem = numpts%numrings
+     if num_points_rem != 0:
+          xrs = np.random.rand(num_points_rem)
+          yrs = np.random.rand(num_points_rem)
+          points.extend([np.asarray(pt) for pt in zip(xrs,yrs)])
+
+     return points
+@
+
+Points placed along a grid are extremely useful as examples when considering TSP like 
+problems. Hence we generate such grid points next. As usual left-over points will 
+be generated randomly inside the unit-square. 
+
+
+
+<<Generic utility classes and functions>>=
+def rectangular_grid_points(numpts, numrows):
+     numcols = int(numpts/numrows)
+     
+     points = []
+     for i in range(numrows):
+         for j in range(numcols):
+              print([i,j])
+              points.append(np.asarray([j,i]))
+
+     points = shift_and_scale_to_unit_square(points)
+
+     num_points_rem = numpts-numrows*numcols
+     if num_points_rem != 0:
+          xrs = np.random.rand(num_points_rem)
+          yrs = np.random.rand(num_points_rem)
+          points.extend([np.asarray(pt) for pt in zip(xrs,yrs)])
+     
+     return points
+@
+
 \section{Data Storage}
 YAML\cite{ben2009yaml} is a convenient serialization and data-interchange format that we will be using 
 for serializing output data of different experiments onto disk. Python has particularly good libraries for dealing with YAML. Basically, 
@@ -282,7 +391,7 @@ user to insert a 2 or 3 letter code to indicate which graph should span the poin
 <<Functions for plotting and interacting>>=
 def wrapperkeyPressHandler(fig,ax, run): 
        def _keyPressHandler(event):
-               if event.key in ['n', 'N', 'u', 'U']: 
+               if event.key in ['n', 'N', 'u', 'U','m','M','o','O','g','G']: 
                      <<Enter type of point set to generate>>                   
                elif event.key in ['t' or 'T']:
                      <<Compute TSP and find common edges with various spanning graphs>>
@@ -417,8 +526,20 @@ fig.texts = []
                  
 if event.key in ['n', 'N']: 
         run.points = non_uniform_points(numpts)
-else : 
+elif event.key in ['u', 'U'] : 
         run.points = uniform_points(numpts)
+elif event.key in ['m', 'M']:
+        nummodes   = int(input(Fore.YELLOW+"How many modes do you want in the distribution?"+Style.RESET_ALL))
+        sigma      = float(input(Fore.YELLOW+"What do you want the standard deviation of the local distribution around each mode to be?"+Style.RESET_ALL))
+        run.points = multimodal_points(numpts,nummodes=nummodes,sigma=sigma)
+elif event.key in ['o', 'O']:
+        numrings   = int(input(Fore.YELLOW+"How many rings do you want?"+Style.RESET_ALL))
+        run.points = concentric_circular_points(numpts,numrings)
+elif event.key in ['g', 'G']:
+        numrows    = int(input(Fore.YELLOW+"How many rows do you want?"+Style.RESET_ALL))
+        run.points = rectangular_grid_points(numpts,numrows)
+else:
+       print("I did not understand that option. Please type one of `n`, `u`, `m`, `o`, `g`")
 
 patchSize  = (xlim[1]-xlim[0])/140.0
 
@@ -593,14 +714,17 @@ def get_delaunay_tri_graph(points):
 \end{figure}
 
 
-From elementary CG, we know that the MST of a set of points in the plane is a subset of the delaunay triangulation. Thus to compute the MST,
-it suffices to compute the MST of the corresponding delaunay triangulation. 
-See \href{https://networkx.github.io/documentation/stable/reference/algorithms/generated/networkx.algorithms.tree.mst.minimum_spanning_edges.html}{this page}
-for a documentation of the code in NetworkX used to compute the MST on an abstract weighted undirected graph. Note that along with the Kruskal method (used below), both Prim's and Boruvka's 
-algorithms have also been implemented in that library. 
+From elementary CG, we know that the MST of a set of points in the 
+plane is a subset of the delaunay triangulation. Thus to compute
+the MST, it suffices to compute the MST of the corresponding 
+delaunay triangulation. 
+
+See 
+\href{https://networkx.github.io/documentation/stable/reference/algorithms/generated/networkx.algorithms.tree.mst.minimum_spanning_edges.html}{this page}
+for a documentation of the code in NetworkX used to compute the MST on an abstract weighted undirected graph. Note that along with 
+the Kruskal method (used below), both Prim's and Boruvka's algorithms have also been implemented in that library. 
 
 <<Functions for generating various graphs>>=
-
 def get_mst_graph(points):
 
      points = np.array(points)
@@ -1131,48 +1255,44 @@ def perturb_points(points, alpha=0.01):
 
 \section{Calculating the Length of a Polygonal Chain}
 
-We assume for the input that points along a polygonal chain have been provided
-in the order they occur. The routine computes the length of that same chain. 
+We assume for the input that points along a polygonal chain 
+have been provided in the order they occur. The routine 
+computes the length of that same chain. 
 
-If the boolean flag  \verb|cycle_p| has been set to \verb|True|, then the poly-chain 
-is now assumed to be a cycle i.e. the last point is joined to the first point. So in this case,
-the routine returns the length of the polygonal chain plus the length of this last edge 
-that closes the cycle. 
+If the boolean flag  \verb|cycle_p| has been set to \verb|True|, 
+then the poly-chain is now assumed to be a cycle i.e. the 
+last point is joined to the first point. So in this case, the 
+routine returns the length of the polygonal chain \textit{plus} the 
+length of this last edge that closes the cycle. 
 
 
 <<Generic utility classes and functions>>=
-def calculate_length_poly_chain(points, cycle_p=False):
+def length_poly_chain(points, cycle_p=False):
 
-     points = [np.asarray(pt) for pt in points]
+     points     = [np.asarray(pt) for pt in points]
+     seglengths = [np.linalg.norm(p1-p2) for (p1,p2) in zip(points, points[1:])]
 
-     def length_segment (p1,p2):
-           return np.linalg.norm(p1-p2)
-     
-     seglengths = [length_segment(p1,p2) for (p1,p2) zip(points, points[1:])]
-     if cucle_p :
-          seglengths.append(length_segment(points[-1],points[0]))
+     if cycle_p :
+          seglengths.append(np.linalg.norm(points[-1]-points[0]))
+
      return sum(seglengths)
 @     
 
 
 
 \section{Data Analysis Functions}
+Given a stream of repeated data recordings $x_1, x_2, \ldots x_n$ for each fixed set of parameters
+in experiments, this function reduces this stream to three numbers $(\mu_x-\sigma_x, \mu_x, \mu_x+\sigma_x)$
 
-Given a stream of repeated data recordings for each fixed set of parameters
-in experiments, this function will be used repeatedly. 
-
-For those who know Haskell, this function accepts input of the type \texttt{[[Double]]}
-and ``reduces'' each element in the outer array (each element is of type \texttt{[Double]})
+In slightly more technical language, especially for those who familiar with Haskell, 
+this function accepts input of the type [\![\texttt{Double}]\!] and ``reduces'' each 
+element (every element in the outer array is of type \texttt{[Double]})
 with a tuple of three numbers $(\mu-\sigma, \mu, \mu+\sigma)$ which represents an 
 error interval $[\mu-\sigma, \mu + \sigma]$ of a single standard deviation above and
-below the mean of the stream of numbers. 
-
-Thus the function basically replaces each stream in the array of streams, with an
-error-interval
-
+below the mean $\mu$ of the stream of numbers. 
 
 <<Generic utility classes and functions>>=
-def calculate_error_intervals(xss):
+def error_intervals(xss):
      means           = [np.mean(xs) for xs in xss]
      stds            = [np.std(xs)  for xs in xss]
      error_intervals =  [ (means[i]-stds[i], \

@@ -107,11 +107,26 @@ interaction with the canvas, as it will often ask for input via prompts or displ
 network do  you want computed on those points. Enter the code inside the brackets \colredt{(...)} 
 
 \item[Generating large random point-sets on the canvas] If you \textit{don't} want to mouse-in points, and just need random points plastered uniformly across the canvas, 
-press \colredt{u}, and then type into the terminal the number of points. Ditto for non-uniformly distributed points: 
-only that you must press \colredt{n}. 
+press \colredt{u}, and then type into the terminal the number of points. Other kinds of non-uniform point sets can also be generated using the following 
+     commands. 
 
+     \begin{mdframed}
+     \textit{Note that while computing these point-sets, if there are points ``left-over'', then the remaining points are added randomly and uniformly to the unit-square. }
+     \end{mdframed}
+
+     \begin{description}
+         \item[Non uniform points] \textit{(This is kind of badly named, sorry, couldn't think of a better one \smiley} This a scheme I sometimes use when geneating non-uniform random points. Press \colredt{n} It generates clusters of points, wherein the clusters near the square boundary are ``tighter'' i.e. have smaller diameter.
+         \item[Multi-modal distribution] Another scheme for non-uniform random points, that's more natural than the above one.  Press \colredt{m} and then type into the terminal the number of points, the number of modes, and the spread ($\sigma$)
+              around each of the modes. The points are assumed normally distributed around each mode
+         \item[Concentric circular points] Press \colredt{o} and then type into the terminal number of points and number of rings. 
+         \item[Grid points] Press \colredt{g} and then type into the terminal, the number of points and then the number of rows of the grid. The number of columns
+          is automatically computed. 
+     \end{description}
+
+\begin{mdframed}
   \textit{Note that after generating these points, you can continue mousing in additional points as part of the input. Useful 
   if you want, say, an example with more or less uniform randomly generated points, except for a few small tight clusters here and there. }
+\end{mdframed}
 
 \item[Computing TSP directly] \footnote{This is an option meant more for convenience than anything really; might be useful for trying to detect counter-examples}.   
 To directly compute the TSP cycle on the points (without needing to go through the prompts of the previous step) just press \colredt{t}. 

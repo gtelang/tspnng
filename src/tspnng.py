@@ -66,6 +66,79 @@ def non_uniform_points(numpts):
     remaining_pts = sp.rand(num_remaining_pts, 2).tolist()
     points.extend(remaining_pts)
     return points
+def multimodal_points(numpts, nummodes=4, sigma=0.05):
+     
+     modes  = sp.rand(nummodes, 2).tolist()
+     points = [] 
+     for mode in modes:
+          mx, my = mode
+          samp_x = np.random.normal(mx, sigma, int(numpts/nummodes))
+          samp_y = np.random.normal(my, sigma, int(numpts/nummodes))
+          points.extend([np.asarray(pt) for pt in zip(samp_x, samp_y)])
+          
+     num_points_rem = numpts%nummodes
+     if num_points_rem != 0:
+          xrs = np.random.rand(num_points_rem)
+          yrs = np.random.rand(num_points_rem)
+          points.extend([np.asarray(pt) for pt in zip(xrs,yrs)])
+
+     points = shift_and_scale_to_unit_square(points)
+     return points
+def shift_and_scale_to_unit_square(points):
+     
+     # make all coordinates positive by shifting origin
+     points = [np.asarray(pt) for pt in points]
+     min_x  = min([x for (x,_) in points])
+     min_y  = min([y for (_,y) in points])
+     m      = min(min_x, min_y)
+     origin = np.asarray([m,m])
+
+     # scale to unit-square
+     points = [pt - origin for pt in points]
+     max_x  = max([x for (x,_) in points])
+     max_y  = max([y for (_,y) in points])
+     scale  = max(max_x,max_y)
+     points = [pt/scale for pt in points]
+
+     return points
+def concentric_circular_points(numpts, numrings):
+     numpts_per_ring = int(numpts/numrings)
+     points          = []
+     center          = np.asarray([0.5,0.5])
+     for ring in range(numrings):
+          radius = (ring+1)*0.5/(numrings+1)
+          print("Radius computed is ", radius)
+         
+          angles = [idx * 2*np.pi/numpts_per_ring for idx in range(numpts_per_ring)]
+          xs     = [center[0] + radius * np.cos(theta) for theta in angles ]
+          ys     = [center[1] + radius * np.sin(theta) for theta in angles ]
+          points.extend([np.asarray(pt) for pt in zip(xs,ys)])
+     
+     num_points_rem = numpts%numrings
+     if num_points_rem != 0:
+          xrs = np.random.rand(num_points_rem)
+          yrs = np.random.rand(num_points_rem)
+          points.extend([np.asarray(pt) for pt in zip(xrs,yrs)])
+
+     return points
+def rectangular_grid_points(numpts, numrows):
+     numcols = int(numpts/numrows)
+     
+     points = []
+     for i in range(numrows):
+         for j in range(numcols):
+              print([i,j])
+              points.append(np.asarray([j,i]))
+
+     points = shift_and_scale_to_unit_square(points)
+
+     num_points_rem = numpts-numrows*numcols
+     if num_points_rem != 0:
+          xrs = np.random.rand(num_points_rem)
+          yrs = np.random.rand(num_points_rem)
+          points.extend([np.asarray(pt) for pt in zip(xrs,yrs)])
+     
+     return points
 def write_to_yaml_file(data, dir_name, file_name):
    with open(dir_name + '/' + file_name, 'w') as outfile:
           yaml.dump( data, outfile, default_flow_style = False)
@@ -107,7 +180,16 @@ def perturb_points(points, alpha=0.01):
          points[i] = points[i] + alpha * unitvec
 
      return points
-def calculate_error_intervals(xss):
+def length_poly_chain(points, cycle_p=False):
+
+     points     = [np.asarray(pt) for pt in points]
+     seglengths = [np.linalg.norm(p1-p2) for (p1,p2) in zip(points, points[1:])]
+
+     if cycle_p :
+          seglengths.append(np.linalg.norm(points[-1]-points[0]))
+
+     return sum(seglengths)
+def error_intervals(xss):
      means           = [np.mean(xs) for xs in xss]
      stds            = [np.std(xs)  for xs in xss]
      error_intervals =  [ (means[i]-stds[i], \
@@ -170,7 +252,7 @@ def wrapperEnterRunPointsHandler(fig, ax, run):
     return _enterPointsHandler
 def wrapperkeyPressHandler(fig,ax, run): 
        def _keyPressHandler(event):
-               if event.key in ['n', 'N', 'u', 'U']: 
+               if event.key in ['n', 'N', 'u', 'U','m','M','o','O','g','G']: 
                      numpts = int(input("\nHow many points should I generate?: ")) 
                      run.clearAllStates()
                      ax.cla()
@@ -182,8 +264,20 @@ def wrapperkeyPressHandler(fig,ax, run):
                                       
                      if event.key in ['n', 'N']: 
                              run.points = non_uniform_points(numpts)
-                     else : 
+                     elif event.key in ['u', 'U'] : 
                              run.points = uniform_points(numpts)
+                     elif event.key in ['m', 'M']:
+                             nummodes   = int(input(Fore.YELLOW+"How many modes do you want in the distribution?"+Style.RESET_ALL))
+                             sigma      = float(input(Fore.YELLOW+"What do you want the standard deviation of the local distribution around each mode to be?"+Style.RESET_ALL))
+                             run.points = multimodal_points(numpts,nummodes=nummodes,sigma=sigma)
+                     elif event.key in ['o', 'O']:
+                             numrings   = int(input(Fore.YELLOW+"How many rings do you want?"+Style.RESET_ALL))
+                             run.points = concentric_circular_points(numpts,numrings)
+                     elif event.key in ['g', 'G']:
+                             numrows    = int(input(Fore.YELLOW+"How many rows do you want?"+Style.RESET_ALL))
+                             run.points = rectangular_grid_points(numpts,numrows)
+                     else:
+                            print("I did not understand that option. Please type one of `n`, `u`, `m`, `o`, `g`")
 
                      patchSize  = (xlim[1]-xlim[0])/140.0
 
@@ -405,7 +499,6 @@ def get_delaunay_tri_graph(points):
      deltri_graph.graph['type']   = 'dt'
 
      return deltri_graph
-
 def get_mst_graph(points):
 
      points = np.array(points)

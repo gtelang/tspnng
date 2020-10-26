@@ -112,9 +112,5 @@ def main2():
             plt.close('all')
             print('....rendering finished!')
 
-def main1():
-    tspnng.run_handler()
-
-
 if __name__=='__main__':
-    main1()
+    main4()
