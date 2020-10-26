@@ -107,6 +107,13 @@ def perturb_points(points, alpha=0.01):
          points[i] = points[i] + alpha * unitvec
 
      return points
+def calculate_error_intervals(xss):
+     means           = [np.mean(xs) for xs in xss]
+     stds            = [np.std(xs)  for xs in xss]
+     error_intervals =  [ (means[i]-stds[i], \
+                           means[i]        , \
+                           means[i]+stds[i])   for i in len(xss)]
+     return error_intervals
 def run_handler(points=[]):
     fig, ax =  plt.subplots()
     run = TSPNNGInput(points=points)
@@ -599,9 +606,9 @@ def expt_intersection_behavior():
      expt_name           = 'expt_intersection_behavior'
      expt_plot_file_extn = '.pdf'
 
-     ptsmin   = 10
-     ptsmax   = 200
-     skipval  = 10
+     ptsmin   = 25
+     ptsmax   = 1000
+     skipval  = 25
 
      numrunsper    = 20
      cols_1nng     = {}
@@ -636,7 +643,7 @@ def expt_intersection_behavior():
      ax.set_ylim([0,110])
      ax.set_xlabel("Number of points in point-cloud")
      ax.set_ylabel("Percentage")
-     ax.set_xticks(range(ptsmin,ptsmax,skipval))
+     ax.set_xticks(np.arange(ptsmin,ptsmax,step=3*skipval))
      
      def arithmetic_mean(nums):
           return sum(nums)/len(nums)

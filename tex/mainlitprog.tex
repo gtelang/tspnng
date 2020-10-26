@@ -176,7 +176,7 @@ transparently encodes any (appropriate) Python dictionary into a YAML file. In t
 def write_to_yaml_file(data, dir_name, file_name):
    with open(dir_name + '/' + file_name, 'w') as outfile:
           yaml.dump( data, outfile, default_flow_style = False)
-\nwalsodefined{\\{NWaGG5Z-4cZhfD-2}\\{NWaGG5Z-4cZhfD-3}\\{NWaGG5Z-4cZhfD-4}}\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{12}\nwdocspar
+\nwalsodefined{\\{NWaGG5Z-4cZhfD-2}\\{NWaGG5Z-4cZhfD-3}\\{NWaGG5Z-4cZhfD-4}\\{NWaGG5Z-4cZhfD-5}}\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{12}\nwdocspar
 
 
 \section{Setting up TSPNNGInput class}
@@ -754,8 +754,6 @@ def get_gabriel_graph(points):
     gabriel.add_nodes_from(zip(range(len(points)), coords))
 
     vor = Voronoi(points)
-    diam = np.sqrt( (vor.min_bound[0] - vor.max_bound[0])**2 +
-                    (vor.min_bound[1] - vor.max_bound[1])**2 )
     center = vor.points.mean(axis=0)
     
     for (p1, p2), (v1, v2) in zip(vor.ridge_points, vor.ridge_vertices):
@@ -774,7 +772,9 @@ def get_gabriel_graph(points):
 
             midpoint = vor.points[[p1, p2]].mean(axis=0)
             direction = np.sign(np.dot(midpoint - center, normal)) * normal
-            far_point = vor.vertices[v2] + direction * diam
+            length = max(2*np.linalg.norm(vor.points[p1]-vor.vertices[v2]),
+                         2*np.linalg.norm(vor.points[p2]-vor.vertices[v2]))
+            far_point = vor.vertices[v2] + direction * length
             
             if intersect(vor.points[p1], vor.points[p2],
                          vor.vertices[v2], far_point):
@@ -1116,7 +1116,7 @@ The amount of perturbation is controlled by the parameter $\alpha$ (where $\alph
 corresponds to zero perturbation. {\color{red} Be careful when choosing $\alpha$; this 
 will depend on the point-cloud you are perturbing.}
 
-\nwenddocs{}\nwbegincode{83}\sublabel{NWaGG5Z-4cZhfD-4}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-4}}}\moddef{Generic utility classes and functions~{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-4cZhfD-3}{\relax}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{83}\sublabel{NWaGG5Z-4cZhfD-4}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-4}}}\moddef{Generic utility classes and functions~{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-4cZhfD-3}{NWaGG5Z-4cZhfD-5}\nwenddeflinemarkup
 def perturb_points(points, alpha=0.01):
      points = np.asarray(points)
 
@@ -1127,6 +1127,33 @@ def perturb_points(points, alpha=0.01):
 
      return points
 \nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{84}\nwdocspar
+
+\section{Data Analysis Functions}
+
+Given a stream of repeated data recordings for each fixed set of parameters
+in experiments, this function will be used repeatedly. 
+
+For those who know Haskell, this function accepts input of the type \texttt{{\Tt{}Double\nwendquote}}
+and ``reduces'' each element in the outer array (each element is of type \texttt{[Double]})
+with a tuple of three numbers $(\mu-\sigma, \mu, \mu+\sigma)$ which represents an 
+error interval $[\mu-\sigma, \mu + \sigma]$ of a single standard deviation above and
+below the mean of the stream of numbers. 
+
+Thus the function basically replaces each stream in the array of streams, with an
+error-interval
+
+
+\nwenddocs{}\nwbegincode{85}\sublabel{NWaGG5Z-4cZhfD-5}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-5}}}\moddef{Generic utility classes and functions~{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-4cZhfD-4}{\relax}\nwenddeflinemarkup
+def calculate_error_intervals(xss):
+     means           = [np.mean(xs) for xs in xss]
+     stds            = [np.std(xs)  for xs in xss]
+     error_intervals =  [ (means[i]-stds[i], \\
+                           means[i]        , \\
+                           means[i]+stds[i])   for i in len(xss)]
+     return error_intervals
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{86}\nwdocspar
+
+
 
 
 
@@ -1153,7 +1180,7 @@ and one standard deviation above i.e. $[\mu-\sigma, \mu+\sigma]$ is shaded for e
 %{\color{red} Why is $\mu+\sigma$ going slightly over 100 for delaunay?? This is a minor technical issue however, can be fixed later} 
 
 
-\nwenddocs{}\nwbegincode{85}\sublabel{NWaGG5Z-3zYcKb-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3zYcKb-1}}}\moddef{Experiments~{\nwtagstyle{}\subpageref{NWaGG5Z-3zYcKb-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{87}\sublabel{NWaGG5Z-3zYcKb-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3zYcKb-1}}}\moddef{Experiments~{\nwtagstyle{}\subpageref{NWaGG5Z-3zYcKb-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwenddeflinemarkup
 def expt_intersection_behavior():
      expt_name           = 'expt_intersection_behavior'
      expt_plot_file_extn = '.pdf'
@@ -1260,7 +1287,7 @@ def expt_intersection_behavior():
      ax.grid(color='gray',linestyle='--',linewidth=0.5)
      plt.savefig(expt_name+expt_plot_file_extn, bbox_inches='tight')
      print("Plot File written to disk")
-\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{86}\nwdocspar
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{88}\nwdocspar
      
 \subsection{Intersection behavior for TSPLIB instances}
 
@@ -1287,7 +1314,7 @@ def expt_intersection_behavior():
 \nwixlogsorted{c}{{Functions for plotting and interacting}{NWaGG5Z-3DI44N-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-3DI44N-1}\nwixd{NWaGG5Z-3DI44N-2}\nwixd{NWaGG5Z-3DI44N-3}\nwixd{NWaGG5Z-3DI44N-4}\nwixd{NWaGG5Z-3DI44N-5}}}%
 \nwixlogsorted{c}{{Generate convex hull of points remaining in \verb|points_tmp|}{NWaGG5Z-1qB5IG-1}{\nwixu{NWaGG5Z-2XNY09-4}\nwixd{NWaGG5Z-1qB5IG-1}}}%
 \nwixlogsorted{c}{{Generate TSP cycle and convert into NetworkX graph}{NWaGG5Z-ixiQd-1}{\nwixu{NWaGG5Z-2XNY09-7}\nwixd{NWaGG5Z-ixiQd-1}}}%
-\nwixlogsorted{c}{{Generic utility classes and functions}{NWaGG5Z-4cZhfD-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-4cZhfD-1}\nwixd{NWaGG5Z-4cZhfD-2}\nwixd{NWaGG5Z-4cZhfD-3}\nwixd{NWaGG5Z-4cZhfD-4}}}%
+\nwixlogsorted{c}{{Generic utility classes and functions}{NWaGG5Z-4cZhfD-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-4cZhfD-1}\nwixd{NWaGG5Z-4cZhfD-2}\nwixd{NWaGG5Z-4cZhfD-3}\nwixd{NWaGG5Z-4cZhfD-4}\nwixd{NWaGG5Z-4cZhfD-5}}}%
 \nwixlogsorted{c}{{Headers}{NWaGG5Z-2BmRoZ-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-2BmRoZ-1}}}%
 \nwixlogsorted{c}{{Iterate through graph edges and draw as segments}{NWaGG5Z-2RD3q9-1}{\nwixu{NWaGG5Z-3DI44N-5}\nwixd{NWaGG5Z-2RD3q9-1}}}%
 \nwixlogsorted{c}{{Join two remaining points by an edge in \verb|onion_graph|}{NWaGG5Z-1QE0qW-1}{\nwixu{NWaGG5Z-2XNY09-4}\nwixd{NWaGG5Z-1QE0qW-1}}}%

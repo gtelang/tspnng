@@ -901,18 +901,18 @@ tsp_graph.graph['weight'] = total_weight_of_edges
 tsp_graph.graph['type']   = 'pytsp'
 @
 
-
 \subsubsection{* Using the Pyconcorde library}
 
 This library is a thin interface around Concorde. Installing Pyconcorde
 automatically installs Concorde and other required libraries such as QSOpt. 
 Instructions for installation are given in Appendix I.  
 
-Note that for the \verb|EUC_2D| cases, the Concorde solver works only on points with integer coordinates. 
-Since our synthetic data-sets will be generated inside the unit-square, we scale by the amount \verb|scale_factor| and then 
-rounded to an integer using \verb|int()|. For a sufficiently large value \verb|scaling_factor|,  
-ordering of points reported by Concorde should be the same as  if the algorithm was run on the 
-unscaled points. 
+Note that for the \verb|EUC_2D| cases, the Concorde solver works only on 
+points with integer coordinates. Since our synthetic data-sets will be 
+generated inside the unit-square, we scale by the amount \verb|scale_factor| 
+and then rounded to an integer using \verb|int()|. For a sufficiently large 
+value \verb|scaling_factor|, ordering of points reported by Concorde 
+should be the same as  if the algorithm was run on the unscaled points. 
 
 Note that Concorde crashes when you pass it only three points. Probably something to do with
 its internals. Of course for the case of one or two points, the package explcitly informs us that we must pass
@@ -1129,6 +1129,61 @@ def perturb_points(points, alpha=0.01):
 @
 
 
+\section{Calculating the Length of a Polygonal Chain}
+
+We assume for the input that points along a polygonal chain have been provided
+in the order they occur. The routine computes the length of that same chain. 
+
+If the boolean flag  \verb|cycle_p| has been set to \verb|True|, then the poly-chain 
+is now assumed to be a cycle i.e. the last point is joined to the first point. So in this case,
+the routine returns the length of the polygonal chain plus the length of this last edge 
+that closes the cycle. 
+
+
+<<Generic utility classes and functions>>=
+def calculate_length_poly_chain(points, cycle_p=False):
+
+     points = [np.asarray(pt) for pt in points]
+
+     def length_segment (p1,p2):
+           return np.linalg.norm(p1-p2)
+     
+     seglengths = [length_segment(p1,p2) for (p1,p2) zip(points, points[1:])]
+     if cucle_p :
+          seglengths.append(length_segment(points[-1],points[0]))
+     return sum(seglengths)
+@     
+
+
+
+\section{Data Analysis Functions}
+
+Given a stream of repeated data recordings for each fixed set of parameters
+in experiments, this function will be used repeatedly. 
+
+For those who know Haskell, this function accepts input of the type \texttt{[[Double]]}
+and ``reduces'' each element in the outer array (each element is of type \texttt{[Double]})
+with a tuple of three numbers $(\mu-\sigma, \mu, \mu+\sigma)$ which represents an 
+error interval $[\mu-\sigma, \mu + \sigma]$ of a single standard deviation above and
+below the mean of the stream of numbers. 
+
+Thus the function basically replaces each stream in the array of streams, with an
+error-interval
+
+
+<<Generic utility classes and functions>>=
+def calculate_error_intervals(xss):
+     means           = [np.mean(xs) for xs in xss]
+     stds            = [np.std(xs)  for xs in xss]
+     error_intervals =  [ (means[i]-stds[i], \
+                           means[i]        , \
+                           means[i]+stds[i])   for i in len(xss)]
+     return error_intervals
+@
+
+
+
+
 
 \section{Experiments}
 \subsection{Intersection behavior for uniformly randomly generated instances}
@@ -1158,9 +1213,9 @@ def expt_intersection_behavior():
      expt_name           = 'expt_intersection_behavior'
      expt_plot_file_extn = '.pdf'
 
-     ptsmin   = 10
-     ptsmax   = 200
-     skipval  = 10
+     ptsmin   = 25
+     ptsmax   = 1000
+     skipval  = 25
 
      numrunsper    = 20
      cols_1nng     = {}
@@ -1195,7 +1250,7 @@ def expt_intersection_behavior():
      ax.set_ylim([0,110])
      ax.set_xlabel("Number of points in point-cloud")
      ax.set_ylabel("Percentage")
-     ax.set_xticks(range(ptsmin,ptsmax,skipval))
+     ax.set_xticks(np.arange(ptsmin,ptsmax,step=3*skipval))
      
      def arithmetic_mean(nums):
           return sum(nums)/len(nums)
