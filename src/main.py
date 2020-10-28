@@ -5,6 +5,9 @@ import matplotlib.pyplot as plt
 from colorama import Fore, Style
 import sys
 
+def main5():
+    tspnng.expt_tsplib_intersection_behavior()
+
 def main4():
     if len(sys.argv)>=2 and sys.argv[1] == '--file':
       filename = sys.argv[2]
@@ -13,16 +16,17 @@ def main4():
             file_data = yaml.safe_load(stream)
             points    = [np.asarray(pt) for pt in file_data['points']]
             
-            for pt in points:
-                if pt[0]<0 or pt[0]>1 or pt[1]<0 or pt[1]>1:
-                    print(Fore.RED,"One of your input points is ", pt)
-                    print(Fore.RED,"Please adjust the coordinates of your points so that ALL of them lie inside [0,1]x[0,1]",Style.RESET_ALL)
-                    sys.exit()
+            #for pt in points:
+            #    if pt[0]<0 or pt[0]>1 or pt[1]<0 or pt[1]>1:
+            #        print(Fore.RED,"One of your input points is ", pt)
+            #        print(Fore.RED,"Please adjust the coordinates of your points so that ALL of them lie inside [0,1]x[0,1]",Style.RESET_ALL)
+            #        sys.exit()
 
             print("\nPoints read from the input file are ")
             for pt in points:
                 print(" ",pt)
             print("\nOpening interactive canvas with provided input points")
+            points = tspnng.shift_and_scale_to_unit_square(points)
             tspnng.run_handler(points=points)
 
          except yaml.YAMLError as exc:

@@ -38,6 +38,7 @@ init() # this line does nothing on Linux/Mac,
        # but is important for Windows to display
        # colored text. See https://pypi.org/project/colorama/
 import yaml
+import shutil
 @
 
 
@@ -492,6 +493,11 @@ elif algo_str == 'conc':
 
 elif algo_str == 'pytsp':
      geometric_graph = get_py_tsp_graph(run.points)
+
+elif algo_str in ['d','D']:
+
+     build_delaunay_forest(run.points,stopnum=10) 
+     sys.exit()
 
 else:
       print(Fore.YELLOW, "I did not recognize that option.", Style.RESET_ALL)
@@ -1144,10 +1150,16 @@ node_coods = np.asarray(node_coods)
 from matplotlib.patches import Polygon
 from matplotlib.collections import PatchCollection
 
+# mark the nodes
+xs = [pt[0] for pt in node_coods ]
+ys = [pt[1] for pt in node_coods ]
+ax.scatter(xs,ys)
+
 polygon = Polygon(node_coods, closed=True, \
-                  facecolor=(255/255, 255/255, 102/255,0.5), \
+                  facecolor=(255/255, 255/255, 102/255,0.4), \
                   edgecolor='k', linewidth=1)
 ax.add_patch(polygon)
+
 @
 
 
@@ -1302,10 +1314,107 @@ def error_intervals(xss):
 @
 
 
-
+%\input{maxdispdelaunay.tex}
 
 
 \section{Experiments}
+
+\subsection{Intersection behavior for TSPLIB instances}
+<<Experiments>>=
+def expt_tsplib_intersection_behavior():
+ 
+     dirName = './tsplib-expts/'
+     shutil.rmtree(dirName, ignore_errors=True)
+     try:
+         os.mkdir(dirName)
+         print("Directory " , dirName ,  " Created ") 
+     except FileExistsError:
+         print("Directory " , dirName ,  " already exists")
+    
+     maxpts_bound        = 1100
+     instance_file_names = get_names_of_all_euclidean2D_instances()
+
+     f = open("./slides-beamer/slidecode.tex", "w")
+
+     for fname in instance_file_names:
+
+        inst_points = shift_and_scale_to_unit_square(tsplib_instance_points(fname))
+
+        if len(inst_points) > maxpts_bound:
+              print(Fore.RED, 'Skipping file', fname, ' which has ', len(inst_points) , '>', maxpts_bound , ' points', Style.RESET_ALL)
+        else:
+              print(fname , 'has ', len(inst_points), ' points')
+              print('...Testing for intersections')
+              tsp_graph = get_concorde_tsp_graph(inst_points)
+              
+              graph_fns = [(get_mst_graph         , 'MST'), \
+                           (get_urquhart_graph    , 'Urquhart'), \
+                           (get_gabriel_graph     , 'Gabriel'),\
+                           (get_delaunay_tri_graph, 'Delaunay')]
+
+              from functools import partial
+              for k in range(1,4): 
+                     graph_fns.append((partial(get_knng_graph, k=k), str(k)+'-NNG'))
+
+              num_tsp_edges        = len(tsp_graph.edges)
+              percentage_intersecn = []  
+     
+              print(Fore.YELLOW,'....COMPUTING INTERSECTIONS OF TSP WITH VARIOUS GRAPHS')
+              for ctr, (fn_body, fn_name) in zip(range(1,1+len(graph_fns)), graph_fns):
+                      print(Fore.CYAN+'---------> Intersecting with '+fn_name+Style.RESET_ALL)
+                      geometric_graph           = fn_body(inst_points)
+                      num_graph_edges           = len(geometric_graph.edges)
+                      common_edges              = list_common_edges(tsp_graph, geometric_graph)
+                      num_common_edges_with_tsp = len(common_edges)
+                      percentage_intersecn.append(100*num_common_edges_with_tsp/num_tsp_edges)
+
+              # plot the tour
+              fig,ax = plt.subplots()
+              ax.set_xlim([xlim[0], xlim[1]])
+              ax.set_ylim([ylim[0], ylim[1]])
+              ax.set_aspect(1.0)
+              ax.set_xticks([])
+              ax.set_yticks([])
+ 
+              render_graph(tsp_graph,fig,ax)
+              inst_name = fname[:-4]
+              plt.savefig(dirName+inst_name+'-concorde-tsp.pdf',bbox_inches='tight')
+              plt.close()
+              
+              # plot the intersection percentage bar-chart
+              plt.style.use('ggplot')
+              x              = [grtype for (_,grtype) in graph_fns]
+              x_pos          = [i for i, _ in enumerate(x)]
+     
+              plt.bar(x_pos, percentage_intersecn, color='blue')
+              plt.xlabel("Graph Type")
+              plt.ylabel("Percentage of Intersections")
+              plt.title("Percentage of intersections of TSP with various graphs on `" + fname[:-4] + "`")
+ 
+              plt.xticks(x_pos, x)   
+              plt.savefig(dirName+inst_name+'-intersection-chart.pdf',bbox_inches='tight')
+                   
+              # write slide code to file
+             
+              slidecode="%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n"
+              slidecode+="\\begin{frame}{Intersections of Concorde TSP with TSPLIB instances of size $\\leq 1100$}\n"
+              slidecode+="\\begin{figure}[ht]\n"
+              slidecode+="  \\centering\n"
+              slidecode+="  \\includegraphics[width=4cm]{../tsplib-expts/" + inst_name+"-concorde-tsp.pdf}\n"
+              slidecode+="  \\includegraphics[width=8cm]{../tsplib-expts/" + inst_name+"-intersection-chart.pdf}\n"
+              slidecode+="\\end{figure}\n"
+              slidecode+="\\end{frame}\n"
+              f.write(slidecode)
+
+
+              plt.close()
+
+     f.close()
+@
+
+
+
+
 \subsection{Intersection behavior for uniformly randomly generated instances}
 
 
@@ -1330,27 +1439,32 @@ and one standard deviation above i.e. $[\mu-\sigma, \mu+\sigma]$ is shaded for e
 
 <<Experiments>>=
 def expt_intersection_behavior():
-     expt_name           = 'expt_intersection_behavior'
+     expt_name           = 'expt_non_uniform_intersection_behavior'
      expt_plot_file_extn = '.pdf'
 
-     ptsmin   = 25
-     ptsmax   = 1000
-     skipval  = 25
+     ptsmin   = 10
+     ptsmax   = 300
+     skipval  = 20
 
-     numrunsper    = 20
+     numrunsper    = 15
      cols_1nng     = {}
      cols_mst      = {}
-     cols_gabriel      = {}
-     cols_urquhart      = {}
+     cols_gabriel  = {}
+     cols_urquhart = {}
      cols_delaunay = {}
      for numpts in range(ptsmin,ptsmax,skipval):
+          print(Fore.CYAN, "\n ========== \n Tackling numpts = ", numpts, "\n==============\n", Style.RESET_ALL)
+          time.sleep(0.50)
           cols_1nng[numpts]     = []
           cols_mst[numpts]      = []
           cols_gabriel[numpts]      = []
           cols_urquhart[numpts]      = []
           cols_delaunay[numpts] = []
           for runcount in range(numrunsper):
-               pts            = uniform_points(numpts)
+               print(Fore.CYAN, "......Run number:", runcount, " for numpts = ", numpts, Style.RESET_ALL)
+               time.sleep(0.25)
+               #pts            = uniform_points(numpts)
+               pts            = multimodal_points(numpts, nummodes=4, sigma=0.05)     
                nng1_graph     = get_knng_graph(pts,k=1)
                mst_graph      = get_mst_graph(pts)
                gabriel_graph  = get_gabriel_graph(pts)
@@ -1365,7 +1479,7 @@ def expt_intersection_behavior():
                cols_delaunay[numpts].append(100*len(list_common_edges(del_graph,conctsp_graph)) /len(conctsp_graph.edges) )
 
      fig, ax = plt.subplots()
-     ax.set_title(r"Intersection \% between Euc. 2D TSP and Various Graphs" "\n"  r"on Random Uniform points in $[0,1]^2$", fontdict={'fontsize':15})
+     ax.set_title(r"Intersection \% between Euc. 2D TSP and Various Graphs" "\n"  r"on Random Non Uniform points in $[0,1]^2$", fontdict={'fontsize':15})
      ax.set_xlim([ptsmin,ptsmax-skipval])
      ax.set_ylim([0,110])
      ax.set_xlabel("Number of points in point-cloud")

@@ -18,6 +18,7 @@ init() # this line does nothing on Linux/Mac,
        # but is important for Windows to display
        # colored text. See https://pypi.org/project/colorama/
 import yaml
+import shutil
 
 def get_names_of_all_euclidean2D_instances(dirpath=\
          "./sym-tsp-tsplib/instances/euclidean_instances_yaml/" ):
@@ -196,6 +197,89 @@ def error_intervals(xss):
                            means[i]        , \
                            means[i]+stds[i])   for i in len(xss)]
      return error_intervals
+def exists_disp_vertex_cover_more_than_bin_guess(graph,points,d):
+
+     from satispy import Variable, Cnf
+     from satispy.solver import Minisat
+
+     numpts = len(points)
+     exp    = Cnf()
+
+     xs = []
+     for idx in range(numpts):
+         xs.append(Variable( 'x_'+str(idx) ))
+     print("     Created Variables....")
+     for (i,j) in  list(graph.edges):
+           c = Cnf()
+           c = xs[i] | xs[j]
+           exp &= c
+     print("     Created Edge Clauses...")
+     for i in range(numpts):
+         for j in range(i+1, numpts):
+             if np.linalg.norm(points[i]-points[j]) < d:
+                    c = Cnf()
+                    c = -xs[i] | -xs[j]
+                    exp &= c
+     print("     Created All Pair Clauses.....")
+     solver = Minisat()
+     solution = solver.solve(exp)
+
+     if solution.success:
+             print(Fore.CYAN, "    2-SAT Solution found!", Style.RESET_ALL)
+             return (True, [idx for idx in range(numpts) if solution[xs[idx]] == True])
+     else: 
+              print(Fore.RED, "    2-SAT Solution cannot be found", Style.RESET_ALL)
+              return (False, [])
+def get_max_disp_vc_nodes(graph, points):
+
+      tol               = 1e-6     # configurable
+      bin_low, bin_high = 0.0, 2.0 # initial interval limits for binary search
+      old_disp_idxs     = range(len(points)) 
+
+      while abs(bin_high - bin_low) > tol:
+
+          assert bin_high >= bin_low 
+          bin_guess = (bin_high + bin_low)/2.0
+          
+          print ("\nBinary search Interval Limits are ", "[", bin_low, " , ", bin_high, "]")
+          print ("Guessed dispersion value currently is ", bin_guess)
+          print ("Checking for vertex cover with ", bin_guess, " dispersion.....")
+
+          [exist_flag_p, disp_idxs] = exists_disp_vertex_cover_more_than_bin_guess(graph,points,bin_guess)
+
+          if exist_flag_p:
+                bin_low       = bin_guess
+                old_disp_idxs = disp_idxs
+          else:
+                bin_high = bin_guess 
+
+      return (old_disp_idxs, bin_guess)
+def list_points_in_node_order(graph):
+     return [graph.nodes[idx]['coods'] for idx in range(len(graph.nodes))]
+class Forest:
+    def __init__(self,rootNodes):
+         self.rootNodes = rootNodes
+
+class Node:
+    def __init__(self, point, children=[]):
+          self.point    = np.asarray(point)
+          self.children = children
+def build_delaunay_forest(points,stopnum=10):
+     from sklearn.neighbors import NearestNeighbors     
+     points = np.asarray([np.asarray(pt) for pt in points])
+     while len(points) >= stopnum :
+              del_graph                     = get_delaunay_tri_graph(points)
+              max_disp_vc_nodes, dispersion = get_max_disp_vc_nodes(del_graph, points) 
+              vcpoints                      = np.asarray([points[idx] for idx in max_disp_vc_nodes])
+              nbrs                          = NearestNeighbors(n_neighbors=5, algorithm='ball_tree').fit(points)
+              distances, indices            = nbrs.kneighbors(vcpoints)
+              print(distances)
+              print(indices)
+              print(len(vcpoints))
+              points             = vcpoints
+
+     sys.exit()
+     return delaunay_forest
 def run_handler(points=[]):
     fig, ax =  plt.subplots()
     run = TSPNNGInput(points=points)
@@ -357,6 +441,11 @@ def wrapperkeyPressHandler(fig,ax, run):
                      elif algo_str == 'pytsp':
                           geometric_graph = get_py_tsp_graph(run.points)
 
+                     elif algo_str in ['d','D']:
+
+                          build_delaunay_forest(run.points,stopnum=10) 
+                          sys.exit()
+
                      else:
                            print(Fore.YELLOW, "I did not recognize that option.", Style.RESET_ALL)
                            geometric_graph = None
@@ -446,10 +535,16 @@ def render_graph(G,fig,ax):
           from matplotlib.patches import Polygon
           from matplotlib.collections import PatchCollection
 
+          # mark the nodes
+          xs = [pt[0] for pt in node_coods ]
+          ys = [pt[1] for pt in node_coods ]
+          ax.scatter(xs,ys)
+
           polygon = Polygon(node_coods, closed=True, \
-                            facecolor=(255/255, 255/255, 102/255,0.5), \
+                            facecolor=(255/255, 255/255, 102/255,0.4), \
                             edgecolor='k', linewidth=1)
           ax.add_patch(polygon)
+
           
      ax.axis('off') # turn off box surrounding plot
      fig.canvas.draw()
@@ -695,28 +790,122 @@ def graphs_intersect_p(g1,g2):
      if list_common_edges(g1,g2):     
           flag = True 
      return flag
+def expt_tsplib_intersection_behavior():
+ 
+     dirName = './tsplib-expts/'
+     shutil.rmtree(dirName, ignore_errors=True)
+     try:
+         os.mkdir(dirName)
+         print("Directory " , dirName ,  " Created ") 
+     except FileExistsError:
+         print("Directory " , dirName ,  " already exists")
+    
+     maxpts_bound        = 1100
+     instance_file_names = get_names_of_all_euclidean2D_instances()
+
+     f = open("./slides-beamer/slidecode.tex", "w")
+
+     for fname in instance_file_names:
+
+        inst_points = shift_and_scale_to_unit_square(tsplib_instance_points(fname))
+
+        if len(inst_points) > maxpts_bound:
+              print(Fore.RED, 'Skipping file', fname, ' which has ', len(inst_points) , '>', maxpts_bound , ' points', Style.RESET_ALL)
+        else:
+              print(fname , 'has ', len(inst_points), ' points')
+              print('...Testing for intersections')
+              tsp_graph = get_concorde_tsp_graph(inst_points)
+              
+              graph_fns = [(get_mst_graph         , 'MST'), \
+                           (get_urquhart_graph    , 'Urquhart'), \
+                           (get_gabriel_graph     , 'Gabriel'),\
+                           (get_delaunay_tri_graph, 'Delaunay')]
+
+              from functools import partial
+              for k in range(1,4): 
+                     graph_fns.append((partial(get_knng_graph, k=k), str(k)+'-NNG'))
+
+              num_tsp_edges        = len(tsp_graph.edges)
+              percentage_intersecn = []  
+     
+              print(Fore.YELLOW,'....COMPUTING INTERSECTIONS OF TSP WITH VARIOUS GRAPHS')
+              for ctr, (fn_body, fn_name) in zip(range(1,1+len(graph_fns)), graph_fns):
+                      print(Fore.CYAN+'---------> Intersecting with '+fn_name+Style.RESET_ALL)
+                      geometric_graph           = fn_body(inst_points)
+                      num_graph_edges           = len(geometric_graph.edges)
+                      common_edges              = list_common_edges(tsp_graph, geometric_graph)
+                      num_common_edges_with_tsp = len(common_edges)
+                      percentage_intersecn.append(100*num_common_edges_with_tsp/num_tsp_edges)
+
+              # plot the tour
+              fig,ax = plt.subplots()
+              ax.set_xlim([xlim[0], xlim[1]])
+              ax.set_ylim([ylim[0], ylim[1]])
+              ax.set_aspect(1.0)
+              ax.set_xticks([])
+              ax.set_yticks([])
+ 
+              render_graph(tsp_graph,fig,ax)
+              inst_name = fname[:-4]
+              plt.savefig(dirName+inst_name+'-concorde-tsp.pdf',bbox_inches='tight')
+              plt.close()
+              
+              # plot the intersection percentage bar-chart
+              plt.style.use('ggplot')
+              x              = [grtype for (_,grtype) in graph_fns]
+              x_pos          = [i for i, _ in enumerate(x)]
+     
+              plt.bar(x_pos, percentage_intersecn, color='blue')
+              plt.xlabel("Graph Type")
+              plt.ylabel("Percentage of Intersections")
+              plt.title("Percentage of intersections of TSP with various graphs on `" + fname[:-4] + "`")
+ 
+              plt.xticks(x_pos, x)   
+              plt.savefig(dirName+inst_name+'-intersection-chart.pdf',bbox_inches='tight')
+                   
+              # write slide code to file
+             
+              slidecode="%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n"
+              slidecode+="\\begin{frame}{Intersections of Concorde TSP with TSPLIB instances of size $\\leq 1100$}\n"
+              slidecode+="\\begin{figure}[ht]\n"
+              slidecode+="  \\centering\n"
+              slidecode+="  \\includegraphics[width=4cm]{../tsplib-expts/" + inst_name+"-concorde-tsp.pdf}\n"
+              slidecode+="  \\includegraphics[width=8cm]{../tsplib-expts/" + inst_name+"-intersection-chart.pdf}\n"
+              slidecode+="\\end{figure}\n"
+              slidecode+="\\end{frame}\n"
+              f.write(slidecode)
+
+
+              plt.close()
+
+     f.close()
 def expt_intersection_behavior():
-     expt_name           = 'expt_intersection_behavior'
+     expt_name           = 'expt_non_uniform_intersection_behavior'
      expt_plot_file_extn = '.pdf'
 
-     ptsmin   = 25
-     ptsmax   = 1000
-     skipval  = 25
+     ptsmin   = 10
+     ptsmax   = 300
+     skipval  = 20
 
-     numrunsper    = 20
+     numrunsper    = 15
      cols_1nng     = {}
      cols_mst      = {}
-     cols_gabriel      = {}
-     cols_urquhart      = {}
+     cols_gabriel  = {}
+     cols_urquhart = {}
      cols_delaunay = {}
      for numpts in range(ptsmin,ptsmax,skipval):
+          print(Fore.CYAN, "\n ========== \n Tackling numpts = ", numpts, "\n==============\n", Style.RESET_ALL)
+          time.sleep(0.50)
           cols_1nng[numpts]     = []
           cols_mst[numpts]      = []
           cols_gabriel[numpts]      = []
           cols_urquhart[numpts]      = []
           cols_delaunay[numpts] = []
           for runcount in range(numrunsper):
-               pts            = uniform_points(numpts)
+               print(Fore.CYAN, "......Run number:", runcount, " for numpts = ", numpts, Style.RESET_ALL)
+               time.sleep(0.25)
+               #pts            = uniform_points(numpts)
+               pts            = multimodal_points(numpts, nummodes=4, sigma=0.05)     
                nng1_graph     = get_knng_graph(pts,k=1)
                mst_graph      = get_mst_graph(pts)
                gabriel_graph  = get_gabriel_graph(pts)
@@ -731,7 +920,7 @@ def expt_intersection_behavior():
                cols_delaunay[numpts].append(100*len(list_common_edges(del_graph,conctsp_graph)) /len(conctsp_graph.edges) )
 
      fig, ax = plt.subplots()
-     ax.set_title(r"Intersection \% between Euc. 2D TSP and Various Graphs" "\n"  r"on Random Uniform points in $[0,1]^2$", fontdict={'fontsize':15})
+     ax.set_title(r"Intersection \% between Euc. 2D TSP and Various Graphs" "\n"  r"on Random Non Uniform points in $[0,1]^2$", fontdict={'fontsize':15})
      ax.set_xlim([ptsmin,ptsmax-skipval])
      ax.set_ylim([0,110])
      ax.set_xlabel("Number of points in point-cloud")

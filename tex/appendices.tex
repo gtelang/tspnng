@@ -19,7 +19,7 @@ The additional packages required can be installed by:
 
 \begin{quote}
 \color{blue}
-\texttt{pip install colorama prettytable tsp} \footnote{If you don't have superuser access during installation, add the flag \texttt{\color{red} \texttt{-{}-}user} at the end}   \\
+\texttt{pip install colorama prettytable tsp satispy treelib} \footnote{If you don't have superuser access during installation or the installation process seems to get stuck, add the flag \texttt{\color{red} \texttt{-{}-}user} at the end}   \\
 \texttt{git clone https://github.com/jvkersch/pyconcorde} \\
 \texttt{cd pyconcorde}\\
 \texttt{pip install -e .}
@@ -421,130 +421,7 @@ We include here the pictures of all the TSPLIB Euclidean instances.
  \end{figure}
 
 
-\newpage
-\section{Laundry-list of Questions/Variants/Conjectures}
- \label{sec:questions}
-
-
-\begin{description}
-\item[\color{red} HAMILTONICITY STRUCTURE] We know that the Delaunay Triangulation of a set of points need not be Hamiltonian. In fact \textit{detecting}
-      Hamiltonicity of a Delaunay Triangulation is famously $NP$-complete \cite{dillencourt1996finding} 
-
-      Two useful facts before we proceed: 
-
-     \begin{description}
-       \item[Folklore] The cube of any connected graph is Hamiltonian. 
-             \footnote{It is sufficient to prove this fact for any tree, and then use it on the spanning tree of the given graph}. 
-       \item[Fleischner's theorem  \cite{georgakopoulos2009short}] The square of 
-             any 2-vertex connected graph is Hamiltonian. 
-          \footnote{This last theorem certainly applies to Delaunay triangulations of general point-sets. By the square of a delaunay triangulation, I mean to say: throw away the edge weights and consider the square of the underlying unweighted graph. Once the new edges are added, consider them weighted with the natural euclidean distance between their endpoints}
-     \end{description}
-
-     And so the following questions are natural:
-
-     \begin{itemize}
-      \item Based on the experiments results shown in this report, can we 
-            claim  $TSP \subseteq DT^{k}$ or $TSP \subseteq MST^{k}$ in $\RR^2$ 
-           for a \textit{small} constant $k$? I'd wager $k=2,3$ or, at worst, some 
-           very slowly growing function of $n$ \footnote{$\log (n)$ maybe?}
-
-      \item For $G=MST^3$, how good is the any (or the shortest??) Hamilton cycle through $G$
-            in approximating the TSP? \footnote{This is a cute vertex analog of the standard edge-doubling based 2-OPT heuristic, but is detecting such a cycle for a small MST power polytime? I'd bet yes. Probably the FPT experts have something to say on this topic.}  
-            Surely, this must be known, right?  For the arrangement of $n$ points at the roots of unity suggests that the 
-            approximation could be as bad as 3. 
-
-       \item What is the likelihood of $MST^2$ of $n$ points $\in \RR^2$ in general position being Hamltonian? 
-             Any characterization of such point-sets? 
-
-       \item Given a set of points in $\RR^2$, does *ANY* 
-             (weakly/strongly) simple polygon and *ANY* triangulation on those 
-             points have an edge in common? This is surely not true, right?!
-       
-             \large{\textbf{UPDATE}}: Yeah this isn't true.  \autoref{fig:hugo-example} is a nice counter-example due to Hugo. 
-             \begin{figure}[H]
-             \centering
-             \includegraphics[width=8cm]{miscimages/hugo-example.png}
-             \caption{\label{fig:hugo-example} A simple polygon with edges in the complement of the graph of a point set's triangulation}
-             \end{figure}
-
-             \textit{Monkey wrench \ala Joe's Universal Guarding Problem:}
-             given a set of points $P$ in general position, might there exist a ``universal'' triangulation of $P$ that shares some edge with  
-             \textit{any} simple polygon on $P$? Maybe Hugo's counter-example of \autoref{fig:hugo-example} still holds? Qian's beautiful UGP 
-                           counterexample from her paper may also be of some relevance. 
-                           If this is not true for all point-sets, is detecting this property $NP$-hard? Check if some of the gadgets from 
-                           Demaine et al's hardness proof of the pulley problem are applicable here: they basically showed that detecting
-                           whether a set of mutually disjoint disks(not necessarily of the same radii) admit a ``pulleygon'' --- excuse the pun! --- is \nph. 
-      \end{itemize}
- 
-
-% \item[\color{red} TSP $\longsquiggly$ DELAUNAY] 
-
-% \begin{itemize}
-%    \item  (Worst idea ever??) Suppose by some magic black box (Concorde! \Winkey) one has obtained the TSP tour through $n$ points.  
-%           Can we then compute the Delaunay Triangulation (or MST. Recall $MST \subseteq DT$  ) of the point-set 
-%           in $O(n)$ time? It certainly seems so going by the high number of edges in the TSP common to the Delaunay 
-%           and MST as suggested by the tests in this writeup. Surely the $TSP \rarr MST$ question in $O(n)$ time has been studied?
-%           Maybe the Okabe book on Voronoi etc. has something on this? 
-          
-          
-%           It's, of course, utter baloney attempting to compute good triangulations or MSTs like this in practice but 
-%           why should  that \textit{that} stop a computer scientist speculating from the comfort of his/her armchair?
-
-
-%           In some vague sense might be related to the question of \textit{detecting}
-%           if a triangulation is Delaunay is linear time (check with joe, if this problem is trivial/open/known. I mean 
-%           detecting if a list is sorted is trivially doable in $O(n)$ as opposed to sorting which takes 
-%           $\Omega(n \lg n)$ in comparsion model. Are there lower bounds in other models (streaming, online etc.) 
-%           for Delaunay tri detection? Check with Joe, Mayank others. 
-          
-%           This reminescent of Melkman (i.e. simple poly chain $\rarr$ convex hull in $O(n)$). Samir Khuller also had work (SODA 1992, iirc) 
-%           in which he was able to compute a $O(1)$ (1.25, was it?) approximations to low-weight spanning trees of max degree 3 on point-sets in $\RR^2$, 
-%           from a \textit{given} MST in linear time. His paper hinged overall on a very simple but beautiful generalization of the $\Delta$ inequality 
-%           \footnote{which bounded the perimeter of a triangle in terms of the sums of the distances of a point $X$ to the points of that triangle. When we set $X$ to any of the vertices of the triangle, we recover the standard $\Delta$ inequality. I forget the exact coefficients of that cited linear inequality, remember some $3 \sqrt{3}$ and a 4 in there.}
-%           Might that be exploitable? Check! 
-
-%           Joe mentioned last week there is some nice work by Melhorn et al, on the reconstructibility properties of the TSP back from SOCG 1988(1989?) ;  Also
-%           Amenta (Crust algorithm) and Dey's works on reconstruction. Maybe we can connect these two lines in some hand-wavy way?  
-
-%    \item  Is the Min Weight (MW), or even better, the Min-Angle Maximizing (MAM) Triangulation of the TSP and its external pockets close 
-%           to being Delaunay in some sense\footnote{e.g. how good is the maximum value of the minimum angle in a triangle over all triangles different from OPT}?  
-%           Note that both MW and MAM triangulations of simple polygons can be computed by D.P. Should be fun to try this out experimentally. See also Sandor's 
-%           ALENEX paper from 2015 where he did something about computing "bad" triangulations (iirc he wanted to minimize maximum angle i.e. make triangle skinny), 
-%           Maybe we could compare against the triangulations obtained from his code, just to see how bad the TSP $\rarr$ Delaunay heuristic is compared 
-%           to the ``bad end'' of the spectrum? 
-
-% \end{itemize}  
-
-\item[\color{red} SHOWING \cite{lin1973effective} HAS A CERTAIN FRACTION OF DELAUNAY/NNG EDGES] 
-     Here we try to show that the output of the Lin Kernighan heuristic (rather than the optimal TSP) on any set of points has the postulated properties. In many practical 
-     cases, the LK heuristic is optimal, so this might be a cut-price (but interesting) substitute of the original question, especially for lower bounds. 
-     The LK paper has also documents some nice local properties of the exchanges.
-     \newpage 
-
-     \autoref{fig:linkernighan} is a screenshot from the opening pages:
- 
-\renewcommand\fbox{\fcolorbox{black}{white}}
-\setlength\fboxrule{0.1pt}
-   
-\begin{figure}[H]
-  \centering
-  \fbox{\includegraphics[width=10cm]{miscimages/linkernighan.pdf}}
-  \caption{\label{fig:linkernighan} Screenshot from the Lin Kernighan paper}
-\end{figure}
-
-Page 5 of that paper contains the main sketch of the overall algorithm. 
-
-On that note, see \cite{papadimitriou1992complexity} 
-where \textit{``It is shown that finding a local optimum solution with respect
-to the Lin-Kernighan heuristic for the traveling salesman problem is $PLS$-complete,''} Might have useful nuggets. 
-
-
- %\item[Approximation by Sharing] If a simple polygon $P$ on $n$ points shares $\theta n$ edges with the Delaunay 
-%      Triangulation, for some constant (i.e. independent of $n$) $\theta$ close to 1 
-%      are there bounds on the approximation factor (as a function of $\theta$) of how good $P$ is compared to TSP? 
-\end{description}
-
-
+%\input{laundry-list-questions.tex}
 
 
 
