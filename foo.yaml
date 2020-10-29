@@ -1,4 +1,4 @@
-# You can include comments in the file too
+#  You can include comments in the file too
 #  While coordinates given below can lie anuwhere in the R^2 plane
 #  the code scales and shifts all coordinates so that all points lie 
 #  inside the unit-square. This makes it convenient for rendering and
