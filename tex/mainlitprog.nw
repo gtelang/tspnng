@@ -1314,7 +1314,183 @@ def error_intervals(xss):
 @
 
 
-%\input{maxdispdelaunay.tex}
+%----
+\section{Computing the Maximally Dispersed Vertex Cover of a Graph}
+
+In the following routine we compute the maximally dispersed vertex cover for the supplied graph of the delaunay triangulation
+on the graph. Returns a list of indices corresponding to the nodes of the supplied graph
+
+The algorithm implemented below has been described in \textit{Minimum Diameter Covering Problems} that can be downloaded
+from \url{http://www.ams.sunysb.edu/~estie/papers/diam.ps.gz}. It solves the problem \textit{exactly} on a graph by using
+2-sat. See Theorem 4.1, Page 10 from that paper. 
+
+The following implements the core routine which uses 2-sat to solve the decision question of 
+computing the existence of a vertex cover with the specified dispersion. 
+
+I believe calculating the maximally dispersed vertex cover a graph might yield good approximation algorithms
+for network design problems when combined with some inefficient dynamic programming algorithm. For instance
+here is one possible heuristic for computing the TSP. Compute the Delaunay Triangulation, calculate the 
+max dispersed vertex cover, then repeat, by computing the delaunay triangulation of this new vertex cover
+and so on. Recurse downards until you have a small point-set and then iteratively and greedily build up the 
+solution from the bottom up. In a sense, I would like to claim maximally dispersed vertex covers
+of delaunay triangulations form a sort of ``universal core-set'' but I should of course put
+my money where my mouth is and give some performance bounds for this rather tall claim. At the moment 
+it looks like a cute framework in which to design algorithms for low-cost networks. If it gives a constant
+factor approxmation algorithm to the TSP, then the resulting tour intuitively looks simple (i.e. does not self intersect).
+However, Joe just mentioned today via email, that this problem was solved early this year by two guys 
+from Sharif University in Iran, using so-called Snowflake trees. Might this offer a simpler alternative? Let's see!! 
+
+Implementing this routine is a first step in getting good examples and honing my hypotheses. Another reason for 
+inserting this piece of code is I am curious how many edges of the resulting tour which I use this routine
+to construct shares its edges with the delaunay triangulation. 
+
+Exploring the maximally dispersed vertex covers (and getting faster algorithms for them instead of the 2-sat algorithm below
+that takes $O(n^2 \log n)$) for various ``standard'' graphs like Delaunay graphs, or MSTs seems like an interesting set of 
+questions to tackle. Can we do $O(n \text{polylog}(n))$ for them? Maybe use Hochbaum Mass for getting good approximations 
+in $O(n \text{polylog}(n))$? 
+
+The motivation for looking at Estie's paper was computing maximally dispersed guards in the annulus to answer Abhishek's
+lighting parking lots questions which he faced at Phillips that I reformulated as an MDG problem, that hasn;t been looked
+at in literature yet. (Sandor's student has a hardness proof for polygons with holes, but the problem remains of interest
+in a convex annulus with a single convex hole.)
+
+
+<<Generic utility classes and functions>>=
+def exists_disp_vertex_cover_more_than_bin_guess(graph,points,d):
+
+     from satispy import Variable, Cnf
+     from satispy.solver import Minisat
+
+     numpts = len(points)
+     exp    = Cnf()
+
+     <<Set up variables $x_i$ for each node of the graph>>
+     <<Set up clauses for each edge>>
+     <<Create a clause for each pair of nodes whose distance is smaller than $d$>>
+     <<Solve the system with Minisat>>
+@
+
+
+<<Set up variables $x_i$ for each node of the graph>>=
+xs = []
+for idx in range(numpts):
+    xs.append(Variable( 'x_'+str(idx) ))
+print("     Created Variables....")
+@
+
+
+<<Set up clauses for each edge>>=
+for (i,j) in  list(graph.edges):
+      c = Cnf()
+      c = xs[i] | xs[j]
+      exp &= c
+print("     Created Edge Clauses...")
+@
+
+
+
+<<Create a clause for each pair of nodes whose distance is smaller than $d$>>=
+for i in range(numpts):
+    for j in range(i+1, numpts):
+        if np.linalg.norm(points[i]-points[j]) < d:
+               c = Cnf()
+               c = -xs[i] | -xs[j]
+               exp &= c
+print("     Created All Pair Clauses.....")
+@
+
+Minisat is an extremely efficient solver for solving large SAT instances, freely 
+available from \url{http://minisat.se/}. I am using it through the Python interface. 
+
+<<Solve the system with Minisat>>=
+solver = Minisat()
+solution = solver.solve(exp)
+
+if solution.success:
+        print(Fore.CYAN, "    2-SAT Solution found!", Style.RESET_ALL)
+        return (True, [idx for idx in range(numpts) if solution[xs[idx]] == True])
+else: 
+         print(Fore.RED, "    2-SAT Solution cannot be found", Style.RESET_ALL)
+         return (False, [])
+@
+
+
+The following routine calls the function defined above, and uses binary search to hone
+down onto a good vertex cover. Note that the reason \verb|bin_high| has been set to $\sqrt{2}$
+since all points lie inside the unit-square. 
+
+
+<<Generic utility classes and functions>>=
+def get_max_disp_vc_nodes(graph, points):
+
+      tol               = 1e-6     # configurable
+      bin_low, bin_high = 0.0, 2.0 # initial interval limits for binary search
+      old_disp_idxs     = range(len(points)) 
+
+      while abs(bin_high - bin_low) > tol:
+
+          assert bin_high >= bin_low 
+          bin_guess = (bin_high + bin_low)/2.0
+          
+          print ("\nBinary search Interval Limits are ", "[", bin_low, " , ", bin_high, "]")
+          print ("Guessed dispersion value currently is ", bin_guess)
+          print ("Checking for vertex cover with ", bin_guess, " dispersion.....")
+
+          [exist_flag_p, disp_idxs] = exists_disp_vertex_cover_more_than_bin_guess(graph,points,bin_guess)
+
+          if exist_flag_p:
+                bin_low       = bin_guess
+                old_disp_idxs = disp_idxs
+          else:
+                bin_high = bin_guess 
+
+      return (old_disp_idxs, bin_guess)
+@
+
+
+
+<<Generic utility classes and functions>>=
+def list_points_in_node_order(graph):
+     return [graph.nodes[idx]['coods'] for idx in range(len(graph.nodes))]
+@
+
+
+<<Generic utility classes and functions>>=
+class Forest:
+    def __init__(self,rootNodes):
+         self.rootNodes = rootNodes
+
+class Node:
+    def __init__(self, point, children=[]):
+          self.point    = np.asarray(point)
+          self.children = children
+@
+
+
+<<Generic utility classes and functions>>=
+def build_delaunay_forest(points,stopnum=10):
+     from sklearn.neighbors import NearestNeighbors     
+     points = np.asarray([np.asarray(pt) for pt in points])
+     while len(points) >= stopnum :
+              del_graph                     = get_delaunay_tri_graph(points)
+              max_disp_vc_nodes, dispersion = get_max_disp_vc_nodes(del_graph, points) 
+              vcpoints                      = np.asarray([points[idx] for idx in max_disp_vc_nodes])
+              nbrs                          = NearestNeighbors(n_neighbors=5, algorithm='ball_tree').fit(points)
+              distances, indices            = nbrs.kneighbors(vcpoints)
+              print(distances)
+              print(indices)
+              print(len(vcpoints))
+              points             = vcpoints
+
+     sys.exit()
+     return delaunay_forest
+@
+%@@@@
+
+
+
+
+
 
 
 \section{Experiments}
@@ -1552,9 +1728,4 @@ def expt_intersection_behavior():
 @
      
 \subsection{Intersection behavior for TSPLIB instances}
-
-
-
-
-
 

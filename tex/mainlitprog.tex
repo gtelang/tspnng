@@ -194,7 +194,7 @@ def multimodal_points(numpts, nummodes=4, sigma=0.05):
 
      points = shift_and_scale_to_unit_square(points)
      return points
-\nwalsodefined{\\{NWaGG5Z-4cZhfD-2}\\{NWaGG5Z-4cZhfD-3}\\{NWaGG5Z-4cZhfD-4}\\{NWaGG5Z-4cZhfD-5}\\{NWaGG5Z-4cZhfD-6}\\{NWaGG5Z-4cZhfD-7}\\{NWaGG5Z-4cZhfD-8}\\{NWaGG5Z-4cZhfD-9}\\{NWaGG5Z-4cZhfD-A}}\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{12}\nwdocspar
+\nwalsodefined{\\{NWaGG5Z-4cZhfD-2}\\{NWaGG5Z-4cZhfD-3}\\{NWaGG5Z-4cZhfD-4}\\{NWaGG5Z-4cZhfD-5}\\{NWaGG5Z-4cZhfD-6}\\{NWaGG5Z-4cZhfD-7}\\{NWaGG5Z-4cZhfD-8}\\{NWaGG5Z-4cZhfD-9}\\{NWaGG5Z-4cZhfD-A}\\{NWaGG5Z-4cZhfD-B}\\{NWaGG5Z-4cZhfD-C}\\{NWaGG5Z-4cZhfD-D}\\{NWaGG5Z-4cZhfD-E}\\{NWaGG5Z-4cZhfD-F}}\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{12}\nwdocspar
 
 The next chunk implements the \verb|scale_to_unit_square| function used 
 in the last line. We implement this separately since we expect to use it 
@@ -1303,7 +1303,7 @@ with a tuple of three numbers $(\mu-\sigma, \mu, \mu+\sigma)$ which represents a
 error interval $[\mu-\sigma, \mu + \sigma]$ of a single standard deviation above and
 below the mean $\mu$ of the stream of numbers. 
 
-\nwenddocs{}\nwbegincode{95}\sublabel{NWaGG5Z-4cZhfD-A}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-A}}}\moddef{Generic utility classes and functions~{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-4cZhfD-9}{\relax}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{95}\sublabel{NWaGG5Z-4cZhfD-A}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-A}}}\moddef{Generic utility classes and functions~{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-4cZhfD-9}{NWaGG5Z-4cZhfD-B}\nwenddeflinemarkup
 def error_intervals(xss):
      means           = [np.mean(xs) for xs in xss]
      stds            = [np.std(xs)  for xs in xss]
@@ -1314,13 +1314,189 @@ def error_intervals(xss):
 \nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{96}\nwdocspar
 
 
-%\input{maxdispdelaunay.tex}
+%----
+\section{Computing the Maximally Dispersed Vertex Cover of a Graph}
+
+In the following routine we compute the maximally dispersed vertex cover for the supplied graph of the delaunay triangulation
+on the graph. Returns a list of indices corresponding to the nodes of the supplied graph
+
+The algorithm implemented below has been described in \textit{Minimum Diameter Covering Problems} that can be downloaded
+from \url{http://www.ams.sunysb.edu/~estie/papers/diam.ps.gz}. It solves the problem \textit{exactly} on a graph by using
+2-sat. See Theorem 4.1, Page 10 from that paper. 
+
+The following implements the core routine which uses 2-sat to solve the decision question of 
+computing the existence of a vertex cover with the specified dispersion. 
+
+I believe calculating the maximally dispersed vertex cover a graph might yield good approximation algorithms
+for network design problems when combined with some inefficient dynamic programming algorithm. For instance
+here is one possible heuristic for computing the TSP. Compute the Delaunay Triangulation, calculate the 
+max dispersed vertex cover, then repeat, by computing the delaunay triangulation of this new vertex cover
+and so on. Recurse downards until you have a small point-set and then iteratively and greedily build up the 
+solution from the bottom up. In a sense, I would like to claim maximally dispersed vertex covers
+of delaunay triangulations form a sort of ``universal core-set'' but I should of course put
+my money where my mouth is and give some performance bounds for this rather tall claim. At the moment 
+it looks like a cute framework in which to design algorithms for low-cost networks. If it gives a constant
+factor approxmation algorithm to the TSP, then the resulting tour intuitively looks simple (i.e. does not self intersect).
+However, Joe just mentioned today via email, that this problem was solved early this year by two guys 
+from Sharif University in Iran, using so-called Snowflake trees. Might this offer a simpler alternative? Let's see!! 
+
+Implementing this routine is a first step in getting good examples and honing my hypotheses. Another reason for 
+inserting this piece of code is I am curious how many edges of the resulting tour which I use this routine
+to construct shares its edges with the delaunay triangulation. 
+
+Exploring the maximally dispersed vertex covers (and getting faster algorithms for them instead of the 2-sat algorithm below
+that takes $O(n^2 \log n)$) for various ``standard'' graphs like Delaunay graphs, or MSTs seems like an interesting set of 
+questions to tackle. Can we do $O(n \text{polylog}(n))$ for them? Maybe use Hochbaum Mass for getting good approximations 
+in $O(n \text{polylog}(n))$? 
+
+The motivation for looking at Estie's paper was computing maximally dispersed guards in the annulus to answer Abhishek's
+lighting parking lots questions which he faced at Phillips that I reformulated as an MDG problem, that hasn;t been looked
+at in literature yet. (Sandor's student has a hardness proof for polygons with holes, but the problem remains of interest
+in a convex annulus with a single convex hole.)
+
+
+\nwenddocs{}\nwbegincode{97}\sublabel{NWaGG5Z-4cZhfD-B}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-B}}}\moddef{Generic utility classes and functions~{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-4cZhfD-A}{NWaGG5Z-4cZhfD-C}\nwenddeflinemarkup
+def exists_disp_vertex_cover_more_than_bin_guess(graph,points,d):
+
+     from satispy import Variable, Cnf
+     from satispy.solver import Minisat
+
+     numpts = len(points)
+     exp    = Cnf()
+
+     \LA{}Set up variables $x_i$ for each node of the graph~{\nwtagstyle{}\subpageref{NWaGG5Z-1YI2LW-1}}\RA{}
+     \LA{}Set up clauses for each edge~{\nwtagstyle{}\subpageref{NWaGG5Z-2iZU13-1}}\RA{}
+     \LA{}Create a clause for each pair of nodes whose distance is smaller than $d$~{\nwtagstyle{}\subpageref{NWaGG5Z-3YpnkD-1}}\RA{}
+     \LA{}Solve the system with Minisat~{\nwtagstyle{}\subpageref{NWaGG5Z-4A3M70-1}}\RA{}
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{98}\nwdocspar
+
+
+\nwenddocs{}\nwbegincode{99}\sublabel{NWaGG5Z-1YI2LW-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-1YI2LW-1}}}\moddef{Set up variables $x_i$ for each node of the graph~{\nwtagstyle{}\subpageref{NWaGG5Z-1YI2LW-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-4cZhfD-B}}\nwenddeflinemarkup
+xs = []
+for idx in range(numpts):
+    xs.append(Variable( 'x_'+str(idx) ))
+print("     Created Variables....")
+\nwused{\\{NWaGG5Z-4cZhfD-B}}\nwendcode{}\nwbegindocs{100}\nwdocspar
+
+
+\nwenddocs{}\nwbegincode{101}\sublabel{NWaGG5Z-2iZU13-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-2iZU13-1}}}\moddef{Set up clauses for each edge~{\nwtagstyle{}\subpageref{NWaGG5Z-2iZU13-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-4cZhfD-B}}\nwenddeflinemarkup
+for (i,j) in  list(graph.edges):
+      c = Cnf()
+      c = xs[i] | xs[j]
+      exp &= c
+print("     Created Edge Clauses...")
+\nwused{\\{NWaGG5Z-4cZhfD-B}}\nwendcode{}\nwbegindocs{102}\nwdocspar
+
+
+
+\nwenddocs{}\nwbegincode{103}\sublabel{NWaGG5Z-3YpnkD-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3YpnkD-1}}}\moddef{Create a clause for each pair of nodes whose distance is smaller than $d$~{\nwtagstyle{}\subpageref{NWaGG5Z-3YpnkD-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-4cZhfD-B}}\nwenddeflinemarkup
+for i in range(numpts):
+    for j in range(i+1, numpts):
+        if np.linalg.norm(points[i]-points[j]) < d:
+               c = Cnf()
+               c = -xs[i] | -xs[j]
+               exp &= c
+print("     Created All Pair Clauses.....")
+\nwused{\\{NWaGG5Z-4cZhfD-B}}\nwendcode{}\nwbegindocs{104}\nwdocspar
+
+Minisat is an extremely efficient solver for solving large SAT instances, freely 
+available from \url{http://minisat.se/}. I am using it through the Python interface. 
+
+\nwenddocs{}\nwbegincode{105}\sublabel{NWaGG5Z-4A3M70-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-4A3M70-1}}}\moddef{Solve the system with Minisat~{\nwtagstyle{}\subpageref{NWaGG5Z-4A3M70-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-4cZhfD-B}}\nwenddeflinemarkup
+solver = Minisat()
+solution = solver.solve(exp)
+
+if solution.success:
+        print(Fore.CYAN, "    2-SAT Solution found!", Style.RESET_ALL)
+        return (True, [idx for idx in range(numpts) if solution[xs[idx]] == True])
+else: 
+         print(Fore.RED, "    2-SAT Solution cannot be found", Style.RESET_ALL)
+         return (False, [])
+\nwused{\\{NWaGG5Z-4cZhfD-B}}\nwendcode{}\nwbegindocs{106}\nwdocspar
+
+
+The following routine calls the function defined above, and uses binary search to hone
+down onto a good vertex cover. Note that the reason \verb|bin_high| has been set to $\sqrt{2}$
+since all points lie inside the unit-square. 
+
+
+\nwenddocs{}\nwbegincode{107}\sublabel{NWaGG5Z-4cZhfD-C}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-C}}}\moddef{Generic utility classes and functions~{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-4cZhfD-B}{NWaGG5Z-4cZhfD-D}\nwenddeflinemarkup
+def get_max_disp_vc_nodes(graph, points):
+
+      tol               = 1e-6     # configurable
+      bin_low, bin_high = 0.0, 2.0 # initial interval limits for binary search
+      old_disp_idxs     = range(len(points)) 
+
+      while abs(bin_high - bin_low) > tol:
+
+          assert bin_high >= bin_low 
+          bin_guess = (bin_high + bin_low)/2.0
+          
+          print ("\\nBinary search Interval Limits are ", "[", bin_low, " , ", bin_high, "]")
+          print ("Guessed dispersion value currently is ", bin_guess)
+          print ("Checking for vertex cover with ", bin_guess, " dispersion.....")
+
+          [exist_flag_p, disp_idxs] = exists_disp_vertex_cover_more_than_bin_guess(graph,points,bin_guess)
+
+          if exist_flag_p:
+                bin_low       = bin_guess
+                old_disp_idxs = disp_idxs
+          else:
+                bin_high = bin_guess 
+
+      return (old_disp_idxs, bin_guess)
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{108}\nwdocspar
+
+
+
+\nwenddocs{}\nwbegincode{109}\sublabel{NWaGG5Z-4cZhfD-D}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-D}}}\moddef{Generic utility classes and functions~{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-4cZhfD-C}{NWaGG5Z-4cZhfD-E}\nwenddeflinemarkup
+def list_points_in_node_order(graph):
+     return [graph.nodes[idx]['coods'] for idx in range(len(graph.nodes))]
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{110}\nwdocspar
+
+
+\nwenddocs{}\nwbegincode{111}\sublabel{NWaGG5Z-4cZhfD-E}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-E}}}\moddef{Generic utility classes and functions~{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-4cZhfD-D}{NWaGG5Z-4cZhfD-F}\nwenddeflinemarkup
+class Forest:
+    def __init__(self,rootNodes):
+         self.rootNodes = rootNodes
+
+class Node:
+    def __init__(self, point, children=[]):
+          self.point    = np.asarray(point)
+          self.children = children
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{112}\nwdocspar
+
+
+\nwenddocs{}\nwbegincode{113}\sublabel{NWaGG5Z-4cZhfD-F}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-F}}}\moddef{Generic utility classes and functions~{\nwtagstyle{}\subpageref{NWaGG5Z-4cZhfD-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-4cZhfD-E}{\relax}\nwenddeflinemarkup
+def build_delaunay_forest(points,stopnum=10):
+     from sklearn.neighbors import NearestNeighbors     
+     points = np.asarray([np.asarray(pt) for pt in points])
+     while len(points) >= stopnum :
+              del_graph                     = get_delaunay_tri_graph(points)
+              max_disp_vc_nodes, dispersion = get_max_disp_vc_nodes(del_graph, points) 
+              vcpoints                      = np.asarray([points[idx] for idx in max_disp_vc_nodes])
+              nbrs                          = NearestNeighbors(n_neighbors=5, algorithm='ball_tree').fit(points)
+              distances, indices            = nbrs.kneighbors(vcpoints)
+              print(distances)
+              print(indices)
+              print(len(vcpoints))
+              points             = vcpoints
+
+     sys.exit()
+     return delaunay_forest
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{114}\nwdocspar
+%@@@@
+
+
+
+
+
 
 
 \section{Experiments}
 
 \subsection{Intersection behavior for TSPLIB instances}
-\nwenddocs{}\nwbegincode{97}\sublabel{NWaGG5Z-3zYcKb-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3zYcKb-1}}}\moddef{Experiments~{\nwtagstyle{}\subpageref{NWaGG5Z-3zYcKb-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{\relax}{NWaGG5Z-3zYcKb-2}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{115}\sublabel{NWaGG5Z-3zYcKb-1}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3zYcKb-1}}}\moddef{Experiments~{\nwtagstyle{}\subpageref{NWaGG5Z-3zYcKb-1}}}\endmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{\relax}{NWaGG5Z-3zYcKb-2}\nwenddeflinemarkup
 def expt_tsplib_intersection_behavior():
  
      dirName = './tsplib-expts/'
@@ -1410,7 +1586,7 @@ def expt_tsplib_intersection_behavior():
               plt.close()
 
      f.close()
-\nwalsodefined{\\{NWaGG5Z-3zYcKb-2}}\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{98}\nwdocspar
+\nwalsodefined{\\{NWaGG5Z-3zYcKb-2}}\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{116}\nwdocspar
 
 
 
@@ -1437,7 +1613,7 @@ and one standard deviation above i.e. $[\mu-\sigma, \mu+\sigma]$ is shaded for e
 %{\color{red} Why is $\mu+\sigma$ going slightly over 100 for delaunay?? This is a minor technical issue however, can be fixed later} 
 
 
-\nwenddocs{}\nwbegincode{99}\sublabel{NWaGG5Z-3zYcKb-2}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3zYcKb-2}}}\moddef{Experiments~{\nwtagstyle{}\subpageref{NWaGG5Z-3zYcKb-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-3zYcKb-1}{\relax}\nwenddeflinemarkup
+\nwenddocs{}\nwbegincode{117}\sublabel{NWaGG5Z-3zYcKb-2}\nwmargintag{{\nwtagstyle{}\subpageref{NWaGG5Z-3zYcKb-2}}}\moddef{Experiments~{\nwtagstyle{}\subpageref{NWaGG5Z-3zYcKb-1}}}\plusendmoddef\nwstartdeflinemarkup\nwusesondefline{\\{NWaGG5Z-HXUTc-1}}\nwprevnextdefs{NWaGG5Z-3zYcKb-1}{\relax}\nwenddeflinemarkup
 def expt_intersection_behavior():
      expt_name           = 'expt_non_uniform_intersection_behavior'
      expt_plot_file_extn = '.pdf'
@@ -1549,14 +1725,9 @@ def expt_intersection_behavior():
      ax.grid(color='gray',linestyle='--',linewidth=0.5)
      plt.savefig(expt_name+expt_plot_file_extn, bbox_inches='tight')
      print("Plot File written to disk")
-\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{100}\nwdocspar
+\nwused{\\{NWaGG5Z-HXUTc-1}}\nwendcode{}\nwbegindocs{118}\nwdocspar
      
 \subsection{Intersection behavior for TSPLIB instances}
-
-
-
-
-
 
 \nwenddocs{}
 
@@ -1567,6 +1738,7 @@ def expt_intersection_behavior():
 \nwixlogsorted{c}{{Compute spanning graph}{NWaGG5Z-33qwdb-1}{\nwixu{NWaGG5Z-3DI44N-3}\nwixd{NWaGG5Z-33qwdb-1}}}%
 \nwixlogsorted{c}{{Compute TSP and find common edges with various spanning graphs}{NWaGG5Z-1xEGS-1}{\nwixu{NWaGG5Z-3DI44N-3}\nwixd{NWaGG5Z-1xEGS-1}}}%
 \nwixlogsorted{c}{{Compute weight of each edge and total edge weight}{NWaGG5Z-3homP2-1}{\nwixu{NWaGG5Z-2XNY09-7}\nwixd{NWaGG5Z-3homP2-1}}}%
+\nwixlogsorted{c}{{Create a clause for each pair of nodes whose distance is smaller than $d$}{NWaGG5Z-3YpnkD-1}{\nwixu{NWaGG5Z-4cZhfD-B}\nwixd{NWaGG5Z-3YpnkD-1}}}%
 \nwixlogsorted{c}{{Data Generation}{NWaGG5Z-2uhtAA-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-2uhtAA-1}}}%
 \nwixlogsorted{c}{{Draw tour as polygon patch}{NWaGG5Z-KZycx-1}{\nwixu{NWaGG5Z-3DI44N-5}\nwixd{NWaGG5Z-KZycx-1}}}%
 \nwixlogsorted{c}{{Enter type of point set to generate}{NWaGG5Z-1TJD4t-1}{\nwixu{NWaGG5Z-3DI44N-3}\nwixd{NWaGG5Z-1TJD4t-1}}}%
@@ -1576,13 +1748,16 @@ def expt_intersection_behavior():
 \nwixlogsorted{c}{{Functions for plotting and interacting}{NWaGG5Z-3DI44N-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-3DI44N-1}\nwixd{NWaGG5Z-3DI44N-2}\nwixd{NWaGG5Z-3DI44N-3}\nwixd{NWaGG5Z-3DI44N-4}\nwixd{NWaGG5Z-3DI44N-5}}}%
 \nwixlogsorted{c}{{Generate convex hull of points remaining in \verb|points_tmp|}{NWaGG5Z-1qB5IG-1}{\nwixu{NWaGG5Z-2XNY09-4}\nwixd{NWaGG5Z-1qB5IG-1}}}%
 \nwixlogsorted{c}{{Generate TSP cycle and convert into NetworkX graph}{NWaGG5Z-ixiQd-1}{\nwixu{NWaGG5Z-2XNY09-7}\nwixd{NWaGG5Z-ixiQd-1}}}%
-\nwixlogsorted{c}{{Generic utility classes and functions}{NWaGG5Z-4cZhfD-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-4cZhfD-1}\nwixd{NWaGG5Z-4cZhfD-2}\nwixd{NWaGG5Z-4cZhfD-3}\nwixd{NWaGG5Z-4cZhfD-4}\nwixd{NWaGG5Z-4cZhfD-5}\nwixd{NWaGG5Z-4cZhfD-6}\nwixd{NWaGG5Z-4cZhfD-7}\nwixd{NWaGG5Z-4cZhfD-8}\nwixd{NWaGG5Z-4cZhfD-9}\nwixd{NWaGG5Z-4cZhfD-A}}}%
+\nwixlogsorted{c}{{Generic utility classes and functions}{NWaGG5Z-4cZhfD-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-4cZhfD-1}\nwixd{NWaGG5Z-4cZhfD-2}\nwixd{NWaGG5Z-4cZhfD-3}\nwixd{NWaGG5Z-4cZhfD-4}\nwixd{NWaGG5Z-4cZhfD-5}\nwixd{NWaGG5Z-4cZhfD-6}\nwixd{NWaGG5Z-4cZhfD-7}\nwixd{NWaGG5Z-4cZhfD-8}\nwixd{NWaGG5Z-4cZhfD-9}\nwixd{NWaGG5Z-4cZhfD-A}\nwixd{NWaGG5Z-4cZhfD-B}\nwixd{NWaGG5Z-4cZhfD-C}\nwixd{NWaGG5Z-4cZhfD-D}\nwixd{NWaGG5Z-4cZhfD-E}\nwixd{NWaGG5Z-4cZhfD-F}}}%
 \nwixlogsorted{c}{{Headers}{NWaGG5Z-2BmRoZ-1}{\nwixu{NWaGG5Z-HXUTc-1}\nwixd{NWaGG5Z-2BmRoZ-1}}}%
 \nwixlogsorted{c}{{Iterate through graph edges and draw as segments}{NWaGG5Z-2RD3q9-1}{\nwixu{NWaGG5Z-3DI44N-5}\nwixd{NWaGG5Z-2RD3q9-1}}}%
 \nwixlogsorted{c}{{Join two remaining points by an edge in \verb|onion_graph|}{NWaGG5Z-1QE0qW-1}{\nwixu{NWaGG5Z-2XNY09-4}\nwixd{NWaGG5Z-1QE0qW-1}}}%
 \nwixlogsorted{c}{{Remove points reported in the convex hull from \verb|points_tmp|}{NWaGG5Z-ArYW6-1}{\nwixu{NWaGG5Z-2XNY09-4}\nwixd{NWaGG5Z-ArYW6-1}}}%
 \nwixlogsorted{c}{{Set graph attributes}{NWaGG5Z-1NBtrs-1}{\nwixu{NWaGG5Z-2XNY09-7}\nwixd{NWaGG5Z-1NBtrs-1}}}%
+\nwixlogsorted{c}{{Set up clauses for each edge}{NWaGG5Z-2iZU13-1}{\nwixu{NWaGG5Z-4cZhfD-B}\nwixd{NWaGG5Z-2iZU13-1}}}%
 \nwixlogsorted{c}{{Set up edge colors depending on graph type}{NWaGG5Z-3Ujbzt-1}{\nwixu{NWaGG5Z-3DI44N-5}\nwixd{NWaGG5Z-3Ujbzt-1}}}%
+\nwixlogsorted{c}{{Set up variables $x_i$ for each node of the graph}{NWaGG5Z-1YI2LW-1}{\nwixu{NWaGG5Z-4cZhfD-B}\nwixd{NWaGG5Z-1YI2LW-1}}}%
+\nwixlogsorted{c}{{Solve the system with Minisat}{NWaGG5Z-4A3M70-1}{\nwixu{NWaGG5Z-4cZhfD-B}\nwixd{NWaGG5Z-4A3M70-1}}}%
 \nwixlogsorted{c}{{Synthetic data}{NWaGG5Z-1lO5Wy-1}{\nwixu{NWaGG5Z-2uhtAA-1}\nwixd{NWaGG5Z-1lO5Wy-1}}}%
 \nwixlogsorted{c}{{TSPLIB data}{NWaGG5Z-Bg7qX-1}{\nwixu{NWaGG5Z-2uhtAA-1}\nwixd{NWaGG5Z-Bg7qX-1}}}%
 \nwixlogsorted{c}{{tspnng.py}{NWaGG5Z-HXUTc-1}{\nwixd{NWaGG5Z-HXUTc-1}}}%
