@@ -498,6 +498,8 @@ elif algo_str in ['d','D']:
 
      build_delaunay_forest(run.points,stopnum=10) 
      sys.exit()
+elif algo_str in ['v','V']:
+     render_max_disp_graph_hierarchy(run.points,graphfn=get_delaunay_tri_graph ,stopnum=4)
 
 else:
       print(Fore.YELLOW, "I did not recognize that option.", Style.RESET_ALL)

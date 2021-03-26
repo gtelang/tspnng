@@ -67,6 +67,7 @@ def non_uniform_points(numpts):
     remaining_pts = sp.rand(num_remaining_pts, 2).tolist()
     points.extend(remaining_pts)
     return points
+
 def multimodal_points(numpts, nummodes=4, sigma=0.05):
      
      modes  = sp.rand(nummodes, 2).tolist()
@@ -197,6 +198,216 @@ def error_intervals(xss):
                            means[i]        , \
                            means[i]+stds[i])   for i in len(xss)]
      return error_intervals
+def exists_disp_vertex_cover_more_than_bin_guess(graph,points,d):
+
+     from satispy import Variable, Cnf
+     from satispy.solver import Minisat
+
+     numpts = len(points)
+     exp    = Cnf()
+
+     xs = []
+     for idx in range(numpts):
+         xs.append(Variable( 'x_'+str(idx) ))
+     print("     Created Variables....")
+     for (i,j) in  list(graph.edges):
+           c = Cnf()
+           c = xs[i] | xs[j]
+           exp &= c
+     print("     Created Edge Clauses...")
+     for i in range(numpts):
+         for j in range(i+1, numpts):
+             if np.linalg.norm(points[i]-points[j]) < d:
+                    c = Cnf()
+                    c = -xs[i] | -xs[j]
+                    exp &= c
+     print("     Created All Pair Clauses.....")
+     solver = Minisat()
+     solution = solver.solve(exp)
+
+     if solution.success:
+             print(Fore.CYAN, "    2-SAT Solution found!", Style.RESET_ALL)
+             return (True, [idx for idx in range(numpts) if solution[xs[idx]] == True])
+     else: 
+              print(Fore.RED, "    2-SAT Solution cannot be found", Style.RESET_ALL)
+              return (False, [])
+def get_max_disp_vc_nodes(graph, points):
+
+      tol               = 1e-6     # configurable
+      bin_low, bin_high = 0.0, 2.0 # initial interval limits for binary search
+      old_disp_idxs     = range(len(points)) 
+
+      while abs(bin_high - bin_low) > tol:
+
+          assert bin_high >= bin_low 
+          bin_guess = (bin_high + bin_low)/2.0
+          
+          print ("\nBinary search Interval Limits are ", "[", bin_low, " , ", bin_high, "]")
+          print ("Guessed dispersion value currently is ", bin_guess)
+          print ("Checking for vertex cover with ", bin_guess, " dispersion.....")
+
+          [exist_flag_p, disp_idxs] = exists_disp_vertex_cover_more_than_bin_guess(graph,points,bin_guess)
+
+          if exist_flag_p:
+                bin_low       = bin_guess
+                old_disp_idxs = disp_idxs
+          else:
+                bin_high = bin_guess 
+
+      return (old_disp_idxs, bin_guess)
+def list_points_in_node_order(graph):
+     return [graph.nodes[idx]['coods'] for idx in range(len(graph.nodes))]
+class Forest:
+    def __init__(self,rootNodes):
+         self.rootNodes = rootNodes
+
+class Node:
+    def __init__(self, point, children=[]):
+          self.point    = np.asarray(point)
+          self.children = children
+def render_max_disp_graph_hierarchy(points, graphfn, stopnum=10):
+     
+          dirName = './max_disp_vc_graphs/'
+          shutil.rmtree(dirName, ignore_errors=True)
+     
+          try:
+              os.mkdir(dirName)
+              print("Directory " , dirName ,  " Created ") 
+          except FileExistsError:
+               print("Directory " , dirName ,  " already exists")
+               sys.exit()    
+
+
+          points          = np.asarray(points)
+          original_points = points.copy()
+          original_numpts = len(original_points)
+
+          filenum = 0
+          
+          fig, ax = plt.subplots()
+
+          ax.set_aspect(aspect=1.0)
+          ax.set_xlim([0.0,1.0])
+          ax.set_ylim([0.0,1.0])
+
+          plt.cla()
+          ax.set_title("Number of red points: " + str(len(points)))
+          render_graph(graphfn(points),fig,ax)
+          ax.plot(points[:,0], points[:,1], 'o', markerfacecolor='r', markersize=10)
+          plt.savefig(dirName+'myplot_' + str(filenum).zfill(4) + '.png', bbox_inches='tight', dpi=200)
+          
+
+          while len(points) >= stopnum :
+              print("ITERATION ", filenum)
+              filenum += 1
+
+              plt.cla()
+              plt.grid(linestyle='--')
+              ax.set_aspect(aspect=1.0)
+              ax.scatter(original_points[:,0], original_points[:,1],alpha=0.2)
+
+              mygraph                       = graphfn(points)     
+              points                        = list_points_in_node_order(mygraph)     
+              max_disp_vc_nodes, dispersion = get_max_disp_vc_nodes(mygraph, points)    
+              points                        = np.asarray([points[idx] for idx in max_disp_vc_nodes])
+
+              render_graph(graphfn(points),fig,ax)
+              ax.plot(points[:,0], points[:,1], 'o', markerfacecolor='r', markersize=10)
+              ax.set_title("Number of red points: " + str(len(points)))
+              plt.savefig(dirName+'myplot_' + str(filenum).zfill(4) + '.png', bbox_inches='tight', dpi=200)
+          
+          return None
+def build_delaunay_forest(points,stopnum=10):
+     from sklearn.neighbors import NearestNeighbors     
+     points = np.asarray([np.asarray(pt) for pt in points])
+     while len(points) >= stopnum :
+              del_graph                     = get_delaunay_tri_graph(points)
+              max_disp_vc_nodes, dispersion = get_max_disp_vc_nodes(del_graph, points) 
+              vcpoints                      = np.asarray([points[idx] for idx in max_disp_vc_nodes])
+              nbrs                          = NearestNeighbors(n_neighbors=5, algorithm='ball_tree').fit(points)
+              distances, indices            = nbrs.kneighbors(vcpoints)
+              print(distances)
+              print(indices)
+              print(len(vcpoints))
+              points             = vcpoints
+
+     sys.exit()
+     return delaunay_forest
+def get_tsp_incr_graph(points):
+
+     points     = [np.asarray(pt) for pt in points]
+     numpts     = len(points)
+     
+     print(Fore.YELLOW, "Closest Pair Calculation Started",  Style.RESET_ALL)
+     dmin     = np.inf
+     dminpair = None
+     del_idxs = None
+     for i in range(numpts):
+         for j in range(i+1, numpts):
+             dist = np.linalg.norm(points[i]-points[j])
+             if dist < dmin:
+                 dmin     = dist
+                 dminpair = [points[i], points[j]]
+                 del_idxs = [i,j]
+
+     points_rem = [ points[i] for i in range(numpts) if i not in del_idxs ]     
+ 
+     print(Fore.GREEN, "......Closest Pair Calculation Finished", Style.RESET_ALL)
+
+     
+     print(Fore.YELLOW, "Setting initial graph", Style.RESET_ALL)
+     tsp_incr_graph = nx.Graph()
+     tsp_incr_graph.add_nodes_from([
+                                    (0,{'coods':dminpair[0]}),\
+                                    (1,{'coods':dminpair[1]})
+                                   ])
+     tsp_incr_graph.add_edge(0, 1, weight=dmin)
+     print(Fore.GREEN, ".......Initial graph set ", Style.RESET_ALL)
+  
+     print(Fore.YELLOW, "Beginning Incremental TSP calculation", Style.RESET_ALL)
+     itcount = 0 
+
+     while points_rem:
+
+          print(Fore.YELLOW, "---> Iteration Count ",itcount, Style.RESET_ALL) ; itcount += 1; 
+               
+
+          ptidx_remove = None
+          edge_remove  = None
+     
+          ins_cost_min = np.inf
+
+          for edge in list(tsp_incr_graph.edges()):
+               u, v = edge
+               for ptidx in range( len(points_rem) ):
+                   
+                   ins_cost_ptidx = np.linalg.norm( tsp_incr_graph.nodes[u]['coods']-points_rem[ptidx]  ) +\
+                                    np.linalg.norm( tsp_incr_graph.nodes[v]['coods']-points_rem[ptidx]  )   - tsp_incr_graph[u][v]['weight']
+                   
+                   if ins_cost_ptidx < ins_cost_min:
+                       ins_cost_min = ins_cost_ptidx
+                       edge_remove  = edge
+                       ptidx_remove = ptidx
+         
+          ur, vr = edge_remove
+          if len(list(tsp_incr_graph.edges)) > 1:
+               tsp_incr_graph.remove_edge(ur,vr)
+
+          N      = len( tsp_incr_graph.nodes )
+          tsp_incr_graph.add_node(N, coods=points_rem[ptidx_remove])   
+          tsp_incr_graph.add_edge(N, ur, weight = np.linalg.norm( tsp_incr_graph.nodes[ur]['coods']-points_rem[ptidx] )   )
+          tsp_incr_graph.add_edge(N, vr, weight = np.linalg.norm( tsp_incr_graph.nodes[vr]['coods']-points_rem[ptidx] )   )
+
+          points_rem.pop(ptidx_remove)
+          print("TSP tour weight: ", tsp_incr_graph.size(weight="weight"))
+
+     
+     print(Fore.GREEN, ".......Finished Incremental TSP calculation", Style.RESET_ALL)
+     assert( len(list(tsp_incr_graph.edges)) == len(points) )  # to ensure it is a cycle 
+        
+     tsp_incr_graph.graph['type']   = 'tspincr'
+     tsp_incr_graph.graph['weight'] = tsp_incr_graph.size(weight="weight")
+     return tsp_incr_graph
 def run_handler(points=[]):
     fig, ax =  plt.subplots()
     run = TSPNNGInput(points=points)
@@ -325,10 +536,11 @@ def wrapperkeyPressHandler(fig,ax, run):
                                           "(knng)   k-Nearest Neighbor Graph        \n"            +\
                                           "(mst)    Minimum Spanning Tree           \n"            +\
                                           "(onion)  Onion                           \n"            +\
-                                          "(gab)    Gabriel Graph                 \n"            +\
-                                          "(urq)    Urquhart Graph                    \n"            +\
-                                          "(dt)     Delaunay Triangulation         \n"             +\
-                                          "(conc)   TSP computed by the Concorde TSP library \n" +
+                                          "(gab)    Gabriel Graph                               \n"            +\
+                                          "(urq)    Urquhart Graph                              \n"            +\
+                                          "(dt)     Delaunay Triangulation                      \n"             +\
+                                          "(tspincr)    Incremental TSP-approx                  \n"             +\
+                                          "(conc)   TSP computed by the Concorde TSP library   \n"              +\
                                           "(pytsp)  TSP computed by the pure Python TSP library \n")
                      algo_str = algo_str.lstrip()
 
@@ -358,10 +570,17 @@ def wrapperkeyPressHandler(fig,ax, run):
                      elif algo_str == 'pytsp':
                           geometric_graph = get_py_tsp_graph(run.points)
 
+                     elif algo_str == 'tspincr':
+                          geometric_graph = get_tsp_incr_graph(run.points)
+
                      elif algo_str in ['d','D']:
 
                           build_delaunay_forest(run.points,stopnum=10) 
                           sys.exit()
+
+                     elif algo_str in ['v','V']:
+                          render_max_disp_graph_hierarchy(run.points,graphfn=get_mst_graph ,stopnum=4)
+
 
                      else:
                            print(Fore.YELLOW, "I did not recognize that option.", Style.RESET_ALL)
@@ -432,7 +651,7 @@ def render_graph(G,fig,ax):
           edgecol = 'b'
      elif G.graph['type'][-3:] == 'nng':
           edgecol = 'm'
-     if G.graph['type'] not in ['conc', 'pytsp']:
+     if G.graph['type'] not in ['conc', 'pytsp','tspincr']:
           
           #for elt in list(G.nodes(data=True)):
           #     print(elt)
