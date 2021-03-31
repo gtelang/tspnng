@@ -532,16 +532,20 @@ def wrapperkeyPressHandler(fig,ax, run):
                      render_graph(tsp_graph,fig,ax)
                      fig.canvas.draw()
                elif event.key in ['i', 'I']:                     
-                     algo_str = input(Fore.YELLOW + "Enter code for the graph you need to span the points:\n" + Style.RESET_ALL  +\
-                                          "(knng)   k-Nearest Neighbor Graph        \n"            +\
-                                          "(mst)    Minimum Spanning Tree           \n"            +\
-                                          "(onion)  Onion                           \n"            +\
-                                          "(gab)    Gabriel Graph                               \n"            +\
-                                          "(urq)    Urquhart Graph                              \n"            +\
-                                          "(dt)     Delaunay Triangulation                      \n"             +\
-                                          "(tspincr)    Incremental TSP-approx                  \n"             +\
-                                          "(conc)   TSP computed by the Concorde TSP library   \n"              +\
-                                          "(pytsp)  TSP computed by the pure Python TSP library \n")
+                     algo_str = input(Fore.YELLOW + "Enter code for the graph you need to span the points: \n" + Style.RESET_ALL  +\
+                                          "(knng)      k-Nearest Neighbor Graph                            \n" +\
+                                          "(mst)       Minimum Spanning Tree                               \n" +\
+                                          "(onion)     Onion                                               \n" +\
+                                          "(gab)       Gabriel Graph                                       \n" +\
+                                          "(urq)       Urquhart Graph                                      \n" +\
+                                          "(dt)        Delaunay Triangulation                              \n" +\
+                                          "(bitonic)   Bitonic tour                                        \n" +\
+                                          "(l1bitonic) L1 Bitonic tour                                     \n" +\
+                                          "(tspincr)   Incremental TSP-approx                              \n" +\
+                                          "(conc)      TSP computed by the Concorde TSP library            \n" +\
+                                          "(pytsp)     TSP tour computed by the pure Python TSP library    \n" +\
+                                          "(pypath)    TSP path computed by the pure Python TSP library    \n" +\
+                                          "(l1pytsp)   L1 TSP tour computed by the pure Python TSP library \n")
                      algo_str = algo_str.lstrip()
 
                      if algo_str == 'knng':
@@ -572,6 +576,18 @@ def wrapperkeyPressHandler(fig,ax, run):
 
                      elif algo_str == 'tspincr':
                           geometric_graph = get_tsp_incr_graph(run.points)
+
+                     elif algo_str == 'bitonic':
+                          geometric_graph = get_bitonic_tour(run.points)
+
+                     elif algo_str == 'l1bitonic':
+                          geometric_graph = get_l1_bitonic_tour(run.points)
+
+                     elif algo_str == 'pypath':
+                          geometric_graph = get_pytsp_path(run.points)
+
+                     elif algo_str == 'l1pytsp':
+                          geometric_graph = get_L1_tsp_tour(run.points)
 
                      elif algo_str in ['d','D']:
 
@@ -651,6 +667,10 @@ def render_graph(G,fig,ax):
           edgecol = 'b'
      elif G.graph['type'][-3:] == 'nng':
           edgecol = 'm'
+     elif G.graph['type'] == 'bitonic':
+          edgecol = (153/255, 0/255, 0/255)
+     elif G.graph['type'] == 'pypath':
+          edgecol = (255/255, 0/255, 0/255)
      if G.graph['type'] not in ['conc', 'pytsp','tspincr']:
           
           #for elt in list(G.nodes(data=True)):
@@ -910,6 +930,162 @@ def get_concorde_tsp_graph(points, scaling_factor=1000):
      concorde_tsp_graph.graph['found_tour_p'] = solution.found_tour
      concorde_tsp_graph.graph['weight'] = None ### TODO!! 
      return concorde_tsp_graph
+
+def get_pytsp_path(points):
+     import tsp
+     points = np.array(points)
+     coords = [{"coods":pt} for pt in points]
+
+     n = len(points)
+     edge_weights = np.zeros((n+1,n+1))
+     for i in range(0,n-1):
+          for j in range(i+1,n):
+               edge_weights[(i,j)] = np.linalg.norm(points[i]-points[j])
+               edge_weights[(j,i)] = np.linalg.norm(points[i]-points[j])
+     #for i in range(0,n):
+     #     edge_weights[i,n] = 0
+     #     edge_weights[n,i] = 0
+     r = range(n+1)
+     dist = {(i, j): edge_weights[i][j] for i in r for j in r}
+
+     t              = tsp.tsp(r, dist)
+     idxs_along_tsp = t[1]
+     tsp_path       = nx.Graph()
+
+     tsp_path.add_nodes_from(zip(range(len(points)), coords))
+     dummy_node_ind = idxs_along_tsp.index(n)
+     if dummy_node_ind == 0:
+           path = idxs_along_tsp[1:]
+     else:
+           path = idxs_along_tsp[dummy_node_ind+1:] + \
+                  idxs_along_tsp[:dummy_node_ind]
+     for i in range(0,n-1):
+           tsp_path.add_edge(path[i], path[i+1])
+
+     total_weight_of_edges = 0.0
+     for edge in tsp_path.edges:
+
+           n1, n2 = edge
+           pt1 = tsp_path.nodes[n1]['coods'] 
+           pt2 = tsp_path.nodes[n2]['coods']
+           edge_wt = np.linalg.norm(pt1-pt2)
+
+           tsp_path.edges[n1,n2]['weight'] = edge_wt
+           total_weight_of_edges = total_weight_of_edges + edge_wt 
+     tsp_path.graph['weight'] = total_weight_of_edges
+     tsp_path.graph['type']   = 'pypath'     
+     return tsp_path
+
+def get_L1_tsp_tour(points):
+    import tsp
+    points = np.array(points)
+    coords = [{"coods":pt} for pt in points]
+    tsp_L1_tour = nx.Graph()
+    tsp_L1_tour.add_nodes_from(zip(range(len(points)), coords))
+    n = len(points)
+    
+    edge_weights = np.zeros((n,n))
+    for i in range(0,n-1):
+        for j in range(i+1,n):
+            edge_weights[(i,j)] = np.linalg.norm(points[i]-points[j], ord=1)
+            edge_weights[(j,i)] = np.linalg.norm(points[i]-points[j], ord=1)
+     #for i in range(0,n):
+     #     edge_weights[i,n] = 0
+     #     edge_weights[n,i] = 0
+    r = range(n)
+    dist = {(i, j): edge_weights[i][j] for i in r for j in r}
+
+    t = tsp.tsp(r, dist)
+    tsp_idxs = t[1]
+    edge_list = [[tsp_idxs[i],tsp_idxs[i+1]] for i in range(-1,n-1)]
+    tsp_L1_tour.add_edges_from(edge_list)
+
+    total_weight_of_edges = 0.0
+    for edge in tsp_L1_tour.edges:
+        n1, n2 = edge
+        pt1 = tsp_L1_tour.nodes[n1]['coods'] 
+        pt2 = tsp_L1_tour.nodes[n2]['coods']
+        edge_wt = np.linalg.norm(pt1-pt2)
+        tsp_L1_tour.edges[n1,n2]['weight'] = edge_wt
+        total_weight_of_edges = total_weight_of_edges + edge_wt 
+    tsp_L1_tour.graph['weight'] = total_weight_of_edges
+    tsp_L1_tour.graph['type']   = 'pytsp'     
+    return tsp_L1_tour
+
+def get_bitonic_tour(points):
+    points = np.array(points)
+    points = points[np.lexsort((points[:,1], points[:,0]))]
+    coords = [{"coods":pt} for pt in points]
+    bitonic_tour = nx.Graph()
+    bitonic_tour.add_nodes_from(zip(range(len(points)), coords))
+    n = len(points)
+    
+    min_lengths = [0, np.linalg.norm(points[0]-points[1])]
+    partial_bitonic_path_edges = {1:[[1,0]]}
+    for l in range(2,n):
+        path_values = []
+        for i in range(2,l+1):
+            path_values.append(np.linalg.norm(points[l]-points[i-2]) + \
+                               min_lengths[i-1] + \
+                               sum( [np.linalg.norm(points[k]-points[k-1]) for k in range(i,l)] ) )
+        path_lngth, idx = min((val, idx) for (idx, val) in enumerate(path_values))
+        min_lengths = min_lengths + [path_lngth]
+        partial_bitonic_path_edges[l] = partial_bitonic_path_edges[idx+1] + [[l,idx]] + \
+                                    [[k-1,k] for k in range(idx+2,l)]
+    bitonic_tour_edges = partial_bitonic_path_edges[n-1] + [[n-2,n-1]]
+    bitonic_tour.add_edges_from(bitonic_tour_edges)
+
+    total_weight_of_edges = 0.0
+    for edge in bitonic_tour.edges:
+          n1, n2 = edge
+          pt1 = bitonic_tour.nodes[n1]['coods'] 
+          pt2 = bitonic_tour.nodes[n2]['coods']
+          edge_wt = np.linalg.norm(pt1-pt2)
+
+          bitonic_tour.edges[n1,n2]['weight'] = edge_wt
+          total_weight_of_edges = total_weight_of_edges + edge_wt 
+    bitonic_tour.graph['weight'] = total_weight_of_edges
+    bitonic_tour.graph['type']   = 'bitonic'
+
+    return bitonic_tour
+
+def get_l1_bitonic_tour(points):
+    points = np.array(points)
+    points = points[np.lexsort((points[:,1], points[:,0]))]
+    coords = [{"coods":pt} for pt in points]
+    bitonic_tour = nx.Graph()
+    bitonic_tour.add_nodes_from(zip(range(len(points)), coords))
+    n = len(points)
+    
+    min_lengths = [0, np.linalg.norm(points[0]-points[1], ord=1)]
+    partial_bitonic_path_edges = {1:[[1,0]]}
+    for l in range(2,n):
+        path_values = []
+        for i in range(2,l+1):
+            path_values.append(np.linalg.norm(points[l]-points[i-2], ord=1) + \
+                               min_lengths[i-1] + \
+                               sum( [np.linalg.norm(points[k]-points[k-1], ord=1) for k in range(i,l)] ) )
+        path_lngth, idx = min((val, idx) for (idx, val) in enumerate(path_values))
+        min_lengths = min_lengths + [path_lngth]
+        partial_bitonic_path_edges[l] = partial_bitonic_path_edges[idx+1] + [[l,idx]] + \
+                                    [[k-1,k] for k in range(idx+2,l)]
+    bitonic_tour_edges = partial_bitonic_path_edges[n-1] + [[n-2,n-1]]
+    bitonic_tour.add_edges_from(bitonic_tour_edges)
+
+    total_weight_of_edges = 0.0
+    for edge in bitonic_tour.edges:
+          n1, n2 = edge
+          pt1 = bitonic_tour.nodes[n1]['coods'] 
+          pt2 = bitonic_tour.nodes[n2]['coods']
+          edge_wt = np.linalg.norm(pt1-pt2, ord=1)
+
+          bitonic_tour.edges[n1,n2]['weight'] = edge_wt
+          total_weight_of_edges = total_weight_of_edges + edge_wt 
+    bitonic_tour.graph['weight'] = total_weight_of_edges
+    bitonic_tour.graph['type']   = 'bitonic'
+
+    return bitonic_tour
+
 def edge_equal_p(e1,e2):
      e1 = sorted(list(e1))
      e2 = sorted(list(e2))
