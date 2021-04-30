@@ -550,9 +550,9 @@ def wrapperkeyPressHandler(fig,ax, run):
                      algo_str = algo_str.lstrip()
 
                      if algo_str == 'knng':
-                           k_str = input('===> What value of k do you want? ')
-                           k     = int(k_str)
-                           geometric_graph = get_knng_graph(run.points,k)
+                           k = int(input('>> Enter value of k: '))
+                           metric = input('>> Enter metric (inf for L_infty metric): ')
+                           geometric_graph = get_knng_graph(run.points, k, metric)
 
                      elif algo_str == 'mst':
                           geometric_graph = get_mst_graph(run.points)
@@ -591,8 +591,8 @@ def wrapperkeyPressHandler(fig,ax, run):
                           geometric_graph = get_L1_tsp_tour(run.points)
 
                      elif algo_str == 'concorde':
-                          mode = input('Enter tour or path: ')
-                          metric = int(input('Enter metric (inf for L_infty metric): '))
+                          mode = input('>> Enter tour or path: ')
+                          metric = input('>> Enter metric (inf for L_infty metric): ')
                           geometric_graph = get_tsp_graph(run.points, metric=metric, mode=mode)
 
                      elif algo_str in ['d','D']:
@@ -712,13 +712,21 @@ def render_graph(G,fig,ax):
           
      ax.axis('off') # turn off box surrounding plot
      fig.canvas.draw()
-def get_knng_graph(points,k):
+def get_knng_graph(points, k=1, metric=2):
      from sklearn.neighbors import NearestNeighbors
      points     = np.array(points)
      coords     = [{"coods":pt} for pt in points]
      knng_graph = nx.Graph()
      knng_graph.add_nodes_from(zip(range(len(points)), coords))
-     nbrs = NearestNeighbors(n_neighbors=(k+1), algorithm='ball_tree').fit(points)
+     if metric=='inf':
+          nbrs = NearestNeighbors(n_neighbors=(k+1),
+                                  algorithm='ball_tree',
+                                  metric='chebyshev').fit(points)
+     else:
+          nbrs = NearestNeighbors(n_neighbors=(k+1),
+                                  algorithm='ball_tree',
+                                  metric='minkowski',
+                                  p=int(metric)).fit(points)
      distances, indices = nbrs.kneighbors(points)
      edge_list = []
 
@@ -1109,7 +1117,7 @@ def generate_distance_matrix(pts, metric, mode='tour'):
         D   = np.zeros((N+t,N+t))
         for i in range(N):
             for j in range(N):
-                D[i,j] = np.linalg.norm(pts[i]-pts[j], ord=metric)
+                D[i,j] = np.linalg.norm(pts[i]-pts[j], ord=int(metric))
     return D
 
 ##### Write distance matrix to file #####
@@ -1135,14 +1143,16 @@ def write_distance_matrix_to_file(D,fname, dscale = 10000):
         file.write('\n')
     file.write('EOF') 
 
-##### Solve with Concorde #####
+##### Solve with Concorde from file #####
 def solve_tsp_from_file(fname):
     from concorde.tsp import TSPSolver
     solver   = TSPSolver.from_tspfile(fname)
     solution = solver.solve()
     return solution
 
+##### Concorde TSP for tour/path for any metric #####
 def get_tsp_graph(points, metric=2, mode='tour'):
+    import os
     import sys
     from concorde.tsp import TSPSolver
     points = np.array(points)
@@ -1192,8 +1202,14 @@ def get_tsp_graph(points, metric=2, mode='tour'):
         total_weight_of_edges = total_weight_of_edges + edge_wt 
     tsp_graph.graph['weight'] = total_weight_of_edges
     tsp_graph.graph['type']   = 'concorde'
-    return tsp_graph
 
+    if os.path.isfile('name.res'):
+        os.remove('name.res')
+    if os.path.isfile('Oname.res'):
+        os.remove('Oname.res')
+    if os.path.isfile('instance.tsp'):
+        os.remove('instance.tsp')
+    return tsp_graph
 
 def edge_equal_p(e1,e2):
      e1 = sorted(list(e1))
