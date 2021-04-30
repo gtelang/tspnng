@@ -545,7 +545,8 @@ def wrapperkeyPressHandler(fig,ax, run):
                                           "(conc)      TSP computed by the Concorde TSP library            \n" +\
                                           "(pytsp)     TSP tour computed by the pure Python TSP library    \n" +\
                                           "(pypath)    TSP path computed by the pure Python TSP library    \n" +\
-                                          "(l1pytsp)   L1 TSP tour computed by the pure Python TSP library \n")
+                                          "(l1pytsp)   L1 TSP tour computed by the pure Python TSP library \n" +\
+                                          "(concorde)  Tour or path in any metric using Concorde           \n")
                      algo_str = algo_str.lstrip()
 
                      if algo_str == 'knng':
@@ -588,6 +589,11 @@ def wrapperkeyPressHandler(fig,ax, run):
 
                      elif algo_str == 'l1pytsp':
                           geometric_graph = get_L1_tsp_tour(run.points)
+
+                     elif algo_str == 'concorde':
+                          mode = input('Enter tour or path: ')
+                          metric = int(input('Enter metric (inf for L_infty metric): '))
+                          geometric_graph = get_tsp_graph(run.points, metric=metric, mode=mode)
 
                      elif algo_str in ['d','D']:
 
@@ -671,6 +677,8 @@ def render_graph(G,fig,ax):
           edgecol = (153/255, 0/255, 0/255)
      elif G.graph['type'] == 'pypath':
           edgecol = (255/255, 0/255, 0/255)
+     elif G.graph['type'] == 'concorde':
+          edgecol = (127/255 , 255/255, 212/255)
      if G.graph['type'] not in ['conc', 'pytsp','tspincr']:
           
           #for elt in list(G.nodes(data=True)):
@@ -906,7 +914,7 @@ def get_py_tsp_graph(points):
      tsp_graph.graph['weight'] = total_weight_of_edges
      tsp_graph.graph['type']   = 'pytsp'     
      return tsp_graph
-def get_concorde_tsp_graph(points, scaling_factor=1000):
+def get_concorde_tsp_graph(points, scaling_factor=10000):
      from concorde.tsp import TSPSolver
      points = np.array(points)
      coords = [{"coods":pt} for pt in points]
@@ -1085,6 +1093,107 @@ def get_l1_bitonic_tour(points):
     bitonic_tour.graph['type']   = 'bitonic'
 
     return bitonic_tour
+
+
+##### Generate Distance matrix ##### 
+def generate_distance_matrix(pts, metric, mode='tour'):
+    N   = len(pts)
+    t = 0 if mode=='tour' else 1
+    if metric=='inf':
+        D   = np.zeros((N+t,N+t))
+        for i in range(N):
+            for j in range(N):
+                D[i,j] = max(abs(pts[i]-pts[j]))
+        return D
+    else:
+        D   = np.zeros((N+t,N+t))
+        for i in range(N):
+            for j in range(N):
+                D[i,j] = np.linalg.norm(pts[i]-pts[j], ord=metric)
+    return D
+
+##### Write distance matrix to file #####
+def write_distance_matrix_to_file(D,fname, dscale = 10000):
+  with open(fname, 'w') as file:
+    numrows, numcols = D.shape[0], D.shape[1]
+    assert numrows == numcols, "Number of rows and columns in distance matrix must be equal, as matrix of distances is square"
+
+    file.write('NAME: sampleinstance\n')
+    file.write('TYPE: TSP\n')
+    file.write('COMMENT: An explicit distance matrix between given set of points. Scaling factor (dscale) used for getting integer distance below = {dscale}\n'.format(dscale=dscale))
+    file.write('DIMENSION: {dim}\n'.format(dim=numrows))
+    file.write('EDGE_WEIGHT_TYPE: EXPLICIT\n')
+    file.write('EDGE_WEIGHT_FORMAT: FULL_MATRIX\n')
+    file.write('EDGE_WEIGHT_SECTION\n')
+    
+    # it is essential that distances are integers, otherwise concorde crashes. 
+    # this is also the reason for the scaling factor that has been introduced, 
+    # to make sure the original distances between the data are preserved as much as possible
+    for i in range(numrows):
+        for j in range(numcols):
+            file.write('{value} \t'.format(value=int(dscale*D[i,j])) )
+        file.write('\n')
+    file.write('EOF') 
+
+##### Solve with Concorde #####
+def solve_tsp_from_file(fname):
+    from concorde.tsp import TSPSolver
+    solver   = TSPSolver.from_tspfile(fname)
+    solution = solver.solve()
+    return solution
+
+def get_tsp_graph(points, metric=2, mode='tour'):
+    import sys
+    from concorde.tsp import TSPSolver
+    points = np.array(points)
+    n = len(points)
+    coords = [{"coods":pt} for pt in points]
+    tsp_graph = nx.Graph()
+
+    # Solve correct problem
+    if metric==2 and mode=='tour':
+        xs = [int(scaling_factor*pt[0]) for pt in points]
+        ys = [int(scaling_factor*pt[1]) for pt in points]
+        solver = TSPSolver.from_data(xs, ys, norm='EUC_2D', name=None)
+        print(Fore.GREEN)
+        solution = solver.solve()
+        print(Style.RESET_ALL)
+    else:
+        D = generate_distance_matrix(points, metric=metric, mode=mode)
+        write_distance_matrix_to_file(D,fname='instance.tsp',  dscale = 10000)
+        solution = solve_tsp_from_file('instance.tsp')
+
+    # get solution inds and add nodes
+    idxs_along_tsp = list(solution.tour)
+    tsp_graph.add_nodes_from(zip(range(len(points)), coords))
+
+    # add correct edges to graph
+    if mode=='tour':
+        edge_list = list(zip(idxs_along_tsp, idxs_along_tsp[1:])) + \
+                    [(idxs_along_tsp[-1],idxs_along_tsp[0])]
+        tsp_graph.add_edges_from(edge_list)
+    elif mode=='path':
+        dummy_node_ind = idxs_along_tsp.index(n)
+        if dummy_node_ind == 0:
+            path = idxs_along_tsp[1:]
+        else:
+            path = idxs_along_tsp[dummy_node_ind+1:] + \
+                   idxs_along_tsp[:dummy_node_ind]
+        for i in range(0,n-1):
+            tsp_graph.add_edge(path[i], path[i+1])
+
+    total_weight_of_edges = 0.0
+    for edge in tsp_graph.edges:
+        n1, n2 = edge
+        pt1 = tsp_graph.nodes[n1]['coods'] 
+        pt2 = tsp_graph.nodes[n2]['coods']
+        edge_wt = np.linalg.norm(pt1-pt2)
+        tsp_graph.edges[n1,n2]['weight'] = edge_wt
+        total_weight_of_edges = total_weight_of_edges + edge_wt 
+    tsp_graph.graph['weight'] = total_weight_of_edges
+    tsp_graph.graph['type']   = 'concorde'
+    return tsp_graph
+
 
 def edge_equal_p(e1,e2):
      e1 = sorted(list(e1))
