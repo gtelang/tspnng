@@ -1121,7 +1121,7 @@ def generate_distance_matrix(pts, metric, mode='tour'):
     return D
 
 ##### Write distance matrix to file #####
-def write_distance_matrix_to_file(D,fname, dscale = 10000):
+def write_distance_matrix_to_file(D,fname, dscale = 100000):
   with open(fname, 'w') as file:
     numrows, numcols = D.shape[0], D.shape[1]
     assert numrows == numcols, "Number of rows and columns in distance matrix must be equal, as matrix of distances is square"
@@ -1170,7 +1170,7 @@ def get_tsp_graph(points, metric=2, mode='tour'):
         print(Style.RESET_ALL)
     else:
         D = generate_distance_matrix(points, metric=metric, mode=mode)
-        write_distance_matrix_to_file(D,fname='instance.tsp',  dscale = 10000)
+        write_distance_matrix_to_file(D,fname='instance.tsp',  dscale = 100000)
         solution = solve_tsp_from_file('instance.tsp')
 
     # get solution inds and add nodes
